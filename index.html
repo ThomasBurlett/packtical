@@ -146,7 +146,25 @@
         display: flex;
         justify-content: space-between;
         gap: 12px;
-        align-items: baseline;
+        align-items: center;
+        cursor: pointer;
+      }
+      .section-header:focus-visible {
+        outline: 2px solid #8b5cf6;
+        outline-offset: 2px;
+      }
+      .section-title-wrap {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .chevron {
+        color: var(--muted);
+        font-size: 13px;
+        transition: transform 0.2s ease;
+      }
+      section.collapsed .chevron {
+        transform: rotate(-90deg);
       }
       h2 {
         margin: 0;
@@ -159,30 +177,33 @@
       }
       .items {
         padding: 8px 10px 12px;
+        display: grid;
+        gap: 8px;
       }
       label.item {
         display: grid;
         grid-template-columns: 26px 1fr auto;
-        gap: 8px;
-        align-items: start;
-        padding: 8px 6px;
-        border-bottom: 1px solid #eceff8;
-        border-radius: 10px;
+        gap: 10px;
+        align-items: center;
+        padding: 10px 10px;
+        border: 1px solid #e6e9f5;
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.78);
         transition:
           background 0.2s ease,
-          transform 0.2s ease;
+          transform 0.2s ease,
+          border-color 0.2s ease;
       }
       label.item:hover {
-        background: rgba(244, 243, 255, 0.72);
-      }
-      label.item:last-child {
-        border-bottom: 0;
+        background: rgba(240, 238, 255, 0.8);
+        border-color: #d7dcf2;
       }
       input[type="checkbox"] {
         width: 18px;
         height: 18px;
-        margin-top: 1px;
+        margin: 0;
         accent-color: var(--accent);
+        align-self: center;
       }
       .item-text {
         font-size: 15px;
@@ -217,6 +238,9 @@
       }
       .hidden {
         display: none !important;
+      }
+      section.collapsed .items {
+        display: none;
       }
       .notes {
         margin-top: 18px;
@@ -341,10 +365,10 @@
           >
         </div>
         <div class="summary">
-          <strong>Moab forecast snapshot</strong
+          <strong>Fast exit checklist</strong
           ><span
-            >Hot days around 90°F; desert nights currently forecast in the
-            low-to-upper 50s.</span
+            >Before driving out: water loaded, offline maps downloaded, fire
+            restrictions checked, and fuel tank topped off.</span
           >
         </div>
         <div class="summary">
@@ -763,8 +787,12 @@
 
       const STORAGE_KEY = "moab-camping-checklist-v1";
       const NOTES_KEY = "moab-camping-notes-v1";
+      const COLLAPSED_KEY = "moab-camping-collapsed-v1";
       const checked = new Set(
         JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]"),
+      );
+      const collapsed = new Set(
+        JSON.parse(localStorage.getItem(COLLAPSED_KEY) || "[]"),
       );
       const sectionsEl = document.getElementById("sections");
 
@@ -778,11 +806,23 @@
         sectionsEl.innerHTML = "";
         DATA.forEach((group) => {
           const section = document.createElement("section");
+          if (collapsed.has(group.section)) section.classList.add("collapsed");
           const header = document.createElement("div");
           header.className = "section-header";
-          header.innerHTML = `<h2>${group.section}</h2><span class="count"></span>`;
+          header.tabIndex = 0;
+          header.setAttribute("role", "button");
+          header.innerHTML = `<div class="section-title-wrap"><span class="chevron">▾</span><h2>${group.section}</h2></div><span class="count"></span>`;
           const items = document.createElement("div");
           items.className = "items";
+          header.addEventListener("click", () =>
+            toggleSection(section, group.section),
+          );
+          header.addEventListener("keydown", (e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              toggleSection(section, group.section);
+            }
+          });
           group.items.forEach(([text, type, note]) => {
             const id = idFor(group.section, text);
             const label = document.createElement("label");
@@ -804,6 +844,14 @@
         bind();
         updateProgress();
         applyFilter();
+      }
+
+      function toggleSection(sectionEl, sectionName) {
+        sectionEl.classList.toggle("collapsed");
+        if (sectionEl.classList.contains("collapsed"))
+          collapsed.add(sectionName);
+        else collapsed.delete(sectionName);
+        localStorage.setItem(COLLAPSED_KEY, JSON.stringify([...collapsed]));
       }
 
       function bind() {
@@ -865,8 +913,10 @@
         }
       });
       document.getElementById("expandAll").addEventListener("click", () => {
+        collapsed.clear();
+        localStorage.setItem(COLLAPSED_KEY, JSON.stringify([]));
         document.getElementById("filter").value = "all";
-        applyFilter();
+        render();
       });
       const notes = document.getElementById("notes");
       notes.value = localStorage.getItem(NOTES_KEY) || "";
