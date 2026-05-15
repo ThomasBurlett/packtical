@@ -293,6 +293,14 @@
         display: flex;
         flex-direction: column;
         justify-content: space-between;
+        gap: 8px;
+        cursor: grab;
+      }
+      .sticky-note:active {
+        cursor: grabbing;
+      }
+      .sticky-note.dragging {
+        opacity: 0.65;
       }
       .sticky-note p {
         margin: 0;
@@ -300,12 +308,42 @@
         word-break: break-word;
         font-size: 14px;
       }
-      .sticky-note button {
-        margin-top: 10px;
-        width: fit-content;
-        align-self: flex-end;
-        padding: 5px 8px;
-        font-size: 12px;
+      .sticky-note textarea {
+        min-height: 82px;
+        border: none;
+        background: transparent;
+        font: inherit;
+        font-size: 14px;
+        line-height: 1.35;
+        padding: 0;
+        resize: none;
+        width: 100%;
+        outline: none;
+      }
+      .sticky-note-actions {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 8px;
+      }
+      .drag-hint {
+        font-size: 11px;
+        color: rgba(51, 65, 85, 0.75);
+      }
+      .delete-note {
+        width: 28px;
+        height: 28px;
+        min-width: 28px;
+        border-radius: 999px;
+        border: 1px solid rgba(15, 23, 42, 0.2);
+        background: rgba(255, 255, 255, 0.55);
+        color: #0f172a;
+        font-size: 18px;
+        line-height: 1;
+        padding: 0;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
       }
       .sticky-empty {
         color: var(--muted);
@@ -1048,7 +1086,16 @@
         localStorage.setItem(NOTES_KEY, JSON.stringify(stickyNotes));
       }
 
+      function normalizeStickyNotes() {
+        return stickyNotes.map((note) =>
+          typeof note === "string" ? { text: note } : note,
+        );
+      }
+
       function renderStickyNotes() {
+        const normalized = normalizeStickyNotes();
+        stickyNotes.length = 0;
+        stickyNotes.push(...normalized);
         stickyNotesEl.innerHTML = "";
         if (!stickyNotes.length) {
           stickyNotesEl.innerHTML =
@@ -1059,13 +1106,41 @@
           const palette = stickyPalettes[index % stickyPalettes.length];
           const card = document.createElement("div");
           card.className = "sticky-note";
+          card.draggable = true;
+          card.dataset.noteIndex = String(index);
           card.style.background = palette.bg;
           card.style.setProperty("--tilt", palette.tilt);
-          card.innerHTML = `<p>${note}</p><button type="button" data-note-index="${index}">Delete</button>`;
+          card.innerHTML = `
+            <textarea aria-label="Edit sticky note">${note.text}</textarea>
+            <div class="sticky-note-actions">
+              <span class="drag-hint">Drag to reorder</span>
+              <button type="button" class="delete-note" data-note-index="${index}" aria-label="Delete sticky note">&times;</button>
+            </div>
+          `;
           stickyNotesEl.appendChild(card);
         });
         stickyNotesEl
-          .querySelectorAll("button[data-note-index]")
+          .querySelectorAll(".sticky-note textarea")
+          .forEach((area) => {
+            area.addEventListener("input", () => {
+              area.style.height = "auto";
+              area.style.height = `${Math.max(area.scrollHeight, 82)}px`;
+            });
+            area.dispatchEvent(new Event("input"));
+            area.addEventListener("blur", () => {
+              const card = area.closest(".sticky-note");
+              const idx = Number(card?.dataset.noteIndex);
+              if (Number.isNaN(idx) || !stickyNotes[idx]) return;
+              stickyNotes[idx].text = area.value.trim();
+              if (!stickyNotes[idx].text) {
+                stickyNotes.splice(idx, 1);
+              }
+              saveStickyNotes();
+              renderStickyNotes();
+            });
+          });
+        stickyNotesEl
+          .querySelectorAll("button.delete-note[data-note-index]")
           .forEach((btn) => {
             btn.addEventListener("click", () => {
               const idx = Number(btn.dataset.noteIndex);
@@ -1074,12 +1149,39 @@
               renderStickyNotes();
             });
           });
+        stickyNotesEl.querySelectorAll(".sticky-note").forEach((card) => {
+          card.addEventListener("dragstart", () => {
+            card.classList.add("dragging");
+          });
+          card.addEventListener("dragend", () => {
+            card.classList.remove("dragging");
+          });
+          card.addEventListener("dragover", (e) => e.preventDefault());
+          card.addEventListener("drop", (e) => {
+            e.preventDefault();
+            const fromIndex = Number(
+              stickyNotesEl.querySelector(".sticky-note.dragging")?.dataset
+                .noteIndex,
+            );
+            const toIndex = Number(card.dataset.noteIndex);
+            if (
+              Number.isNaN(fromIndex) ||
+              Number.isNaN(toIndex) ||
+              fromIndex === toIndex
+            )
+              return;
+            const [moved] = stickyNotes.splice(fromIndex, 1);
+            stickyNotes.splice(toIndex, 0, moved);
+            saveStickyNotes();
+            renderStickyNotes();
+          });
+        });
       }
 
       function addStickyNote() {
         const value = stickyInput.value.trim();
         if (!value) return;
-        stickyNotes.unshift(value);
+        stickyNotes.unshift({ text: value });
         stickyInput.value = "";
         saveStickyNotes();
         renderStickyNotes();
