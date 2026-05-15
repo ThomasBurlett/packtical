@@ -175,6 +175,22 @@
         font-size: 13px;
         white-space: nowrap;
       }
+      .section-tools {
+        display: flex;
+        gap: 6px;
+        align-items: center;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+      }
+      .section-btn {
+        border: 1px solid #d7dcf2;
+        background: rgba(255, 255, 255, 0.9);
+        border-radius: 999px;
+        padding: 4px 9px;
+        font-size: 12px;
+        color: #374151;
+        cursor: pointer;
+      }
       .items {
         padding: 8px 10px 12px;
         display: grid;
@@ -249,6 +265,31 @@
         border-radius: 16px;
         padding: 16px;
       }
+      .quick-notes {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+        margin: 10px 0 12px;
+      }
+      .quick-notes label {
+        display: grid;
+        gap: 4px;
+        font-size: 13px;
+        color: var(--muted);
+      }
+      .quick-notes input {
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 8px 10px;
+        font: inherit;
+        background: #fff;
+      }
+      .notes-actions {
+        margin-top: 8px;
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
       textarea {
         width: 100%;
         min-height: 100px;
@@ -281,9 +322,15 @@
           grid-column: 2;
           width: fit-content;
         }
+        .section-tools {
+          justify-content: flex-start;
+        }
         button,
         select {
           width: 100%;
+        }
+        .quick-notes {
+          grid-template-columns: 1fr;
         }
       }
       @media print {
@@ -348,7 +395,7 @@
             <option value="required">Needed only</option>
             <option value="extra">Extra / comfort only</option>
           </select>
-          <button id="expandAll">Expand all</button>
+          <button id="toggleSections">Collapse all</button>
           <button id="reset">Reset checks</button>
           <button onclick="window.print()">Print</button>
         </div>
@@ -384,11 +431,42 @@
 
       <div class="notes">
         <h2>Trip Notes / Last-Minute Adds</h2>
-        <p class="footer-note">These notes save locally in this browser.</p>
+        <p class="footer-note">
+          Save the details you actually need at departure time (these all save
+          locally in this browser).
+        </p>
+        <div class="quick-notes">
+          <label
+            >Campsite / Area
+            <input
+              id="campLocation"
+              placeholder="ex: Willow Springs Road BLM area"
+            />
+          </label>
+          <label
+            >Primary route
+            <input
+              id="routePlan"
+              placeholder="ex: UT-191 S → Gemini Bridges Rd"
+            />
+          </label>
+          <label
+            >Leave time
+            <input id="leaveTime" placeholder="ex: Fri 4:30 PM" />
+          </label>
+          <label
+            >Must-buy before leaving
+            <input id="mustBuy" placeholder="ex: Ice, propane, batteries" />
+          </label>
+        </div>
         <textarea
           id="notes"
-          placeholder="Add meal plan, campsite details, ride/hike plans, things to buy, etc."
+          placeholder="Add meal plan, trail options, backup campsite ideas, emergency contacts, and anything easy to forget."
         ></textarea>
+        <div class="notes-actions">
+          <button id="copyTripPlan">Copy trip plan</button>
+          <button id="clearNotes">Clear notes</button>
+        </div>
       </div>
 
       <p class="footer-note">
@@ -787,6 +865,7 @@
 
       const STORAGE_KEY = "moab-camping-checklist-v1";
       const NOTES_KEY = "moab-camping-notes-v1";
+      const NOTES_META_KEY = "moab-camping-notes-meta-v1";
       const COLLAPSED_KEY = "moab-camping-collapsed-v1";
       const checked = new Set(
         JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]"),
@@ -811,9 +890,18 @@
           header.className = "section-header";
           header.tabIndex = 0;
           header.setAttribute("role", "button");
-          header.innerHTML = `<div class="section-title-wrap"><span class="chevron">▾</span><h2>${group.section}</h2></div><span class="count"></span>`;
+          header.innerHTML = `<div class="section-title-wrap"><span class="chevron">▾</span><h2>${group.section}</h2></div><div class="section-tools"><button type="button" class="section-btn select-all" aria-label="Select all items in ${group.section}">Select all</button><button type="button" class="section-btn clear-all" aria-label="Clear all items in ${group.section}">Clear</button><span class="count"></span></div>`;
           const items = document.createElement("div");
           items.className = "items";
+          header.querySelectorAll(".section-btn").forEach((btn) => {
+            btn.addEventListener("click", (e) => e.stopPropagation());
+          });
+          header.querySelector(".select-all").addEventListener("click", () => {
+            setSectionChecked(group.section, true);
+          });
+          header.querySelector(".clear-all").addEventListener("click", () => {
+            setSectionChecked(group.section, false);
+          });
           header.addEventListener("click", () =>
             toggleSection(section, group.section),
           );
@@ -829,6 +917,7 @@
             label.className = `item ${type}`;
             label.dataset.type = type;
             label.dataset.id = id;
+            label.dataset.section = group.section;
             label.innerHTML = `
             <input type="checkbox" ${checked.has(id) ? "checked" : ""} />
             <span class="item-text">${text}${note ? `<small>${note}</small>` : ""}</span>
@@ -844,6 +933,10 @@
         bind();
         updateProgress();
         applyFilter();
+        document.getElementById("toggleSections").textContent =
+          document.querySelectorAll("section:not(.collapsed)").length > 0
+            ? "Collapse all"
+            : "Expand all";
       }
 
       function toggleSection(sectionEl, sectionName) {
@@ -852,6 +945,21 @@
           collapsed.add(sectionName);
         else collapsed.delete(sectionName);
         localStorage.setItem(COLLAPSED_KEY, JSON.stringify([...collapsed]));
+      }
+
+      function setSectionChecked(sectionName, shouldCheck) {
+        document.querySelectorAll("label.item").forEach((label) => {
+          const id = label.dataset.id;
+          if (label.dataset.section !== sectionName) return;
+          label.classList.toggle("checked", shouldCheck);
+          if (shouldCheck) checked.add(id);
+          else checked.delete(id);
+          const checkbox = label.querySelector('input[type="checkbox"]');
+          checkbox.checked = shouldCheck;
+        });
+        localStorage.setItem(STORAGE_KEY, JSON.stringify([...checked]));
+        updateProgress();
+        applyFilter();
       }
 
       function bind() {
@@ -912,17 +1020,66 @@
           render();
         }
       });
-      document.getElementById("expandAll").addEventListener("click", () => {
-        collapsed.clear();
-        localStorage.setItem(COLLAPSED_KEY, JSON.stringify([]));
-        document.getElementById("filter").value = "all";
-        render();
-      });
+      document
+        .getElementById("toggleSections")
+        .addEventListener("click", (e) => {
+          const anyExpanded =
+            document.querySelectorAll("section:not(.collapsed)").length > 0;
+          if (anyExpanded) {
+            DATA.forEach((group) => collapsed.add(group.section));
+            e.target.textContent = "Expand all";
+          } else {
+            collapsed.clear();
+            e.target.textContent = "Collapse all";
+          }
+          localStorage.setItem(COLLAPSED_KEY, JSON.stringify([...collapsed]));
+          document.getElementById("filter").value = "all";
+          render();
+        });
       const notes = document.getElementById("notes");
+      const notesMeta = {
+        campLocation: document.getElementById("campLocation"),
+        routePlan: document.getElementById("routePlan"),
+        leaveTime: document.getElementById("leaveTime"),
+        mustBuy: document.getElementById("mustBuy"),
+      };
       notes.value = localStorage.getItem(NOTES_KEY) || "";
       notes.addEventListener("input", () =>
         localStorage.setItem(NOTES_KEY, notes.value),
       );
+      const savedMeta = JSON.parse(
+        localStorage.getItem(NOTES_META_KEY) || "{}",
+      );
+      Object.entries(notesMeta).forEach(([key, input]) => {
+        input.value = savedMeta[key] || "";
+        input.addEventListener("input", () => {
+          const current = Object.fromEntries(
+            Object.entries(notesMeta).map(([k, el]) => [k, el.value]),
+          );
+          localStorage.setItem(NOTES_META_KEY, JSON.stringify(current));
+        });
+      });
+      document
+        .getElementById("copyTripPlan")
+        .addEventListener("click", async () => {
+          const plan =
+            `Camping Trip Plan\nCampsite: ${notesMeta.campLocation.value}\nRoute: ${notesMeta.routePlan.value}\nLeave time: ${notesMeta.leaveTime.value}\nMust-buy: ${notesMeta.mustBuy.value}\n\nNotes:\n${notes.value}`.trim();
+          try {
+            await navigator.clipboard.writeText(plan);
+            alert("Trip plan copied to clipboard.");
+          } catch {
+            alert(
+              "Clipboard access unavailable. You can manually copy from notes.",
+            );
+          }
+        });
+      document.getElementById("clearNotes").addEventListener("click", () => {
+        if (!confirm("Clear all trip notes and quick fields?")) return;
+        notes.value = "";
+        localStorage.removeItem(NOTES_KEY);
+        Object.values(notesMeta).forEach((el) => (el.value = ""));
+        localStorage.removeItem(NOTES_META_KEY);
+      });
       render();
     </script>
   </body>
