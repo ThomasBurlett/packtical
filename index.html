@@ -1,442 +1,929 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Moab Dispersed Camping Packing Checklist</title>
-  <style>
-    :root {
-      --bg: #f7f4ed;
-      --card: #ffffff;
-      --ink: #1f2933;
-      --muted: #64748b;
-      --border: #d9d4ca;
-      --essential: #7a3413;
-      --extra: #334155;
-      --accent: #9a3412;
-      --soft: #fff7ed;
-    }
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
-      background: var(--bg);
-      color: var(--ink);
-      line-height: 1.35;
-    }
-    header {
-      padding: 28px 18px 16px;
-      max-width: 1100px;
-      margin: 0 auto;
-    }
-    h1 { margin: 0 0 8px; font-size: 30px; }
-    .subtitle { color: var(--muted); max-width: 860px; }
-    .topbar {
-      position: sticky;
-      top: 0;
-      z-index: 10;
-      background: rgba(247,244,237,0.96);
-      border-top: 1px solid var(--border);
-      border-bottom: 1px solid var(--border);
-      padding: 10px 18px;
-      backdrop-filter: blur(8px);
-    }
-    .topbar-inner {
-      max-width: 1100px;
-      margin: 0 auto;
-      display: grid;
-      grid-template-columns: 1fr auto;
-      gap: 12px;
-      align-items: center;
-    }
-    .progress-wrap { display: flex; gap: 10px; align-items: center; }
-    .progress {
-      width: 100%; height: 12px; border-radius: 999px; overflow: hidden;
-      background: #e7e0d4; border: 1px solid var(--border);
-    }
-    .progress > div { height: 100%; width: 0%; background: var(--accent); transition: width .2s ease; }
-    .progress-text { white-space: nowrap; color: var(--muted); font-size: 13px; }
-    .controls { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
-    button, select {
-      border: 1px solid var(--border);
-      background: var(--card);
-      border-radius: 10px;
-      padding: 8px 10px;
-      font-size: 14px;
-      color: var(--ink);
-    }
-    button { cursor: pointer; }
-    main {
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 16px 18px 32px;
-    }
-    .summary-grid {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 12px;
-      margin-bottom: 16px;
-    }
-    .summary, section {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.04);
-    }
-    .summary { padding: 14px; }
-    .summary strong { display:block; margin-bottom: 4px; }
-    .summary span { color: var(--muted); font-size: 14px; }
-    section { margin: 14px 0; overflow: hidden; }
-    .section-header {
-      padding: 14px 16px;
-      border-bottom: 1px solid var(--border);
-      background: var(--soft);
-      display: flex;
-      justify-content: space-between;
-      gap: 12px;
-      align-items: baseline;
-    }
-    h2 { margin: 0; font-size: 20px; }
-    .count { color: var(--muted); font-size: 13px; white-space: nowrap; }
-    .items { padding: 8px 10px 12px; }
-    label.item {
-      display: grid;
-      grid-template-columns: 26px 1fr auto;
-      gap: 8px;
-      align-items: start;
-      padding: 8px 6px;
-      border-bottom: 1px solid #f1ede6;
-    }
-    label.item:last-child { border-bottom: 0; }
-    input[type="checkbox"] { width: 18px; height: 18px; margin-top: 1px; accent-color: var(--accent); }
-    .item-text { font-size: 15px; }
-    .item small { display: block; color: var(--muted); margin-top: 2px; }
-    .tag {
-      border-radius: 999px;
-      padding: 3px 8px;
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: .02em;
-      white-space: nowrap;
-    }
-    .required { background: #ffedd5; color: var(--essential); }
-    .extra { background: #e2e8f0; color: var(--extra); }
-    .checked .item-text { text-decoration: line-through; color: var(--muted); }
-    .hidden { display: none !important; }
-    .notes {
-      margin-top: 18px;
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 16px;
-    }
-    textarea {
-      width: 100%; min-height: 100px; resize: vertical;
-      border: 1px solid var(--border); border-radius: 12px; padding: 10px;
-      font: inherit; background: #fff;
-    }
-    .footer-note { color: var(--muted); font-size: 13px; margin-top: 12px; }
-    @media (max-width: 780px) {
-      .topbar-inner { grid-template-columns: 1fr; }
-      .controls { justify-content: flex-start; }
-      .summary-grid { grid-template-columns: 1fr; }
-      label.item { grid-template-columns: 26px 1fr; }
-      .tag { grid-column: 2; width: fit-content; }
-    }
-    @media print {
-      body { background: white; }
-      .topbar, button, select, textarea { display: none; }
-      header, main { max-width: none; padding: 8px; }
-      section, .summary, .notes { box-shadow: none; break-inside: avoid; }
-      .items { padding: 4px 8px; }
-      label.item { padding: 4px 4px; }
-      h1 { font-size: 22px; }
-      h2 { font-size: 16px; }
-      .item-text { font-size: 12px; }
-    }
-  </style>
-</head>
-<body>
-  <header>
-    <h1>Moab Dispersed Camping Packing Checklist</h1>
-    <div class="subtitle">For 2 people, 1-2 nights, dispersed camping near Moab, UT, with simple meals, mountain biking, and hiking. Items are tagged as <strong>Needed</strong> or <strong>Extra / Comfort</strong>.</div>
-  </header>
-
-  <div class="topbar">
-    <div class="topbar-inner">
-      <div class="progress-wrap">
-        <div class="progress"><div id="progressFill"></div></div>
-        <div class="progress-text" id="progressText">0 / 0 packed</div>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Moab Dispersed Camping Packing Checklist</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+    <style>
+      :root {
+        --bg: #f7f4ed;
+        --card: rgba(255, 255, 255, 0.82);
+        --ink: #1f2933;
+        --muted: #5d6a7d;
+        --border: #d7daed;
+        --essential: #7a3413;
+        --extra: #243e66;
+        --accent: #6d28d9;
+        --soft: #f4f2ff;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial,
+          sans-serif;
+        background:
+          radial-gradient(circle at 0% 0%, #ffffff 0%, transparent 42%),
+          radial-gradient(circle at 100% 0%, #ffe9cf 0%, transparent 34%),
+          linear-gradient(170deg, #eff3ff 0%, #fff6e9 100%);
+        color: var(--ink);
+        line-height: 1.35;
+      }
+      header {
+        padding: 28px 18px 16px;
+        max-width: 1100px;
+        margin: 0 auto;
+      }
+      h1 {
+        margin: 0 0 8px;
+        font-size: 30px;
+        letter-spacing: -0.02em;
+      }
+      .subtitle {
+        color: var(--muted);
+        max-width: 860px;
+      }
+      .topbar {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        background: rgba(244, 245, 255, 0.9);
+        border-top: 1px solid var(--border);
+        border-bottom: 1px solid var(--border);
+        padding: 10px 18px;
+        backdrop-filter: blur(10px);
+      }
+      .topbar-inner {
+        max-width: 1100px;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 12px;
+        align-items: center;
+      }
+      .progress-wrap {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+      }
+      .progress {
+        width: 100%;
+        height: 12px;
+        border-radius: 999px;
+        overflow: hidden;
+        background: #e7e7f6;
+        border: 1px solid var(--border);
+      }
+      .progress > div {
+        height: 100%;
+        width: 0%;
+        background: linear-gradient(90deg, #6d28d9, #8b5cf6 70%, #ec4899);
+        transition: width 0.2s ease;
+      }
+      .progress-text {
+        white-space: nowrap;
+        color: var(--muted);
+        font-size: 13px;
+      }
+      .controls {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+      }
+      button,
+      select {
+        border: 1px solid var(--border);
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 12px;
+        padding: 8px 10px;
+        font-size: 14px;
+        color: var(--ink);
+      }
+      button {
+        cursor: pointer;
+      }
+      main {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 16px 18px 32px;
+      }
+      .summary-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 12px;
+        margin-bottom: 16px;
+      }
+      .summary,
+      section {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        box-shadow: 0 8px 24px rgba(60, 64, 100, 0.08);
+      }
+      .summary {
+        padding: 14px;
+      }
+      .summary strong {
+        display: block;
+        margin-bottom: 4px;
+      }
+      .summary span {
+        color: var(--muted);
+        font-size: 14px;
+      }
+      section {
+        margin: 14px 0;
+        overflow: hidden;
+      }
+      .section-header {
+        padding: 14px 16px;
+        border-bottom: 1px solid var(--border);
+        background: linear-gradient(90deg, var(--soft), #fff5e7);
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        align-items: center;
+        cursor: pointer;
+      }
+      .section-header:focus-visible {
+        outline: 2px solid #8b5cf6;
+        outline-offset: 2px;
+      }
+      .section-title-wrap {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .chevron {
+        color: var(--muted);
+        font-size: 13px;
+        transition: transform 0.2s ease;
+      }
+      section.collapsed .chevron {
+        transform: rotate(-90deg);
+      }
+      h2 {
+        margin: 0;
+        font-size: 20px;
+      }
+      .count {
+        color: var(--muted);
+        font-size: 13px;
+        white-space: nowrap;
+      }
+      .items {
+        padding: 8px 10px 12px;
+        display: grid;
+        gap: 8px;
+      }
+      label.item {
+        display: grid;
+        grid-template-columns: 26px 1fr auto;
+        gap: 10px;
+        align-items: center;
+        padding: 10px 10px;
+        border: 1px solid #e6e9f5;
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.78);
+        transition:
+          background 0.2s ease,
+          transform 0.2s ease,
+          border-color 0.2s ease;
+      }
+      label.item:hover {
+        background: rgba(240, 238, 255, 0.8);
+        border-color: #d7dcf2;
+      }
+      input[type="checkbox"] {
+        width: 18px;
+        height: 18px;
+        margin: 0;
+        accent-color: var(--accent);
+        align-self: center;
+      }
+      .item-text {
+        font-size: 15px;
+      }
+      .item small {
+        display: block;
+        color: var(--muted);
+        margin-top: 2px;
+      }
+      .tag {
+        border-radius: 999px;
+        padding: 3px 8px;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.02em;
+        white-space: nowrap;
+      }
+      .required {
+        background: #ffedd5;
+        color: var(--essential);
+      }
+      .extra {
+        background: #e7eeff;
+        color: var(--extra);
+      }
+      .checked .item-text {
+        text-decoration: line-through;
+        color: var(--muted);
+      }
+      .checked {
+        transform: translateX(2px);
+      }
+      .hidden {
+        display: none !important;
+      }
+      section.collapsed .items {
+        display: none;
+      }
+      .notes {
+        margin-top: 18px;
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 16px;
+      }
+      textarea {
+        width: 100%;
+        min-height: 100px;
+        resize: vertical;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 10px;
+        font: inherit;
+        background: #fff;
+      }
+      .footer-note {
+        color: var(--muted);
+        font-size: 13px;
+        margin-top: 12px;
+      }
+      @media (max-width: 780px) {
+        .topbar-inner {
+          grid-template-columns: 1fr;
+        }
+        .controls {
+          justify-content: flex-start;
+        }
+        .summary-grid {
+          grid-template-columns: 1fr;
+        }
+        label.item {
+          grid-template-columns: 26px 1fr;
+        }
+        .tag {
+          grid-column: 2;
+          width: fit-content;
+        }
+        button,
+        select {
+          width: 100%;
+        }
+      }
+      @media print {
+        body {
+          background: white;
+        }
+        .topbar,
+        button,
+        select,
+        textarea {
+          display: none;
+        }
+        header,
+        main {
+          max-width: none;
+          padding: 8px;
+        }
+        section,
+        .summary,
+        .notes {
+          box-shadow: none;
+          break-inside: avoid;
+        }
+        .items {
+          padding: 4px 8px;
+        }
+        label.item {
+          padding: 4px 4px;
+        }
+        h1 {
+          font-size: 22px;
+        }
+        h2 {
+          font-size: 16px;
+        }
+        .item-text {
+          font-size: 12px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>🏕️ Moab Dispersed Camping Packing Checklist</h1>
+      <div class="subtitle">
+        For 2 people, 1-2 nights, dispersed camping near Moab, UT, with simple
+        meals, mountain biking, and hiking. Items are tagged as
+        <strong>Needed</strong> or <strong>Extra / Comfort</strong>.
       </div>
-      <div class="controls">
-        <select id="filter">
-          <option value="all">Show all</option>
-          <option value="unchecked">Unchecked only</option>
-          <option value="required">Needed only</option>
-          <option value="extra">Extra / comfort only</option>
-        </select>
-        <button id="expandAll">Expand all</button>
-        <button id="reset">Reset checks</button>
-        <button onclick="window.print()">Print</button>
+    </header>
+
+    <div class="topbar">
+      <div class="topbar-inner">
+        <div class="progress-wrap">
+          <div class="progress"><div id="progressFill"></div></div>
+          <div class="progress-text" id="progressText">0 / 0 packed</div>
+        </div>
+        <div class="controls">
+          <select id="filter">
+            <option value="all">Show all</option>
+            <option value="unchecked">Unchecked only</option>
+            <option value="required">Needed only</option>
+            <option value="extra">Extra / comfort only</option>
+          </select>
+          <button id="expandAll">Expand all</button>
+          <button id="reset">Reset checks</button>
+          <button onclick="window.print()">Print</button>
+        </div>
       </div>
     </div>
-  </div>
 
-  <main>
-    <div class="summary-grid">
-      <div class="summary"><strong>Trip assumptions</strong><span>Dispersed camping; no water, bathrooms, picnic table, or trash service assumed.</span></div>
-      <div class="summary"><strong>Moab forecast snapshot</strong><span>Hot days around 90°F; desert nights currently forecast in the low-to-upper 50s.</span></div>
-      <div class="summary"><strong>Water rule</strong><span>Pack at least 6 gallons total; 8-10 gallons is safer with biking, hiking, cooking, and washing.</span></div>
-    </div>
+    <main>
+      <div class="summary-grid">
+        <div class="summary">
+          <strong>Trip assumptions</strong
+          ><span
+            >Dispersed camping; no water, bathrooms, picnic table, or trash
+            service assumed.</span
+          >
+        </div>
+        <div class="summary">
+          <strong>Fast exit checklist</strong
+          ><span
+            >Before driving out: water loaded, offline maps downloaded, fire
+            restrictions checked, and fuel tank topped off.</span
+          >
+        </div>
+        <div class="summary">
+          <strong>Water rule</strong
+          ><span
+            >Pack at least 6 gallons total; 8-10 gallons is safer with biking,
+            hiking, cooking, and washing.</span
+          >
+        </div>
+      </div>
 
-    <div id="sections"></div>
+      <div id="sections"></div>
 
-    <div class="notes">
-      <h2>Trip Notes / Last-Minute Adds</h2>
-      <p class="footer-note">These notes save locally in this browser.</p>
-      <textarea id="notes" placeholder="Add meal plan, campsite details, ride/hike plans, things to buy, etc."></textarea>
-    </div>
+      <div class="notes">
+        <h2>Trip Notes / Last-Minute Adds</h2>
+        <p class="footer-note">These notes save locally in this browser.</p>
+        <textarea
+          id="notes"
+          placeholder="Add meal plan, campsite details, ride/hike plans, things to buy, etc."
+        ></textarea>
+      </div>
 
-    <p class="footer-note">Source checklist adapted from REI camping checklist and customized for dispersed Moab camping, simple meals, hiking, and mountain biking.</p>
-  </main>
+      <p class="footer-note">
+        Source checklist adapted from REI camping checklist and customized for
+        dispersed Moab camping, simple meals, hiking, and mountain biking.
+      </p>
+    </main>
 
-  <script>
-    const DATA = [
-      { section: "Must-Have Dispersed Camping", items: [
-        ["Water: minimum 6 gallons total; 8-10 gallons preferred", "required", "No campsite water. Include drinking, cooking, dishes, and post-ride cleanup."],
-        ["Trash bags", "required", "Pack out all trash."],
-        ["Toilet paper", "required", "Keep dry in a zip bag."],
-        ["Trowel or portable toilet system", "required", "Use required local rules for waste disposal."],
-        ["Hand sanitizer", "required", "Keep one in camp and one in day pack."],
-        ["Downloaded offline maps / directions", "required", "Dispersed sites may have limited service."],
-        ["Vehicle recovery basics", "required", "Spare tire, jack, tire pressure gauge, jumper cables or battery pack."],
-        ["Fire rules checked before leaving", "required", "Desert fire restrictions change frequently."],
-        ["Extra warm layer for desert night", "required", "Lows can feel colder after hot daytime riding/hiking."],
-        ["Sun protection kit", "required", "Sunscreen, sunglasses, brimmed hat, lip balm."],
-      ]},
-      { section: "Shelter / Sleep", items: [
-        ["Tent", "required", "Confirm all parts are inside bag."],
-        ["Tent footprint or ground tarp", "required", "Useful on sand, rock, and sharp desert ground."],
-        ["Tent stakes + extras", "required", "Bring stakes suited for sandy/rocky ground if you have them."],
-        ["Mallet or hammer", "required", "For stakes."],
-        ["Sleeping bags for 2", "required", "Choose temp rating appropriate for 50s or colder."],
-        ["Sleeping pads for 2", "required", "Check inflation before leaving."],
-        ["Camping pillows for 2", "extra", "Comfort item."],
-        ["Extra blanket or quilt", "extra", "Good for cold desert nights."],
-        ["Camp chairs for 2", "extra", "Strongly recommended for comfort."],
-        ["Camp table", "extra", "Needed if you will not have a tailgate/table surface."],
-        ["Tarp / shade shelter", "extra", "Very useful for Moab sun and wind."],
-        ["Camp rug / doormat", "extra", "Helps keep sand out of tent."],
-      ]},
-      { section: "Lighting / Power", items: [
-        ["Headlamps for 2", "required", "Hands-free light for camp and bathroom trips."],
-        ["Extra headlamp batteries or charging cable", "required", "Confirm battery type."],
-        ["Lantern", "extra", "Comfortable camp lighting."],
-        ["Battery bank", "required", "For phones, GPS, lights, watch, bike computer."],
-        ["Phone charging cables", "required", "Bring car + battery-compatible cables."],
-        ["Solar charger", "extra", "Only needed if you expect heavy device use."],
-      ]},
-      { section: "Kitchen / Simple Meals", items: [
-        ["Cooler", "required", "Pre-chill if possible."],
-        ["Ice / ice packs", "required", "Enough for 1-2 nights in desert heat."],
-        ["Camp stove", "required", "Assuming simple meals still need boiling/heating."],
-        ["Stove fuel", "required", "Check canister level."],
-        ["Lighter + backup matches", "required", "Store backup dry."],
-        ["Pot or pan", "required", "Match planned meals."],
-        ["Cooking utensil", "required", "Spatula/spoon/tongs as needed."],
-        ["Knife", "required", "Food prep."],
-        ["Cutting board", "extra", "Convenient but optional for simple meals."],
-        ["Plates/bowls for 2", "required", "Reusable preferred."],
-        ["Forks/spoons for 2", "required", "Pack one extra if possible."],
-        ["Mugs/cups for 2", "required", "Coffee/tea and drinks."],
-        ["Coffee/tea setup", "extra", "Only if wanted."],
-        ["Dish bin or collapsible sink", "extra", "Helpful with no facilities."],
-        ["Biodegradable soap", "required", "Use away from water sources."],
-        ["Sponge / scrubber", "required", "For dishes."],
-        ["Dish towel / paper towels", "required", "Drying and cleanup."],
-        ["Food storage bags / containers / foil", "required", "Leftovers, trash control, prep."],
-        ["Bear/animal-safe food storage plan", "required", "In vehicle or secure hard-sided storage."],
-      ]},
-      { section: "Food", items: [
-        ["Breakfasts for 2 people x 2 mornings", "required", "Adjust down if only 1 night."],
-        ["Lunches for 2 people x 2 days", "required", "Pack ride/hike friendly food."],
-        ["Dinners for 2 people x 2 nights", "required", "Adjust down if only 1 night."],
-        ["High-calorie snacks", "required", "Bars, trail mix, jerky, fruit, chips."],
-        ["Electrolytes", "required", "Useful for hot desert riding/hiking."],
-        ["Cooking oil / butter", "extra", "Only if meal plan needs it."],
-        ["Salt, pepper, seasonings", "extra", "Optional but easy win."],
-        ["Condiments", "extra", "Optional."],
-        ["S'mores / dessert", "extra", "Comfort item."],
-      ]},
-      { section: "Clothing", items: [
-        ["Underwear x 2-3 per person", "required", "1 packed extra is useful."],
-        ["Wool/synthetic socks x 2-3 per person", "required", "Include riding/hiking socks."],
-        ["Moisture-wicking shirts", "required", "Avoid cotton for active layers."],
-        ["Hiking/riding shorts or pants", "required", "Comfortable for activity."],
-        ["Warm fleece or midlayer", "required", "For evenings."],
-        ["Insulated jacket or puffy", "required", "Desert night comfort."],
-        ["Rain/wind shell", "extra", "Mostly wind protection based on your forecast."],
-        ["Warm hat", "extra", "Small, useful at night."],
-        ["Light gloves", "extra", "Optional for chilly mornings/evenings."],
-        ["Sleep clothes", "required", "Keep separate from sweaty activity clothing."],
-        ["Camp sandals or easy shoes", "extra", "Comfort after biking/hiking."],
-      ]},
-      { section: "Mountain Biking", items: [
-        ["Bike", "required", "Do a quick pre-trip check."],
-        ["Helmet", "required", "Do not forget."],
-        ["Bike shoes", "required", "If using clipless, bring the correct pair."],
-        ["Riding gloves", "required", "Useful in desert terrain."],
-        ["Hydration pack or bottles", "required", "Carry more water than usual."],
-        ["Bike repair kit", "required", "Tube, plugs, levers, multi-tool, pump/CO2."],
-        ["Spare derailleur hanger", "extra", "Small and trip-saving if you have one."],
-        ["Chain lube", "extra", "Dusty desert riding."],
-        ["Bike computer / mount", "extra", "If used."],
-        ["Trail map downloaded", "required", "Phone/GPS offline."],
-        ["Post-ride towel/wipes", "extra", "Useful with no shower."],
-      ]},
-      { section: "Hiking / Day Pack", items: [
-        ["Day pack", "required", "For hikes and short outings."],
-        ["Water bottles / bladder", "required", "Enough for heat and distance."],
-        ["Navigation", "required", "Offline map, GPS, paper map if available."],
-        ["First-aid kit", "required", "Include blister care."],
-        ["Headlamp", "required", "Even on day hikes."],
-        ["Emergency blanket", "required", "Small and useful."],
-        ["Small knife or multi-tool", "required", "Trail essential."],
-        ["Snacks", "required", "More than you think you need."],
-        ["Sun shirt / hat", "required", "Moab exposure is high."],
-        ["Trekking poles", "extra", "Optional."],
-      ]},
-      { section: "Health / Hygiene", items: [
-        ["Prescription meds", "required", "Plus extras."],
-        ["Pain reliever / basic meds", "extra", "Ibuprofen, allergy meds, stomach meds."],
-        ["Toothbrush + toothpaste", "required", ""],
-        ["Wipes / body wipes", "required", "No shower."],
-        ["Quick-dry towel", "extra", "Useful for cleanup."],
-        ["Insect repellent", "extra", "Usually situational, but easy to pack."],
-        ["Earplugs / eye mask", "extra", "Comfort item."],
-        ["Personal toiletries", "required", "Contacts, glasses, deodorant, etc."],
-      ]},
-      { section: "Tools / Repair / Camp Extras", items: [
-        ["Multi-tool", "required", "Camp and bike backup."],
-        ["Duct tape", "required", "Wrap some around a bottle or lighter."],
-        ["Paracord / extra cord", "required", "Repairs, tarp, clothesline."],
-        ["Tent-pole repair sleeve", "extra", "Good repair item."],
-        ["Sleeping pad repair kit", "extra", "Worth packing if inflatable pads."],
-        ["Small broom / dustpan", "extra", "Great for sand."],
-        ["Binoculars", "extra", "Optional."],
-        ["Book / cards / game", "extra", "Camp downtime."],
-        ["Notebook + pen", "extra", "Useful for notes/plans."],
-      ]},
-      { section: "Admin / Before Leaving", items: [
-        ["Tell someone your plan", "required", "Location area and return time."],
-        ["Check land-use / dispersed camping rules", "required", "Confirm camping is allowed where you plan to stay."],
-        ["Check fire restrictions", "required", "Especially important near Moab."],
-        ["Check bike/hike trail conditions", "required", "Closures, heat, road access."],
-        ["ID + wallet", "required", ""],
-        ["Cash", "extra", "Useful for fees or emergencies."],
-        ["Park/area pass if needed", "required", "Depending on exact destination."],
-        ["Gas up before remote roads", "required", "Do not rely on remote options."],
-      ]}
-    ];
+    <script>
+      const DATA = [
+        {
+          section: "Must-Have Dispersed Camping",
+          items: [
+            [
+              "Water: minimum 6 gallons total; 8-10 gallons preferred",
+              "required",
+              "No campsite water. Include drinking, cooking, dishes, and post-ride cleanup.",
+            ],
+            ["Trash bags", "required", "Pack out all trash."],
+            ["Toilet paper", "required", "Keep dry in a zip bag."],
+            [
+              "Trowel or portable toilet system",
+              "required",
+              "Use required local rules for waste disposal.",
+            ],
+            [
+              "Hand sanitizer",
+              "required",
+              "Keep one in camp and one in day pack.",
+            ],
+            [
+              "Downloaded offline maps / directions",
+              "required",
+              "Dispersed sites may have limited service.",
+            ],
+            [
+              "Vehicle recovery basics",
+              "required",
+              "Spare tire, jack, tire pressure gauge, jumper cables or battery pack.",
+            ],
+            [
+              "Fire rules checked before leaving",
+              "required",
+              "Desert fire restrictions change frequently.",
+            ],
+            [
+              "Extra warm layer for desert night",
+              "required",
+              "Lows can feel colder after hot daytime riding/hiking.",
+            ],
+            [
+              "Sun protection kit",
+              "required",
+              "Sunscreen, sunglasses, brimmed hat, lip balm.",
+            ],
+          ],
+        },
+        {
+          section: "Shelter / Sleep",
+          items: [
+            ["Tent", "required", "Confirm all parts are inside bag."],
+            [
+              "Tent footprint or ground tarp",
+              "required",
+              "Useful on sand, rock, and sharp desert ground.",
+            ],
+            [
+              "Tent stakes + extras",
+              "required",
+              "Bring stakes suited for sandy/rocky ground if you have them.",
+            ],
+            ["Mallet or hammer", "required", "For stakes."],
+            [
+              "Sleeping bags for 2",
+              "required",
+              "Choose temp rating appropriate for 50s or colder.",
+            ],
+            [
+              "Sleeping pads for 2",
+              "required",
+              "Check inflation before leaving.",
+            ],
+            ["Camping pillows for 2", "extra", "Comfort item."],
+            ["Extra blanket or quilt", "extra", "Good for cold desert nights."],
+            ["Camp chairs for 2", "extra", "Strongly recommended for comfort."],
+            [
+              "Camp table",
+              "extra",
+              "Needed if you will not have a tailgate/table surface.",
+            ],
+            [
+              "Tarp / shade shelter",
+              "extra",
+              "Very useful for Moab sun and wind.",
+            ],
+            ["Camp rug / doormat", "extra", "Helps keep sand out of tent."],
+          ],
+        },
+        {
+          section: "Lighting / Power",
+          items: [
+            [
+              "Headlamps for 2",
+              "required",
+              "Hands-free light for camp and bathroom trips.",
+            ],
+            [
+              "Extra headlamp batteries or charging cable",
+              "required",
+              "Confirm battery type.",
+            ],
+            ["Lantern", "extra", "Comfortable camp lighting."],
+            [
+              "Battery bank",
+              "required",
+              "For phones, GPS, lights, watch, bike computer.",
+            ],
+            [
+              "Phone charging cables",
+              "required",
+              "Bring car + battery-compatible cables.",
+            ],
+            [
+              "Solar charger",
+              "extra",
+              "Only needed if you expect heavy device use.",
+            ],
+          ],
+        },
+        {
+          section: "Kitchen / Simple Meals",
+          items: [
+            ["Cooler", "required", "Pre-chill if possible."],
+            [
+              "Ice / ice packs",
+              "required",
+              "Enough for 1-2 nights in desert heat.",
+            ],
+            [
+              "Camp stove",
+              "required",
+              "Assuming simple meals still need boiling/heating.",
+            ],
+            ["Stove fuel", "required", "Check canister level."],
+            ["Lighter + backup matches", "required", "Store backup dry."],
+            ["Pot or pan", "required", "Match planned meals."],
+            ["Cooking utensil", "required", "Spatula/spoon/tongs as needed."],
+            ["Knife", "required", "Food prep."],
+            [
+              "Cutting board",
+              "extra",
+              "Convenient but optional for simple meals.",
+            ],
+            ["Plates/bowls for 2", "required", "Reusable preferred."],
+            ["Forks/spoons for 2", "required", "Pack one extra if possible."],
+            ["Mugs/cups for 2", "required", "Coffee/tea and drinks."],
+            ["Coffee/tea setup", "extra", "Only if wanted."],
+            [
+              "Dish bin or collapsible sink",
+              "extra",
+              "Helpful with no facilities.",
+            ],
+            ["Biodegradable soap", "required", "Use away from water sources."],
+            ["Sponge / scrubber", "required", "For dishes."],
+            ["Dish towel / paper towels", "required", "Drying and cleanup."],
+            [
+              "Food storage bags / containers / foil",
+              "required",
+              "Leftovers, trash control, prep.",
+            ],
+            [
+              "Bear/animal-safe food storage plan",
+              "required",
+              "In vehicle or secure hard-sided storage.",
+            ],
+          ],
+        },
+        {
+          section: "Food",
+          items: [
+            [
+              "Breakfasts for 2 people x 2 mornings",
+              "required",
+              "Adjust down if only 1 night.",
+            ],
+            [
+              "Lunches for 2 people x 2 days",
+              "required",
+              "Pack ride/hike friendly food.",
+            ],
+            [
+              "Dinners for 2 people x 2 nights",
+              "required",
+              "Adjust down if only 1 night.",
+            ],
+            [
+              "High-calorie snacks",
+              "required",
+              "Bars, trail mix, jerky, fruit, chips.",
+            ],
+            [
+              "Electrolytes",
+              "required",
+              "Useful for hot desert riding/hiking.",
+            ],
+            ["Cooking oil / butter", "extra", "Only if meal plan needs it."],
+            ["Salt, pepper, seasonings", "extra", "Optional but easy win."],
+            ["Condiments", "extra", "Optional."],
+            ["S'mores / dessert", "extra", "Comfort item."],
+          ],
+        },
+        {
+          section: "Clothing",
+          items: [
+            [
+              "Underwear x 2-3 per person",
+              "required",
+              "1 packed extra is useful.",
+            ],
+            [
+              "Wool/synthetic socks x 2-3 per person",
+              "required",
+              "Include riding/hiking socks.",
+            ],
+            [
+              "Moisture-wicking shirts",
+              "required",
+              "Avoid cotton for active layers.",
+            ],
+            [
+              "Hiking/riding shorts or pants",
+              "required",
+              "Comfortable for activity.",
+            ],
+            ["Warm fleece or midlayer", "required", "For evenings."],
+            ["Insulated jacket or puffy", "required", "Desert night comfort."],
+            [
+              "Rain/wind shell",
+              "extra",
+              "Mostly wind protection based on your forecast.",
+            ],
+            ["Warm hat", "extra", "Small, useful at night."],
+            ["Light gloves", "extra", "Optional for chilly mornings/evenings."],
+            [
+              "Sleep clothes",
+              "required",
+              "Keep separate from sweaty activity clothing.",
+            ],
+            [
+              "Camp sandals or easy shoes",
+              "extra",
+              "Comfort after biking/hiking.",
+            ],
+          ],
+        },
+        {
+          section: "Mountain Biking",
+          items: [
+            ["Bike", "required", "Do a quick pre-trip check."],
+            ["Helmet", "required", "Do not forget."],
+            [
+              "Bike shoes",
+              "required",
+              "If using clipless, bring the correct pair.",
+            ],
+            ["Riding gloves", "required", "Useful in desert terrain."],
+            [
+              "Hydration pack or bottles",
+              "required",
+              "Carry more water than usual.",
+            ],
+            [
+              "Bike repair kit",
+              "required",
+              "Tube, plugs, levers, multi-tool, pump/CO2.",
+            ],
+            [
+              "Spare derailleur hanger",
+              "extra",
+              "Small and trip-saving if you have one.",
+            ],
+            ["Chain lube", "extra", "Dusty desert riding."],
+            ["Bike computer / mount", "extra", "If used."],
+            ["Trail map downloaded", "required", "Phone/GPS offline."],
+            ["Post-ride towel/wipes", "extra", "Useful with no shower."],
+          ],
+        },
+        {
+          section: "Hiking / Day Pack",
+          items: [
+            ["Day pack", "required", "For hikes and short outings."],
+            [
+              "Water bottles / bladder",
+              "required",
+              "Enough for heat and distance.",
+            ],
+            [
+              "Navigation",
+              "required",
+              "Offline map, GPS, paper map if available.",
+            ],
+            ["First-aid kit", "required", "Include blister care."],
+            ["Headlamp", "required", "Even on day hikes."],
+            ["Emergency blanket", "required", "Small and useful."],
+            ["Small knife or multi-tool", "required", "Trail essential."],
+            ["Snacks", "required", "More than you think you need."],
+            ["Sun shirt / hat", "required", "Moab exposure is high."],
+            ["Trekking poles", "extra", "Optional."],
+          ],
+        },
+        {
+          section: "Health / Hygiene",
+          items: [
+            ["Prescription meds", "required", "Plus extras."],
+            [
+              "Pain reliever / basic meds",
+              "extra",
+              "Ibuprofen, allergy meds, stomach meds.",
+            ],
+            ["Toothbrush + toothpaste", "required", ""],
+            ["Wipes / body wipes", "required", "No shower."],
+            ["Quick-dry towel", "extra", "Useful for cleanup."],
+            [
+              "Insect repellent",
+              "extra",
+              "Usually situational, but easy to pack.",
+            ],
+            ["Earplugs / eye mask", "extra", "Comfort item."],
+            [
+              "Personal toiletries",
+              "required",
+              "Contacts, glasses, deodorant, etc.",
+            ],
+          ],
+        },
+        {
+          section: "Tools / Repair / Camp Extras",
+          items: [
+            ["Multi-tool", "required", "Camp and bike backup."],
+            ["Duct tape", "required", "Wrap some around a bottle or lighter."],
+            [
+              "Paracord / extra cord",
+              "required",
+              "Repairs, tarp, clothesline.",
+            ],
+            ["Tent-pole repair sleeve", "extra", "Good repair item."],
+            [
+              "Sleeping pad repair kit",
+              "extra",
+              "Worth packing if inflatable pads.",
+            ],
+            ["Small broom / dustpan", "extra", "Great for sand."],
+            ["Binoculars", "extra", "Optional."],
+            ["Book / cards / game", "extra", "Camp downtime."],
+            ["Notebook + pen", "extra", "Useful for notes/plans."],
+          ],
+        },
+        {
+          section: "Admin / Before Leaving",
+          items: [
+            [
+              "Tell someone your plan",
+              "required",
+              "Location area and return time.",
+            ],
+            [
+              "Check land-use / dispersed camping rules",
+              "required",
+              "Confirm camping is allowed where you plan to stay.",
+            ],
+            [
+              "Check fire restrictions",
+              "required",
+              "Especially important near Moab.",
+            ],
+            [
+              "Check bike/hike trail conditions",
+              "required",
+              "Closures, heat, road access.",
+            ],
+            ["ID + wallet", "required", ""],
+            ["Cash", "extra", "Useful for fees or emergencies."],
+            [
+              "Park/area pass if needed",
+              "required",
+              "Depending on exact destination.",
+            ],
+            [
+              "Gas up before remote roads",
+              "required",
+              "Do not rely on remote options.",
+            ],
+          ],
+        },
+      ];
 
-    const STORAGE_KEY = "moab-camping-checklist-v1";
-    const NOTES_KEY = "moab-camping-notes-v1";
-    const checked = new Set(JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]"));
-    const sectionsEl = document.getElementById("sections");
+      const STORAGE_KEY = "moab-camping-checklist-v1";
+      const NOTES_KEY = "moab-camping-notes-v1";
+      const COLLAPSED_KEY = "moab-camping-collapsed-v1";
+      const checked = new Set(
+        JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]"),
+      );
+      const collapsed = new Set(
+        JSON.parse(localStorage.getItem(COLLAPSED_KEY) || "[]"),
+      );
+      const sectionsEl = document.getElementById("sections");
 
-    function idFor(section, text) {
-      return btoa(unescape(encodeURIComponent(section + "::" + text))).replace(/=/g, "");
-    }
+      function idFor(section, text) {
+        return btoa(
+          unescape(encodeURIComponent(section + "::" + text)),
+        ).replace(/=/g, "");
+      }
 
-    function render() {
-      sectionsEl.innerHTML = "";
-      DATA.forEach(group => {
-        const section = document.createElement("section");
-        const header = document.createElement("div");
-        header.className = "section-header";
-        header.innerHTML = `<h2>${group.section}</h2><span class="count"></span>`;
-        const items = document.createElement("div");
-        items.className = "items";
-        group.items.forEach(([text, type, note]) => {
-          const id = idFor(group.section, text);
-          const label = document.createElement("label");
-          label.className = `item ${type}`;
-          label.dataset.type = type;
-          label.dataset.id = id;
-          label.innerHTML = `
+      function render() {
+        sectionsEl.innerHTML = "";
+        DATA.forEach((group) => {
+          const section = document.createElement("section");
+          if (collapsed.has(group.section)) section.classList.add("collapsed");
+          const header = document.createElement("div");
+          header.className = "section-header";
+          header.tabIndex = 0;
+          header.setAttribute("role", "button");
+          header.innerHTML = `<div class="section-title-wrap"><span class="chevron">▾</span><h2>${group.section}</h2></div><span class="count"></span>`;
+          const items = document.createElement("div");
+          items.className = "items";
+          header.addEventListener("click", () =>
+            toggleSection(section, group.section),
+          );
+          header.addEventListener("keydown", (e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              toggleSection(section, group.section);
+            }
+          });
+          group.items.forEach(([text, type, note]) => {
+            const id = idFor(group.section, text);
+            const label = document.createElement("label");
+            label.className = `item ${type}`;
+            label.dataset.type = type;
+            label.dataset.id = id;
+            label.innerHTML = `
             <input type="checkbox" ${checked.has(id) ? "checked" : ""} />
             <span class="item-text">${text}${note ? `<small>${note}</small>` : ""}</span>
             <span class="tag ${type}">${type === "required" ? "Needed" : "Extra / Comfort"}</span>
           `;
-          if (checked.has(id)) label.classList.add("checked");
-          items.appendChild(label);
+            if (checked.has(id)) label.classList.add("checked");
+            items.appendChild(label);
+          });
+          section.appendChild(header);
+          section.appendChild(items);
+          sectionsEl.appendChild(section);
         });
-        section.appendChild(header);
-        section.appendChild(items);
-        sectionsEl.appendChild(section);
-      });
-      bind();
-      updateProgress();
-      applyFilter();
-    }
-
-    function bind() {
-      document.querySelectorAll('input[type="checkbox"]').forEach(cb => {
-        cb.addEventListener("change", e => {
-          const label = e.target.closest("label.item");
-          const id = label.dataset.id;
-          if (e.target.checked) checked.add(id); else checked.delete(id);
-          label.classList.toggle("checked", e.target.checked);
-          localStorage.setItem(STORAGE_KEY, JSON.stringify([...checked]));
-          updateProgress();
-          applyFilter();
-        });
-      });
-    }
-
-    function updateProgress() {
-      const all = document.querySelectorAll("label.item");
-      const done = document.querySelectorAll("label.item.checked");
-      const pct = all.length ? Math.round((done.length / all.length) * 100) : 0;
-      document.getElementById("progressFill").style.width = pct + "%";
-      document.getElementById("progressText").textContent = `${done.length} / ${all.length} packed (${pct}%)`;
-      document.querySelectorAll("section").forEach(section => {
-        const total = section.querySelectorAll("label.item").length;
-        const packed = section.querySelectorAll("label.item.checked").length;
-        section.querySelector(".count").textContent = `${packed}/${total}`;
-      });
-    }
-
-    function applyFilter() {
-      const filter = document.getElementById("filter").value;
-      document.querySelectorAll("label.item").forEach(item => {
-        const isChecked = item.classList.contains("checked");
-        const type = item.dataset.type;
-        const show = filter === "all" || (filter === "unchecked" && !isChecked) || filter === type;
-        item.classList.toggle("hidden", !show);
-      });
-      document.querySelectorAll("section").forEach(section => {
-        const visible = section.querySelectorAll("label.item:not(.hidden)").length;
-        section.classList.toggle("hidden", visible === 0);
-      });
-    }
-
-    document.getElementById("filter").addEventListener("change", applyFilter);
-    document.getElementById("reset").addEventListener("click", () => {
-      if (confirm("Reset all checked items?")) {
-        checked.clear();
-        localStorage.removeItem(STORAGE_KEY);
-        render();
+        bind();
+        updateProgress();
+        applyFilter();
       }
-    });
-    document.getElementById("expandAll").addEventListener("click", () => {
-      document.getElementById("filter").value = "all";
-      applyFilter();
-    });
-    const notes = document.getElementById("notes");
-    notes.value = localStorage.getItem(NOTES_KEY) || "";
-    notes.addEventListener("input", () => localStorage.setItem(NOTES_KEY, notes.value));
-    render();
-  </script>
-</body>
+
+      function toggleSection(sectionEl, sectionName) {
+        sectionEl.classList.toggle("collapsed");
+        if (sectionEl.classList.contains("collapsed"))
+          collapsed.add(sectionName);
+        else collapsed.delete(sectionName);
+        localStorage.setItem(COLLAPSED_KEY, JSON.stringify([...collapsed]));
+      }
+
+      function bind() {
+        document.querySelectorAll('input[type="checkbox"]').forEach((cb) => {
+          cb.addEventListener("change", (e) => {
+            const label = e.target.closest("label.item");
+            const id = label.dataset.id;
+            if (e.target.checked) checked.add(id);
+            else checked.delete(id);
+            label.classList.toggle("checked", e.target.checked);
+            localStorage.setItem(STORAGE_KEY, JSON.stringify([...checked]));
+            updateProgress();
+            applyFilter();
+          });
+        });
+      }
+
+      function updateProgress() {
+        const all = document.querySelectorAll("label.item");
+        const done = document.querySelectorAll("label.item.checked");
+        const pct = all.length
+          ? Math.round((done.length / all.length) * 100)
+          : 0;
+        document.getElementById("progressFill").style.width = pct + "%";
+        document.getElementById("progressText").textContent =
+          `${done.length} / ${all.length} packed (${pct}%)`;
+        document.querySelectorAll("section").forEach((section) => {
+          const total = section.querySelectorAll("label.item").length;
+          const packed = section.querySelectorAll("label.item.checked").length;
+          section.querySelector(".count").textContent = `${packed}/${total}`;
+        });
+      }
+
+      function applyFilter() {
+        const filter = document.getElementById("filter").value;
+        document.querySelectorAll("label.item").forEach((item) => {
+          const isChecked = item.classList.contains("checked");
+          const type = item.dataset.type;
+          const show =
+            filter === "all" ||
+            (filter === "unchecked" && !isChecked) ||
+            filter === type;
+          item.classList.toggle("hidden", !show);
+        });
+        document.querySelectorAll("section").forEach((section) => {
+          const visible = section.querySelectorAll(
+            "label.item:not(.hidden)",
+          ).length;
+          section.classList.toggle("hidden", visible === 0);
+        });
+      }
+
+      document.getElementById("filter").addEventListener("change", applyFilter);
+      document.getElementById("reset").addEventListener("click", () => {
+        if (confirm("Reset all checked items?")) {
+          checked.clear();
+          localStorage.removeItem(STORAGE_KEY);
+          render();
+        }
+      });
+      document.getElementById("expandAll").addEventListener("click", () => {
+        collapsed.clear();
+        localStorage.setItem(COLLAPSED_KEY, JSON.stringify([]));
+        document.getElementById("filter").value = "all";
+        render();
+      });
+      const notes = document.getElementById("notes");
+      notes.value = localStorage.getItem(NOTES_KEY) || "";
+      notes.addEventListener("input", () =>
+        localStorage.setItem(NOTES_KEY, notes.value),
+      );
+      render();
+    </script>
+  </body>
 </html>
