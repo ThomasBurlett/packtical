@@ -265,30 +265,51 @@
         border-radius: 16px;
         padding: 16px;
       }
-      .quick-notes {
-        display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
+      .note-input-row {
+        display: flex;
         gap: 10px;
         margin: 10px 0 12px;
       }
-      .quick-notes label {
-        display: grid;
-        gap: 4px;
-        font-size: 13px;
-        color: var(--muted);
-      }
-      .quick-notes input {
+      .note-input-row input {
+        flex: 1;
         border: 1px solid var(--border);
         border-radius: 10px;
-        padding: 8px 10px;
+        padding: 10px 12px;
         font: inherit;
         background: #fff;
       }
-      .notes-actions {
-        margin-top: 8px;
+      .sticky-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+        gap: 12px;
+      }
+      .sticky-note {
+        min-height: 126px;
+        border-radius: 10px;
+        border: 1px solid rgba(0, 0, 0, 0.06);
+        padding: 10px 10px 8px;
+        box-shadow: 0 8px 20px rgba(51, 65, 85, 0.15);
+        transform: rotate(var(--tilt, 0deg));
         display: flex;
-        gap: 8px;
-        flex-wrap: wrap;
+        flex-direction: column;
+        justify-content: space-between;
+      }
+      .sticky-note p {
+        margin: 0;
+        white-space: pre-wrap;
+        word-break: break-word;
+        font-size: 14px;
+      }
+      .sticky-note button {
+        margin-top: 10px;
+        width: fit-content;
+        align-self: flex-end;
+        padding: 5px 8px;
+        font-size: 12px;
+      }
+      .sticky-empty {
+        color: var(--muted);
+        font-size: 14px;
       }
       textarea {
         width: 100%;
@@ -329,8 +350,8 @@
         select {
           width: 100%;
         }
-        .quick-notes {
-          grid-template-columns: 1fr;
+        .note-input-row {
+          flex-direction: column;
         }
       }
       @media print {
@@ -432,41 +453,18 @@
       <div class="notes">
         <h2>Trip Notes / Last-Minute Adds</h2>
         <p class="footer-note">
-          Save the details you actually need at departure time (these all save
-          locally in this browser).
+          Add short reminders and last-minute items. They save locally in this
+          browser.
         </p>
-        <div class="quick-notes">
-          <label
-            >Campsite / Area
-            <input
-              id="campLocation"
-              placeholder="ex: Willow Springs Road BLM area"
-            />
-          </label>
-          <label
-            >Primary route
-            <input
-              id="routePlan"
-              placeholder="ex: UT-191 S → Gemini Bridges Rd"
-            />
-          </label>
-          <label
-            >Leave time
-            <input id="leaveTime" placeholder="ex: Fri 4:30 PM" />
-          </label>
-          <label
-            >Must-buy before leaving
-            <input id="mustBuy" placeholder="ex: Ice, propane, batteries" />
-          </label>
+        <div class="note-input-row">
+          <input
+            id="newStickyNote"
+            maxlength="180"
+            placeholder="Add a short note (food stop, forgot item, campsite reminder...)"
+          />
+          <button id="addStickyNote" type="button">Add note</button>
         </div>
-        <textarea
-          id="notes"
-          placeholder="Add meal plan, trail options, backup campsite ideas, emergency contacts, and anything easy to forget."
-        ></textarea>
-        <div class="notes-actions">
-          <button id="copyTripPlan">Copy trip plan</button>
-          <button id="clearNotes">Clear notes</button>
-        </div>
+        <div id="stickyNotes" class="sticky-grid"></div>
       </div>
 
       <p class="footer-note">
@@ -864,8 +862,7 @@
       ];
 
       const STORAGE_KEY = "moab-camping-checklist-v1";
-      const NOTES_KEY = "moab-camping-notes-v1";
-      const NOTES_META_KEY = "moab-camping-notes-meta-v1";
+      const NOTES_KEY = "moab-camping-sticky-notes-v1";
       const COLLAPSED_KEY = "moab-camping-collapsed-v1";
       const checked = new Set(
         JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]"),
@@ -1036,50 +1033,65 @@
           document.getElementById("filter").value = "all";
           render();
         });
-      const notes = document.getElementById("notes");
-      const notesMeta = {
-        campLocation: document.getElementById("campLocation"),
-        routePlan: document.getElementById("routePlan"),
-        leaveTime: document.getElementById("leaveTime"),
-        mustBuy: document.getElementById("mustBuy"),
-      };
-      notes.value = localStorage.getItem(NOTES_KEY) || "";
-      notes.addEventListener("input", () =>
-        localStorage.setItem(NOTES_KEY, notes.value),
-      );
-      const savedMeta = JSON.parse(
-        localStorage.getItem(NOTES_META_KEY) || "{}",
-      );
-      Object.entries(notesMeta).forEach(([key, input]) => {
-        input.value = savedMeta[key] || "";
-        input.addEventListener("input", () => {
-          const current = Object.fromEntries(
-            Object.entries(notesMeta).map(([k, el]) => [k, el.value]),
-          );
-          localStorage.setItem(NOTES_META_KEY, JSON.stringify(current));
+      const stickyInput = document.getElementById("newStickyNote");
+      const stickyNotesEl = document.getElementById("stickyNotes");
+      const stickyNotes = JSON.parse(localStorage.getItem(NOTES_KEY) || "[]");
+      const stickyPalettes = [
+        { bg: "#fff4a8", tilt: "-1deg" },
+        { bg: "#ffd8ad", tilt: "1deg" },
+        { bg: "#c9f0ff", tilt: "-2deg" },
+        { bg: "#d7f8c9", tilt: "2deg" },
+        { bg: "#e8dcff", tilt: "-1deg" },
+      ];
+
+      function saveStickyNotes() {
+        localStorage.setItem(NOTES_KEY, JSON.stringify(stickyNotes));
+      }
+
+      function renderStickyNotes() {
+        stickyNotesEl.innerHTML = "";
+        if (!stickyNotes.length) {
+          stickyNotesEl.innerHTML =
+            '<div class="sticky-empty">No sticky notes yet. Add one above.</div>';
+          return;
+        }
+        stickyNotes.forEach((note, index) => {
+          const palette = stickyPalettes[index % stickyPalettes.length];
+          const card = document.createElement("div");
+          card.className = "sticky-note";
+          card.style.background = palette.bg;
+          card.style.setProperty("--tilt", palette.tilt);
+          card.innerHTML = `<p>${note}</p><button type="button" data-note-index="${index}">Delete</button>`;
+          stickyNotesEl.appendChild(card);
         });
-      });
+        stickyNotesEl
+          .querySelectorAll("button[data-note-index]")
+          .forEach((btn) => {
+            btn.addEventListener("click", () => {
+              const idx = Number(btn.dataset.noteIndex);
+              stickyNotes.splice(idx, 1);
+              saveStickyNotes();
+              renderStickyNotes();
+            });
+          });
+      }
+
+      function addStickyNote() {
+        const value = stickyInput.value.trim();
+        if (!value) return;
+        stickyNotes.unshift(value);
+        stickyInput.value = "";
+        saveStickyNotes();
+        renderStickyNotes();
+      }
+
       document
-        .getElementById("copyTripPlan")
-        .addEventListener("click", async () => {
-          const plan =
-            `Camping Trip Plan\nCampsite: ${notesMeta.campLocation.value}\nRoute: ${notesMeta.routePlan.value}\nLeave time: ${notesMeta.leaveTime.value}\nMust-buy: ${notesMeta.mustBuy.value}\n\nNotes:\n${notes.value}`.trim();
-          try {
-            await navigator.clipboard.writeText(plan);
-            alert("Trip plan copied to clipboard.");
-          } catch {
-            alert(
-              "Clipboard access unavailable. You can manually copy from notes.",
-            );
-          }
-        });
-      document.getElementById("clearNotes").addEventListener("click", () => {
-        if (!confirm("Clear all trip notes and quick fields?")) return;
-        notes.value = "";
-        localStorage.removeItem(NOTES_KEY);
-        Object.values(notesMeta).forEach((el) => (el.value = ""));
-        localStorage.removeItem(NOTES_META_KEY);
+        .getElementById("addStickyNote")
+        .addEventListener("click", addStickyNote);
+      stickyInput.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") addStickyNote();
       });
+      renderStickyNotes();
       render();
     </script>
   </body>
