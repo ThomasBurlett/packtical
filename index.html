@@ -1081,21 +1081,30 @@
         { bg: "#d7f8c9", tilt: "2deg" },
         { bg: "#e8dcff", tilt: "-1deg" },
       ];
+      let nextStickyPalette = 0;
 
       function saveStickyNotes() {
         localStorage.setItem(NOTES_KEY, JSON.stringify(stickyNotes));
       }
 
       function normalizeStickyNotes() {
-        return stickyNotes.map((note) =>
-          typeof note === "string" ? { text: note } : note,
-        );
+        return stickyNotes.map((note, index) => {
+          const asObject = typeof note === "string" ? { text: note } : note;
+          const paletteIndex = Number(asObject.paletteIndex);
+          return {
+            text: String(asObject.text || "").trim(),
+            paletteIndex: Number.isInteger(paletteIndex)
+              ? paletteIndex
+              : index % stickyPalettes.length,
+          };
+        });
       }
 
       function renderStickyNotes() {
         const normalized = normalizeStickyNotes();
         stickyNotes.length = 0;
         stickyNotes.push(...normalized);
+        nextStickyPalette = stickyNotes.length % stickyPalettes.length;
         stickyNotesEl.innerHTML = "";
         if (!stickyNotes.length) {
           stickyNotesEl.innerHTML =
@@ -1103,7 +1112,8 @@
           return;
         }
         stickyNotes.forEach((note, index) => {
-          const palette = stickyPalettes[index % stickyPalettes.length];
+          const palette =
+            stickyPalettes[note.paletteIndex % stickyPalettes.length];
           const card = document.createElement("div");
           card.className = "sticky-note";
           card.draggable = true;
@@ -1181,7 +1191,11 @@
       function addStickyNote() {
         const value = stickyInput.value.trim();
         if (!value) return;
-        stickyNotes.unshift({ text: value });
+        stickyNotes.unshift({
+          text: value,
+          paletteIndex: nextStickyPalette % stickyPalettes.length,
+        });
+        nextStickyPalette += 1;
         stickyInput.value = "";
         saveStickyNotes();
         renderStickyNotes();
