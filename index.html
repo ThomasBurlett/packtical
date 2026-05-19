@@ -4,593 +4,88 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Adventure Checklist Hub</title>
+    <meta
+      name="description"
+      content="Mobile-friendly interactive packing and preparation checklists for camping, backpacking, travel, trail running, cycling, and mountain biking."
+    />
     <link rel="icon" type="image/svg+xml" href="favicon.svg" />
-    <style>
-      :root {
-        --bg: #f7f4ed;
-        --card: rgba(255, 255, 255, 0.82);
-        --ink: #1f2933;
-        --muted: #5d6a7d;
-        --border: #d7daed;
-        --essential: #7a3413;
-        --extra: #243e66;
-        --accent: #6d28d9;
-        --soft: #f4f2ff;
-      }
-      * {
-        box-sizing: border-box;
-      }
-      body {
-        margin: 0;
-        font-family:
-          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial,
-          sans-serif;
-        background:
-          radial-gradient(circle at 0% 0%, #ffffff 0%, transparent 42%),
-          radial-gradient(circle at 100% 0%, #ffe9cf 0%, transparent 34%),
-          linear-gradient(170deg, #eff3ff 0%, #fff6e9 100%);
-        color: var(--ink);
-        line-height: 1.35;
-      }
-      header,
-      main,
-      .topbar-inner {
-        max-width: 1100px;
-        margin: 0 auto;
-      }
-      header {
-        padding: 28px 18px 16px;
-      }
-      h1 {
-        margin: 0 0 8px;
-        font-size: 30px;
-        letter-spacing: -0.02em;
-      }
-      .subtitle {
-        color: var(--muted);
-        max-width: 860px;
-      }
-      .topbar {
-        position: sticky;
-        top: 0;
-        z-index: 10;
-        background: rgba(244, 245, 255, 0.9);
-        border-top: 1px solid var(--border);
-        border-bottom: 1px solid var(--border);
-        padding: 10px 18px;
-        backdrop-filter: blur(10px);
-      }
-      .topbar-inner {
-        display: grid;
-        grid-template-columns: 1fr auto;
-        gap: 12px;
-        align-items: center;
-      }
-      .progress-wrap {
-        display: flex;
-        gap: 10px;
-        align-items: center;
-      }
-      .progress {
-        width: 100%;
-        height: 12px;
-        border-radius: 999px;
-        overflow: hidden;
-        background: #e7e7f6;
-        border: 1px solid var(--border);
-      }
-      .progress > div {
-        height: 100%;
-        width: 0;
-        background: linear-gradient(90deg, #6d28d9, #8b5cf6 70%, #ec4899);
-        transition: width 0.2s ease;
-      }
-      .progress-text {
-        white-space: nowrap;
-        color: var(--muted);
-        font-size: 13px;
-      }
-      .controls {
-        display: flex;
-        gap: 8px;
-        flex-wrap: wrap;
-        justify-content: flex-end;
-      }
-      button,
-      select {
-        border: 1px solid var(--border);
-        background: rgba(255, 255, 255, 0.95);
-        border-radius: 12px;
-        padding: 8px 10px;
-        font-size: 14px;
-        color: var(--ink);
-      }
-      button {
-        cursor: pointer;
-      }
-      main {
-        padding: 16px 18px 32px;
-      }
-      .summary-grid {
-        display: grid;
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-        gap: 12px;
-        margin-bottom: 16px;
-      }
-      .summary,
-      section {
-        background: var(--card);
-        border: 1px solid var(--border);
-        border-radius: 16px;
-        box-shadow: 0 8px 24px rgba(60, 64, 100, 0.08);
-      }
-      .summary {
-        padding: 14px;
-      }
-      .summary strong {
-        display: block;
-        margin-bottom: 4px;
-      }
-      .summary span {
-        color: var(--muted);
-        font-size: 14px;
-      }
-      section {
-        margin: 14px 0;
-        overflow: hidden;
-      }
-      .section-header {
-        padding: 14px 16px;
-        border-bottom: 1px solid var(--border);
-        background: linear-gradient(90deg, var(--soft), #fff5e7);
-        display: flex;
-        justify-content: space-between;
-        gap: 12px;
-        align-items: center;
-        cursor: pointer;
-      }
-      .section-title-wrap {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-      }
-      .chevron {
-        color: var(--muted);
-        font-size: 13px;
-        transition: transform 0.2s ease;
-      }
-      section.collapsed .chevron {
-        transform: rotate(-90deg);
-      }
-      h2 {
-        margin: 0;
-        font-size: 20px;
-      }
-      .count {
-        color: var(--muted);
-        font-size: 13px;
-        white-space: nowrap;
-      }
-      .section-tools {
-        display: flex;
-        gap: 6px;
-        align-items: center;
-        flex-wrap: wrap;
-        justify-content: flex-end;
-      }
-      .section-btn {
-        border: 1px solid #d7dcf2;
-        background: rgba(255, 255, 255, 0.9);
-        border-radius: 999px;
-        padding: 4px 9px;
-        font-size: 12px;
-      }
-      .items {
-        padding: 8px 10px 12px;
-        display: grid;
-        gap: 8px;
-      }
-      label.item {
-        display: grid;
-        grid-template-columns: 26px 1fr auto;
-        gap: 10px;
-        align-items: center;
-        padding: 10px;
-        border: 1px solid #e6e9f5;
-        border-radius: 12px;
-        background: rgba(255, 255, 255, 0.78);
-      }
-      input[type="checkbox"] {
-        width: 18px;
-        height: 18px;
-        margin: 0;
-        accent-color: var(--accent);
-      }
-      .item small {
-        display: block;
-        color: var(--muted);
-      }
-      .tag {
-        border-radius: 999px;
-        padding: 3px 8px;
-        font-size: 11px;
-        font-weight: 700;
-      }
-      .required {
-        background: #ffedd5;
-        color: var(--essential);
-      }
-      .extra {
-        background: #e7eeff;
-        color: var(--extra);
-      }
-      .checked .item-text {
-        text-decoration: line-through;
-        color: var(--muted);
-      }
-      .hidden {
-        display: none !important;
-      }
-      section.collapsed .items {
-        display: none;
-      }
-      .notes {
-        margin-top: 18px;
-        background: var(--card);
-        border: 1px solid var(--border);
-        border-radius: 16px;
-        padding: 16px;
-      }
-      .note-input-row {
-        display: flex;
-        gap: 10px;
-        margin: 10px 0 12px;
-      }
-      .note-input-row input {
-        flex: 1;
-        border: 1px solid var(--border);
-        border-radius: 10px;
-        padding: 10px 12px;
-      }
-      .footer-note {
-        color: var(--muted);
-        font-size: 13px;
-        margin-top: 12px;
-      }
-    </style>
+    <link rel="stylesheet" href="assets/styles.css" />
   </head>
-  <body>
-    <header>
-      <h1>🧭 Adventure Checklist Hub</h1>
-      <div class="subtitle" id="subtitle"></div>
-    </header>
-    <div class="topbar">
-      <div class="topbar-inner">
-        <div class="progress-wrap">
-          <div class="progress"><div id="progressFill"></div></div>
-          <div class="progress-text" id="progressText">0 / 0 packed</div>
-        </div>
-        <div class="controls">
-          <select id="activity"></select
-          ><select id="filter">
-            <option value="all">Show all</option>
-            <option value="unchecked">Unchecked only</option>
-            <option value="required">Needed only</option>
-            <option value="extra">Extra only</option></select
-          ><button id="toggleSections">Collapse all</button
-          ><button id="reset">Reset checks</button>
-        </div>
-      </div>
-    </div>
-    <main>
-      <div class="summary-grid">
-        <div class="summary">
-          <strong>How to use</strong
-          ><span
-            >Pick an activity, check items, and your progress saves locally in
-            this browser.</span
-          >
-        </div>
-        <div class="summary">
-          <strong>Checklist source</strong
-          ><span
-            >Lists are adapted from REI checklist guides and converted to
-            interactive pack lists.</span
-          >
-        </div>
-        <div class="summary">
-          <strong>Pro tip</strong
-          ><span
-            >Use “Unchecked only” right before leaving to catch final
-            misses.</span
-          >
-        </div>
-      </div>
-      <div id="sections"></div>
-      <p class="footer-note">
-        Adapted from REI checklists for camping, trail running, travel prep,
-        backpacking, road cycling, and mountain biking.
+  <body class="hub-page">
+    <header class="hub-shell hero">
+      <p class="eyebrow">Adventure Checklist Hub</p>
+      <h1>Interactive REI-inspired checklists built for real packing.</h1>
+      <p class="hero-copy">
+        Each activity has its own URL, its own saved progress, and room for your
+        own ad-hoc items.
       </p>
+      <div class="hero-actions">
+        <a class="primary-link" href="camping/">Open camping checklist</a>
+        <a class="secondary-link" href="#activities">Browse all activities</a>
+      </div>
+    </header>
+
+    <main class="hub-shell" id="activities">
+      <section class="hub-section">
+        <div class="section-copy">
+          <p class="eyebrow">Included lists</p>
+          <h2>Choose an activity</h2>
+          <p>
+            Lists are adapted from REI checklist guides, preserved in roughly
+            the same order, and converted into a persistent interactive
+            experience.
+          </p>
+        </div>
+        <div class="activity-grid">
+          <a class="activity-card" href="camping/">
+            <span class="card-kicker">Camping</span>
+            <strong>Camping checklist</strong>
+            <span>Campsite, kitchen, clothing, hygiene, repairs and personal items.</span>
+          </a>
+          <a class="activity-card" href="trail-running/">
+            <span class="card-kicker">Trail Running</span>
+            <strong>Trail-running checklist</strong>
+            <span>Clothing, navigation, hydration, electronics, first aid and misc gear.</span>
+          </a>
+          <a class="activity-card" href="travel-preparation/">
+            <span class="card-kicker">Travel</span>
+            <strong>Travel preparation checklist</strong>
+            <span>Chronological trip-prep workflow from 30 days out through departure day.</span>
+          </a>
+          <a class="activity-card" href="backpacking/">
+            <span class="card-kicker">Backpacking</span>
+            <strong>Backpacking checklist</strong>
+            <span>Backpacking gear, food and water, emergency items, repairs and extras.</span>
+          </a>
+          <a class="activity-card" href="basic-cycling/">
+            <span class="card-kicker">Cycling</span>
+            <strong>Basic cycling checklist</strong>
+            <span>Ride essentials, repair gear, comfort items and pre-ride inspection.</span>
+          </a>
+          <a class="activity-card" href="mountain-biking/">
+            <span class="card-kicker">Mountain Biking</span>
+            <strong>Mountain biking checklist</strong>
+            <span>Trail-focused gear, repair tools, clothing, personal items and protection.</span>
+          </a>
+        </div>
+      </section>
+
+      <section class="hub-section compact">
+        <div class="feature-grid">
+          <article class="feature-card">
+            <strong>Independent progress</strong>
+            <span>Each checklist stores its checked items, collapsed sections and custom additions separately.</span>
+          </article>
+          <article class="feature-card">
+            <strong>Mobile-first workflow</strong>
+            <span>Large tap targets, sticky progress controls and scrollable activity navigation.</span>
+          </article>
+          <article class="feature-card">
+            <strong>Personal extensions</strong>
+            <span>Add and remove your own items without losing the base REI-inspired structure.</span>
+          </article>
+        </div>
+      </section>
     </main>
-    <script>
-      const LISTS = {
-        moab: {
-          label: "Moab camping",
-          subtitle: "Dispersed camping near Moab with simple meals.",
-          sections: [
-            {
-              section: "Shelter / Sleep",
-              items: [
-                ["Tent", "required", ""],
-                ["Sleeping bag", "required", ""],
-              ],
-            },
-            {
-              section: "Kitchen",
-              items: [
-                ["Camp stove", "required", ""],
-                ["Stove fuel", "required", ""],
-              ],
-            },
-          ],
-        },
-        trail: {
-          label: "Trail running",
-          subtitle: "Trail running gear and safety kit.",
-          sections: [
-            {
-              section: "Essentials",
-              items: [
-                ["Trail running shoes", "required", ""],
-                ["Hydration vest or bottles", "required", ""],
-                ["Weather layer", "required", ""],
-                ["Sun protection", "required", ""],
-                ["ID + phone", "required", ""],
-                ["Nutrition / gels", "required", ""],
-              ],
-            },
-          ],
-        },
-        travel: {
-          label: "Travel preparation",
-          subtitle: "Trip planning and travel admin checklist.",
-          sections: [
-            {
-              section: "Documents",
-              items: [
-                ["Passport/ID", "required", ""],
-                ["Tickets/boarding pass", "required", ""],
-                ["Travel insurance info", "extra", ""],
-              ],
-            },
-            {
-              section: "Before departure",
-              items: [
-                ["Check weather & restrictions", "required", ""],
-                ["Charge devices", "required", ""],
-                ["Home lockup checklist", "required", ""],
-              ],
-            },
-          ],
-        },
-        backpack: {
-          label: "Backpacking",
-          subtitle: "Overnight backcountry backpacking essentials.",
-          sections: [
-            {
-              section: "Core gear",
-              items: [
-                ["Backpack", "required", ""],
-                ["Tent/shelter", "required", ""],
-                ["Sleep system", "required", ""],
-                ["Water filter", "required", ""],
-                ["Navigation", "required", ""],
-                ["First-aid kit", "required", ""],
-              ],
-            },
-          ],
-        },
-        road: {
-          label: "Basic cycling",
-          subtitle: "Road/gravel day ride checklist.",
-          sections: [
-            {
-              section: "Ride setup",
-              items: [
-                ["Bike + helmet", "required", ""],
-                ["Spare tube + levers", "required", ""],
-                ["Pump / CO2", "required", ""],
-                ["Lights", "extra", ""],
-                ["Water + nutrition", "required", ""],
-              ],
-            },
-          ],
-        },
-        mtb: {
-          label: "Mountain biking",
-          subtitle: "MTB ride checklist with trail repair focus.",
-          sections: [
-            {
-              section: "Trail essentials",
-              items: [
-                ["Mountain bike", "required", ""],
-                ["Helmet", "required", ""],
-                ["Multi-tool", "required", ""],
-                ["Tube/plug kit", "required", ""],
-                ["Hydration pack", "required", ""],
-                ["Knee/elbow pads", "extra", ""],
-              ],
-            },
-          ],
-        },
-      };
-      const sectionsEl = document.getElementById("sections");
-      const checked = new Set();
-      const collapsed = new Set();
-      let current = "moab";
-      function key(s) {
-        return `checklist-${current}-${s}`;
-      }
-      function persist() {
-        localStorage.setItem(key("checked"), JSON.stringify([...checked]));
-        localStorage.setItem(key("collapsed"), JSON.stringify([...collapsed]));
-      }
-      function load() {
-        checked.clear();
-        collapsed.clear();
-        JSON.parse(localStorage.getItem(key("checked")) || "[]").forEach((x) =>
-          checked.add(x),
-        );
-        JSON.parse(localStorage.getItem(key("collapsed")) || "[]").forEach(
-          (x) => collapsed.add(x),
-        );
-      }
-      function idFor(section, text) {
-        return btoa(
-          unescape(encodeURIComponent(section + "::" + text)),
-        ).replace(/=/g, "");
-      }
-      function render() {
-        const data = LISTS[current];
-        document.getElementById("subtitle").textContent = data.subtitle;
-        sectionsEl.innerHTML = "";
-        data.sections.forEach((group) => {
-          const section = document.createElement("section");
-          if (collapsed.has(group.section)) section.classList.add("collapsed");
-          const header = document.createElement("div");
-          header.className = "section-header";
-          header.innerHTML = `<div class='section-title-wrap'><span class='chevron'>▾</span><h2>${group.section}</h2></div><div class='section-tools'><button class='section-btn select-all'>Select all</button><button class='section-btn clear-all'>Clear</button><span class='count'></span></div>`;
-          const items = document.createElement("div");
-          items.className = "items";
-          group.items.forEach(([text, type, note]) => {
-            const id = idFor(group.section, text);
-            const label = document.createElement("label");
-            label.className = `item ${type}`;
-            label.dataset.id = id;
-            label.dataset.section = group.section;
-            label.dataset.type = type;
-            label.innerHTML = `<input type='checkbox' ${checked.has(id) ? "checked" : ""}/><span class='item-text'>${text}${note ? `<small>${note}</small>` : ""}</span><span class='tag ${type}'>${type === "required" ? "Needed" : "Extra"}</span>`;
-            if (checked.has(id)) label.classList.add("checked");
-            items.appendChild(label);
-          });
-          section.append(header, items);
-          sectionsEl.appendChild(section);
-        });
-        bind();
-        updateProgress();
-        applyFilter();
-      }
-      function bind() {
-        document.querySelectorAll(".select-all").forEach(
-          (b, i) =>
-            (b.onclick = (e) => {
-              e.stopPropagation();
-              const name = LISTS[current].sections[i].section;
-              setSection(name, true);
-            }),
-        );
-        document.querySelectorAll(".clear-all").forEach(
-          (b, i) =>
-            (b.onclick = (e) => {
-              e.stopPropagation();
-              const name = LISTS[current].sections[i].section;
-              setSection(name, false);
-            }),
-        );
-        document.querySelectorAll(".section-header").forEach(
-          (h, i) =>
-            (h.onclick = () => {
-              const n = LISTS[current].sections[i].section;
-              const s = h.closest("section");
-              s.classList.toggle("collapsed");
-              s.classList.contains("collapsed")
-                ? collapsed.add(n)
-                : collapsed.delete(n);
-              persist();
-            }),
-        );
-        document.querySelectorAll("input[type='checkbox']").forEach(
-          (cb) =>
-            (cb.onchange = (e) => {
-              const l = e.target.closest("label.item");
-              const id = l.dataset.id;
-              e.target.checked ? checked.add(id) : checked.delete(id);
-              l.classList.toggle("checked", e.target.checked);
-              persist();
-              updateProgress();
-              applyFilter();
-            }),
-        );
-      }
-      function setSection(name, on) {
-        document.querySelectorAll("label.item").forEach((l) => {
-          if (l.dataset.section !== name) return;
-          l.querySelector("input").checked = on;
-          l.classList.toggle("checked", on);
-          on ? checked.add(l.dataset.id) : checked.delete(l.dataset.id);
-        });
-        persist();
-        updateProgress();
-        applyFilter();
-      }
-      function updateProgress() {
-        const all = document.querySelectorAll("label.item").length;
-        const done = document.querySelectorAll("label.item.checked").length;
-        const pct = all ? Math.round((done / all) * 100) : 0;
-        document.getElementById("progressFill").style.width = `${pct}%`;
-        document.getElementById("progressText").textContent =
-          `${done} / ${all} packed (${pct}%)`;
-        document.querySelectorAll("section").forEach((s) => {
-          s.querySelector(".count").textContent =
-            `${s.querySelectorAll("label.item.checked").length}/${s.querySelectorAll("label.item").length}`;
-        });
-      }
-      function applyFilter() {
-        const f = document.getElementById("filter").value;
-        document.querySelectorAll("label.item").forEach((i) => {
-          const show =
-            f === "all" ||
-            (f === "unchecked" && !i.classList.contains("checked")) ||
-            f === i.dataset.type;
-          i.classList.toggle("hidden", !show);
-        });
-        document
-          .querySelectorAll("section")
-          .forEach((s) =>
-            s.classList.toggle(
-              "hidden",
-              !s.querySelectorAll("label.item:not(.hidden)").length,
-            ),
-          );
-      }
-      document.getElementById("filter").onchange = applyFilter;
-      document.getElementById("reset").onclick = () => {
-        checked.clear();
-        persist();
-        render();
-      };
-      document.getElementById("toggleSections").onclick = () => {
-        const any = document.querySelector("section:not(.collapsed)");
-        LISTS[current].sections.forEach((s) =>
-          any ? collapsed.add(s.section) : collapsed.delete(s.section),
-        );
-        persist();
-        render();
-      };
-      const aSel = document.getElementById("activity");
-      Object.entries(LISTS).forEach(([k, v]) => {
-        const o = document.createElement("option");
-        o.value = k;
-        o.textContent = v.label;
-        aSel.appendChild(o);
-      });
-      aSel.onchange = (e) => {
-        current = e.target.value;
-        load();
-        render();
-      };
-      load();
-      render();
-    </script>
   </body>
 </html>
