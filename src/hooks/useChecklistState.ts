@@ -1,0 +1,180 @@
+import { useEffect, useMemo, useState } from "react";
+import { buildCustomItemId, cloneSections, itemMatchesFilter } from "@/lib/checklist-items";
+import { loadChecklistState, saveChecklistState } from "@/lib/checklist-storage";
+import type {
+  Checklist,
+  ChecklistFilter,
+  ChecklistItem,
+  ChecklistSectionState,
+} from "@/types/checklist";
+
+type DraftMap = Record<string, string>;
+type CustomItemMap = Record<string, ChecklistItem[]>;
+
+export function useChecklistState(checklist: Checklist) {
+  const baseSections = useMemo(() => cloneSections(checklist.sections), [checklist.sections]);
+  const sectionIds = useMemo(() => baseSections.map((section) => section.id), [baseSections]);
+  const storedState = useMemo(
+    () => loadChecklistState(checklist.slug, sectionIds),
+    [checklist.slug, sectionIds],
+  );
+
+  const [checkedIds, setCheckedIds] = useState<Set<string>>(() => new Set(storedState.checkedIds));
+  const [collapsedSections, setCollapsedSections] = useState<Set<string>>(
+    () => new Set(storedState.collapsedSections),
+  );
+  const [customItems, setCustomItems] = useState<CustomItemMap>(() => storedState.customItems);
+  const [filter, setFilter] = useState<ChecklistFilter>("all");
+  const [drafts, setDrafts] = useState<DraftMap>({});
+  const [openForms, setOpenForms] = useState<Set<string>>(() => new Set());
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [checklist.slug]);
+
+  useEffect(() => {
+    try {
+      saveChecklistState(checklist.slug, checkedIds, collapsedSections, customItems);
+    } catch {
+      return;
+    }
+  }, [checklist.slug, checkedIds, collapsedSections, customItems]);
+
+  const sections = useMemo<ChecklistSectionState[]>(
+    () =>
+      baseSections.map((section) => {
+        const items = [...section.items, ...(customItems[section.id] ?? [])];
+        const visibleItems = items.filter((item) => itemMatchesFilter(item, filter, checkedIds));
+        const checkedCount = items.filter((item) => checkedIds.has(item.id)).length;
+
+        return {
+          ...section,
+          items,
+          visibleItems,
+          checkedCount,
+          isCollapsed: collapsedSections.has(section.id),
+        };
+      }),
+    [baseSections, checkedIds, collapsedSections, customItems, filter],
+  );
+
+  const totals = useMemo(() => {
+    const items = sections.flatMap((section) => section.items);
+    const total = items.length;
+    const checked = items.filter((item) => checkedIds.has(item.id)).length;
+    const percent = total ? Math.round((checked / total) * 100) : 0;
+
+    return { total, checked, percent };
+  }, [checkedIds, sections]);
+
+  const hasVisibleOpenSection = sections.some(
+    (section) => section.visibleItems.length > 0 && !section.isCollapsed,
+  );
+
+  const actions = {
+    setFilter: (value: ChecklistFilter) => {
+      setFilter(value);
+    },
+    updateChecked: (itemId: string, nextChecked: boolean) => {
+      setCheckedIds((current) => {
+        const next = new Set(current);
+        if (nextChecked) next.add(itemId);
+        else next.delete(itemId);
+        return next;
+      });
+    },
+    resetChecks: () => {
+      setCheckedIds(new Set());
+    },
+    toggleSection: (sectionId: string) => {
+      setCollapsedSections((current) => {
+        const next = new Set(current);
+        if (next.has(sectionId)) next.delete(sectionId);
+        else next.add(sectionId);
+        return next;
+      });
+    },
+    toggleAllSections: () => {
+      setCollapsedSections(() => {
+        if (hasVisibleOpenSection) {
+          return new Set(sections.map((section) => section.id));
+        }
+
+        return new Set();
+      });
+    },
+    setSectionChecked: (sectionId: string, nextChecked: boolean) => {
+      const items = sections.find((section) => section.id === sectionId)?.items ?? [];
+      setCheckedIds((current) => {
+        const next = new Set(current);
+        for (const item of items) {
+          if (nextChecked) next.add(item.id);
+          else next.delete(item.id);
+        }
+        return next;
+      });
+    },
+    toggleAddForm: (sectionId: string) => {
+      setOpenForms((current) => {
+        const next = new Set(current);
+        if (next.has(sectionId)) next.delete(sectionId);
+        else next.add(sectionId);
+        return next;
+      });
+    },
+    setDraft: (sectionId: string, value: string) => {
+      setDrafts((current) => ({
+        ...current,
+        [sectionId]: value,
+      }));
+    },
+    addCustomItem: (sectionId: string) => {
+      const label = drafts[sectionId]?.trim();
+      if (!label) return;
+
+      setCustomItems((current) => ({
+        ...current,
+        [sectionId]: [
+          ...(current[sectionId] ?? []),
+          {
+            id: buildCustomItemId(sectionId),
+            label,
+            kind: "custom",
+            note: "",
+            source: "custom",
+          },
+        ],
+      }));
+
+      setDrafts((current) => ({ ...current, [sectionId]: "" }));
+      setOpenForms((current) => {
+        const next = new Set(current);
+        next.delete(sectionId);
+        return next;
+      });
+    },
+    deleteCustomItem: (sectionId: string, itemId: string) => {
+      setCustomItems((current) => ({
+        ...current,
+        [sectionId]: (current[sectionId] ?? []).filter((item) => item.id !== itemId),
+      }));
+
+      setCheckedIds((current) => {
+        const next = new Set(current);
+        next.delete(itemId);
+        return next;
+      });
+    },
+  };
+
+  return {
+    sections,
+    totals,
+    filter,
+    drafts,
+    openForms,
+    checkedIds,
+    hasVisibleOpenSection,
+    actions,
+  };
+}

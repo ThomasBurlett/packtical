@@ -1,10 +1,13 @@
-export const CHECKLISTS = [
+import type { Checklist } from "@/types/checklist";
+
+export const CHECKLISTS: Checklist[] = [
   {
     slug: "camping",
     label: "Camping",
     shortLabel: "Camping",
     subtitle:
       "A general camping packing list adapted from REI’s camping checklist and tuned for repeat use on your phone.",
+    summary: "Campsite, kitchen, clothing, hygiene, repairs and personal items.",
     sourceUrl: "https://www.rei.com/learn/expert-advice/family-camping-checklist.html",
     sourceLabel: "REI camping checklist",
     sections: [
@@ -168,6 +171,7 @@ export const CHECKLISTS = [
     shortLabel: "Trail running",
     subtitle:
       "A comprehensive trail-running checklist adapted from REI and organized for quick pre-run review.",
+    summary: "Clothing, navigation, hydration, electronics, first aid and misc gear.",
     sourceUrl: "https://www.rei.com/learn/expert-advice/trail-running-gear-checklist.html",
     sourceLabel: "REI trail-running checklist",
     sections: [
@@ -274,6 +278,7 @@ export const CHECKLISTS = [
     shortLabel: "Travel prep",
     subtitle:
       "A chronological pre-trip checklist adapted from REI so you can work the trip down over time instead of all at once.",
+    summary: "Chronological trip-prep workflow from 30 days out through departure day.",
     sourceUrl: "https://www.rei.com/learn/expert-advice/travel-preparation-checklist.html",
     sourceLabel: "REI travel preparation checklist",
     sections: [
@@ -342,6 +347,7 @@ export const CHECKLISTS = [
     shortLabel: "Backpacking",
     subtitle:
       "A backpacking gear system adapted from REI, with core items separated from optional extras and emergency systems.",
+    summary: "Backpacking gear, food and water, emergency items, repairs and extras.",
     sourceUrl: "https://www.rei.com/learn/expert-advice/backpacking-checklist.html",
     sourceLabel: "REI backpacking checklist",
     sections: [
@@ -498,6 +504,7 @@ export const CHECKLISTS = [
     shortLabel: "Basic cycling",
     subtitle:
       "A simple ride-day checklist adapted from REI, including repair basics and a pre-ride inspection section.",
+    summary: "Ride essentials, repair gear, comfort items and pre-ride inspection.",
     sourceUrl: "https://www.rei.com/learn/expert-advice/basic-cycling-checklist.html",
     sourceLabel: "REI basic cycling checklist",
     sections: [
@@ -578,6 +585,7 @@ export const CHECKLISTS = [
     shortLabel: "Mountain biking",
     subtitle:
       "A trail-oriented mountain biking checklist adapted from REI, with stronger repair and protection coverage.",
+    summary: "Trail-focused gear, repair tools, clothing, personal items and protection.",
     sourceUrl: "https://www.rei.com/learn/expert-advice/mountain-biking-checklist.html",
     sourceLabel: "REI mountain biking checklist",
     sections: [
@@ -686,4 +694,4 @@ export const CHECKLISTS = [
 
 export const CHECKLIST_MAP = Object.fromEntries(
   CHECKLISTS.map((list) => [list.slug, list]),
-);
+) as Record<string, Checklist>;
