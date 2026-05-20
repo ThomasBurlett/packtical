@@ -1,3 +1,4 @@
+import { Button, ButtonGroup, Card, Label, ProgressBar } from "@heroui/react";
 import { FILTERS } from "@/constants/filters";
 import type { ChecklistFilter } from "@/types/checklist";
 
@@ -25,35 +26,52 @@ export function ChecklistToolbar({
   return (
     <div className="sticky-bar">
       <div className="page-shell sticky-inner">
-        <div className="progress-panel">
-          <div className="progress-track">
-            <div id="progress-fill" style={{ width: `${percent}%` }} />
-          </div>
-          <div className="progress-copy">
-            {checked} / {total} complete ({percent}%)
-          </div>
-        </div>
-        <div className="toolbar">
-          <label className="select-wrap">
-            <span className="sr-only">Filter items</span>
-            <select
-              value={filter}
-              onChange={(event) => onFilterChange(event.target.value as ChecklistFilter)}
+        <Card className="toolbar-card" variant="secondary">
+          <Card.Content className="toolbar-content">
+            <ProgressBar
+              aria-label="Checklist progress"
+              className="progress-panel"
+              color="success"
+              value={percent}
             >
-              {FILTERS.map((item) => (
-                <option key={item.value} value={item.value}>
-                  {item.label}
-                </option>
-              ))}
-            </select>
-          </label>
-          <button onClick={onToggleAllSections} type="button">
-            {hasVisibleOpenSection ? "Collapse all" : "Expand all"}
-          </button>
-          <button onClick={onResetChecks} type="button">
-            Reset checks
-          </button>
-        </div>
+              <div className="progress-heading">
+                <Label>Packing progress</Label>
+                <ProgressBar.Output />
+              </div>
+              <ProgressBar.Track className="progress-track">
+                <ProgressBar.Fill className="progress-fill" />
+              </ProgressBar.Track>
+            </ProgressBar>
+
+            <div className="toolbar-actions">
+              <ButtonGroup className="filter-group" size="sm" variant="secondary">
+                {FILTERS.map((item) => (
+                  <Button
+                    className={filter === item.value ? "filter-button-active" : undefined}
+                    key={item.value}
+                    onPress={() => onFilterChange(item.value)}
+                    variant={filter === item.value ? "primary" : "secondary"}
+                  >
+                    {item.label}
+                  </Button>
+                ))}
+              </ButtonGroup>
+
+              <div className="toolbar-cta-group">
+                <Button onPress={onToggleAllSections} size="sm" variant="outline">
+                  {hasVisibleOpenSection ? "Collapse all" : "Expand all"}
+                </Button>
+                <Button onPress={onResetChecks} size="sm" variant="ghost">
+                  Reset checks
+                </Button>
+              </div>
+            </div>
+
+            <p className="progress-copy">
+              {checked} of {total} items packed for this activity.
+            </p>
+          </Card.Content>
+        </Card>
       </div>
     </div>
   );

@@ -10,6 +10,8 @@ if (!rootElement) {
   throw new Error("App root element was not found.");
 }
 
+document.documentElement.lang = "en";
+
 ReactDOM.createRoot(rootElement).render(
   <React.StrictMode>
     <HashRouter>

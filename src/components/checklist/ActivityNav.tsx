@@ -1,21 +1,23 @@
-import { NavLink } from "react-router-dom";
+import { Link } from "@heroui/react";
 import type { Checklist } from "@/types/checklist";
 
 interface ActivityNavProps {
   checklists: Checklist[];
+  activeSlug: string;
 }
 
-export function ActivityNav({ checklists }: ActivityNavProps) {
+export function ActivityNav({ checklists, activeSlug }: ActivityNavProps) {
   return (
     <nav aria-label="Activities" className="activity-nav">
       {checklists.map((item) => (
-        <NavLink
-          className={({ isActive }) => `activity-pill${isActive ? " active" : ""}`}
+        <Link
+          className={`activity-pill${activeSlug === item.slug ? " active" : ""}`}
+          data-active={activeSlug === item.slug}
+          href={`#/${item.slug}`}
           key={item.slug}
-          to={`/${item.slug}`}
         >
           {item.shortLabel}
-        </NavLink>
+        </Link>
       ))}
     </nav>
   );

@@ -94,6 +94,14 @@ export function useChecklistState(checklist: Checklist) {
         return next;
       });
     },
+    setSectionCollapsed: (sectionId: string, isCollapsed: boolean) => {
+      setCollapsedSections((current) => {
+        const next = new Set(current);
+        if (isCollapsed) next.add(sectionId);
+        else next.delete(sectionId);
+        return next;
+      });
+    },
     toggleAllSections: () => {
       setCollapsedSections(() => {
         if (hasVisibleOpenSection) {
