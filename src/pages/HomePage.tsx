@@ -69,8 +69,8 @@ export function HomePage({ isDark, onToggleTheme }: HomePageProps) {
               </Chip>
               <Card.Title className="section-title">Choose an activity</Card.Title>
               <Card.Description className="section-description">
-                Lists are adapted from REI packing guides and translated into an interactive,
-                mobile-friendly workflow.
+                Each list is based on proven outdoor packing workflows and translated into a
+                cleaner, mobile-first checklist experience.
               </Card.Description>
             </div>
           </Card.Header>

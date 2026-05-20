@@ -29,8 +29,6 @@ export interface Checklist {
   shortLabel: string;
   subtitle: string;
   summary: string;
-  sourceUrl: string;
-  sourceLabel: string;
   sections: ChecklistSectionData[];
 }
 

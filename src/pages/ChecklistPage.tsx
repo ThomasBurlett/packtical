@@ -50,7 +50,7 @@ function ChecklistPageContent({
                 Adventure Checklist Hub
               </Link>
               <Chip className="section-chip" variant="soft">
-                REI-inspired checklist
+                Trail planning checklist
               </Chip>
               <Card.Title className="page-title">{checklist.label}</Card.Title>
               <Card.Description className="page-subtitle">{checklist.subtitle}</Card.Description>
@@ -97,13 +97,10 @@ function ChecklistPageContent({
             </Card.Description>
           </Card>
           <Card className="summary-card" variant="secondary">
-            <Card.Title>Source</Card.Title>
+            <Card.Title>Best on mobile</Card.Title>
             <Card.Description>
-              Adapted from{" "}
-              <Link href={checklist.sourceUrl} rel="noreferrer" target="_blank">
-                {checklist.sourceLabel}
-              </Link>
-              .
+              Keep this view open while packing so filters, section controls and progress stay
+              within thumb reach.
             </Card.Description>
           </Card>
         </div>
