@@ -1,7 +1,8 @@
-import { Card, Chip, Link, Switch } from "@heroui/react";
+import { Card, Chip, Link } from "@heroui/react";
 import { ActivityNav } from "@/components/checklist/ActivityNav";
 import { ChecklistSection } from "@/components/checklist/ChecklistSection";
 import { ChecklistToolbar } from "@/components/checklist/ChecklistToolbar";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { CHECKLISTS, CHECKLIST_MAP } from "@/data/checklists";
 import { useChecklistState } from "@/hooks/useChecklistState";
 
@@ -57,10 +58,7 @@ function ChecklistPageContent({
             </div>
             <Card className="theme-toggle-card" variant="secondary">
               <Card.Content className="theme-toggle-content">
-                <span className="theme-toggle-label">Theme</span>
-                <Switch isSelected={isDark} onChange={onToggleTheme} size="sm">
-                  <Switch.Control />
-                </Switch>
+                <ThemeToggle isDark={isDark} onToggleTheme={onToggleTheme} />
               </Card.Content>
             </Card>
           </Card.Header>

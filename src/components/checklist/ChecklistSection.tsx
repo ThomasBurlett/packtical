@@ -140,6 +140,7 @@ function ChecklistSectionItem({
     <Card className={`item-card${checked ? " checked" : ""}`} variant="secondary">
       <Card.Content className="item-card-content">
         <Checkbox
+          className="item-checkbox"
           id={inputId}
           isSelected={checked}
           onChange={(isSelected) => onUpdateChecked(item.id, isSelected)}
@@ -153,16 +154,24 @@ function ChecklistSectionItem({
               {item.label}
             </Label>
             {item.note ? <span className="item-note">{item.note}</span> : null}
+            <div className="item-inline-meta">
+              <Chip
+                className="item-tag"
+                color={getItemChipColor(item.kind)}
+                size="sm"
+                variant="soft"
+              >
+                {getItemKindLabel(item.kind)}
+              </Chip>
+            </div>
           </Checkbox.Content>
         </Checkbox>
 
         <div className="item-meta">
-          <Chip className="item-tag" color={getItemChipColor(item.kind)} size="sm" variant="soft">
-            {getItemKindLabel(item.kind)}
-          </Chip>
           {item.source === "custom" ? (
             <Button
               aria-label={`Delete ${item.label}`}
+              className="item-delete-button"
               isIconOnly
               onPress={() => onDeleteCustomItem(sectionId, item.id)}
               size="sm"

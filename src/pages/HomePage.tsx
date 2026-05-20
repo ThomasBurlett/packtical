@@ -1,4 +1,5 @@
-import { Button, Card, Chip, Link, Switch } from "@heroui/react";
+import { Button, Card, Chip, Link } from "@heroui/react";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { CHECKLISTS } from "@/data/checklists";
 
 interface HomePageProps {
@@ -21,19 +22,16 @@ export function HomePage({ isDark, onToggleTheme }: HomePageProps) {
                 Trail-ready planning
               </Chip>
               <Card.Title className="hero-title">
-                Outdoor packing checklists with a calmer, more capable UI.
+                Outdoor packing checklists with a cleaner, field-ready design.
               </Card.Title>
               <Card.Description className="hero-description">
-                Each activity keeps its own saved progress, supports custom additions, and now
-                runs on a HeroUI-driven design system tuned for camp, trail, and travel use.
+                Each activity saves its own progress, supports custom additions, and stays easy to
+                use while you pack from your phone.
               </Card.Description>
             </div>
             <Card className="theme-toggle-card" variant="secondary">
               <Card.Content className="theme-toggle-content">
-                <span className="theme-toggle-label">Theme</span>
-                <Switch isSelected={isDark} onChange={onToggleTheme} size="sm">
-                  <Switch.Control />
-                </Switch>
+                <ThemeToggle isDark={isDark} onToggleTheme={onToggleTheme} />
               </Card.Content>
             </Card>
           </Card.Header>
@@ -108,9 +106,9 @@ export function HomePage({ isDark, onToggleTheme }: HomePageProps) {
             </Card.Description>
           </Card>
           <Card className="feature-card" variant="secondary">
-            <Card.Title>Outdoor visual language</Card.Title>
+            <Card.Title>Clear visual hierarchy</Card.Title>
             <Card.Description>
-              Pine, sandstone, and lake tones keep the interface useful without feeling generic.
+              Stronger contrast, calmer surfaces, and easier scanning help you move faster.
             </Card.Description>
           </Card>
         </div>
