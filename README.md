@@ -13,32 +13,43 @@ Interactive checklist hub for multiple outdoor activities and travel prep.
 
 ## Current app shape
 
-- Static multi-page site for GitHub Pages
-- Activity-specific URLs such as `/camping/` and `/backpacking/`
+- React application built with Vite
+- Hash-based checklist routes such as `/#/camping` and `/#/backpacking`
+- Legacy activity paths such as `/camping/` and `/backpacking/` redirect into the React app
 - Per-activity local progress saved in `localStorage`
 - Ad-hoc custom items supported per section
 
 ## Local development
 
-Because this uses ES modules, run it behind a local static server instead of opening files directly:
+Install dependencies and start the Vite dev server:
 
 ```bash
-python -m http.server 4173
+npm install
+npm run dev
 ```
 
-Then open `http://127.0.0.1:4173/`.
+Then open the local URL printed by Vite.
 
 ## GitHub Pages
 
-This site is designed to work with the existing Pages setup:
+This site now deploys through GitHub Actions instead of serving the repository root directly.
 
-- **Deploy from a branch**
-- branch **main**
-- folder **/(root)**
+Repository settings should use:
+
+- **Build and deployment**: **GitHub Actions**
 
 Expected Pages URL:
 
 `https://<my-github-username>.github.io/camping-checklist/`
+
+Main React routes:
+
+- `/#/camping`
+- `/#/trail-running`
+- `/#/travel-preparation`
+- `/#/backpacking`
+- `/#/basic-cycling`
+- `/#/mountain-biking`
 
 ## If Pages is showing an old custom domain
 
@@ -46,8 +57,8 @@ If your site opens at `http://burlett.xyz/camping-checklist/`, a custom domain i
 
 To reset it:
 
-1. Go to **GitHub → this repository → Settings → Pages**.
+1. Go to **GitHub -> this repository -> Settings -> Pages**.
 2. In **Custom domain**, clear `burlett.xyz` and click **Save**.
 3. If present, delete any `CNAME` file at the repo root.
-4. Confirm source is **Deploy from a branch**, branch **main**, folder **/(root)**.
+4. Confirm source is **GitHub Actions**.
 5. Wait a few minutes and reload the GitHub Pages URL.

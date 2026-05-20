@@ -8,84 +8,10 @@
       name="description"
       content="Mobile-friendly interactive packing and preparation checklists for camping, backpacking, travel, trail running, cycling, and mountain biking."
     />
-    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
-    <link rel="stylesheet" href="assets/styles.css" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   </head>
-  <body class="hub-page">
-    <header class="hub-shell hero">
-      <p class="eyebrow">Adventure Checklist Hub</p>
-      <h1>Interactive REI-inspired checklists built for real packing.</h1>
-      <p class="hero-copy">
-        Each activity has its own URL, its own saved progress, and room for your
-        own ad-hoc items.
-      </p>
-      <div class="hero-actions">
-        <a class="primary-link" href="camping/">Open camping checklist</a>
-        <a class="secondary-link" href="#activities">Browse all activities</a>
-      </div>
-    </header>
-
-    <main class="hub-shell" id="activities">
-      <section class="hub-section">
-        <div class="section-copy">
-          <p class="eyebrow">Included lists</p>
-          <h2>Choose an activity</h2>
-          <p>
-            Lists are adapted from REI checklist guides, preserved in roughly
-            the same order, and converted into a persistent interactive
-            experience.
-          </p>
-        </div>
-        <div class="activity-grid">
-          <a class="activity-card" href="camping/">
-            <span class="card-kicker">Camping</span>
-            <strong>Camping checklist</strong>
-            <span>Campsite, kitchen, clothing, hygiene, repairs and personal items.</span>
-          </a>
-          <a class="activity-card" href="trail-running/">
-            <span class="card-kicker">Trail Running</span>
-            <strong>Trail-running checklist</strong>
-            <span>Clothing, navigation, hydration, electronics, first aid and misc gear.</span>
-          </a>
-          <a class="activity-card" href="travel-preparation/">
-            <span class="card-kicker">Travel</span>
-            <strong>Travel preparation checklist</strong>
-            <span>Chronological trip-prep workflow from 30 days out through departure day.</span>
-          </a>
-          <a class="activity-card" href="backpacking/">
-            <span class="card-kicker">Backpacking</span>
-            <strong>Backpacking checklist</strong>
-            <span>Backpacking gear, food and water, emergency items, repairs and extras.</span>
-          </a>
-          <a class="activity-card" href="basic-cycling/">
-            <span class="card-kicker">Cycling</span>
-            <strong>Basic cycling checklist</strong>
-            <span>Ride essentials, repair gear, comfort items and pre-ride inspection.</span>
-          </a>
-          <a class="activity-card" href="mountain-biking/">
-            <span class="card-kicker">Mountain Biking</span>
-            <strong>Mountain biking checklist</strong>
-            <span>Trail-focused gear, repair tools, clothing, personal items and protection.</span>
-          </a>
-        </div>
-      </section>
-
-      <section class="hub-section compact">
-        <div class="feature-grid">
-          <article class="feature-card">
-            <strong>Independent progress</strong>
-            <span>Each checklist stores its checked items, collapsed sections and custom additions separately.</span>
-          </article>
-          <article class="feature-card">
-            <strong>Mobile-first workflow</strong>
-            <span>Large tap targets, sticky progress controls and scrollable activity navigation.</span>
-          </article>
-          <article class="feature-card">
-            <strong>Personal extensions</strong>
-            <span>Add and remove your own items without losing the base REI-inspired structure.</span>
-          </article>
-        </div>
-      </section>
-    </main>
+  <body>
+    <div id="app"></div>
+    <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>
