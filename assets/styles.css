@@ -75,6 +75,13 @@
   --color-danger: var(--danger);
   --color-danger-foreground: var(--danger-foreground);
   --color-border: var(--border);
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
 }
 
 * {
@@ -122,19 +129,19 @@ select {
 .page-shell {
   width: min(100%, 960px);
   margin: 0 auto;
-  padding-inline: 16px;
+  padding-inline: var(--space-4);
 }
 
 .page-frame {
   min-height: 100vh;
-  padding: 14px 0 36px;
+  padding: var(--space-4) 0 var(--space-8);
 }
 
 .home-layout,
 .page-main,
 .page-header {
   display: grid;
-  gap: 18px;
+  gap: var(--space-5);
 }
 
 .hero-card,
@@ -167,14 +174,14 @@ select {
 .page-hero-header {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: var(--space-5);
   justify-content: space-between;
 }
 
 .hero-copy-block,
 .page-hero-copy {
   display: grid;
-  gap: 12px;
+  gap: var(--space-3);
 }
 
 .hero-chip,
@@ -222,9 +229,9 @@ select {
 
 .theme-toggle-shell {
   display: grid;
-  gap: 10px;
+  gap: var(--space-3);
   min-width: 132px;
-  padding: 14px 16px;
+  padding: var(--space-4);
 }
 
 .theme-toggle-title {
@@ -239,13 +246,13 @@ select {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 12px;
+  gap: var(--space-3);
 }
 
 .theme-switch-copy {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--space-2);
 }
 
 .theme-switch-mode {
@@ -289,19 +296,19 @@ select {
 .feature-grid,
 .activity-grid {
   display: grid;
-  gap: 14px;
+  gap: var(--space-4);
   grid-template-columns: 1fr;
 }
 
 .metric-card .card__description {
-  margin-top: 6px;
+  margin-top: var(--space-2);
 }
 
 .hero-actions,
 .page-hero-footer {
   display: flex;
   flex-wrap: wrap;
-  gap: 12px;
+  gap: var(--space-3);
   align-items: center;
 }
 
@@ -332,7 +339,7 @@ select {
 .section-heading {
   display: flex;
   justify-content: space-between;
-  gap: 16px;
+  gap: var(--space-4);
   align-items: start;
 }
 
@@ -373,7 +380,7 @@ select {
 
 .activity-card-header {
   display: grid;
-  gap: 10px;
+  gap: var(--space-3);
 }
 
 .activity-card-footer {
@@ -398,7 +405,7 @@ select {
 
 .toolbar-content {
   display: grid;
-  gap: 14px;
+  gap: var(--space-4);
 }
 
 .progress-panel {
@@ -409,8 +416,8 @@ select {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 12px;
-  margin-bottom: 8px;
+  gap: var(--space-3);
+  margin-bottom: var(--space-2);
   font-weight: 700;
 }
 
@@ -427,7 +434,7 @@ select {
 
 .toolbar-actions {
   display: grid;
-  gap: 12px;
+  gap: var(--space-3);
 }
 
 .filter-group {
@@ -458,14 +465,14 @@ select {
 .toolbar-cta-group {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 10px;
+  gap: var(--space-3);
 }
 
 .activity-nav {
   display: flex;
-  gap: 10px;
+  gap: var(--space-3);
   overflow-x: auto;
-  padding: 4px 0;
+  padding: var(--space-1) 0;
   scrollbar-width: none;
 }
 
@@ -501,7 +508,7 @@ select {
 
 .summary-card .card__title,
 .feature-card .card__title {
-  margin-bottom: 8px;
+  margin-bottom: var(--space-2);
 }
 
 .summary-card .card__description,
@@ -512,7 +519,7 @@ select {
 
 .sections-wrap {
   display: grid;
-  gap: 12px;
+  gap: var(--space-4);
 }
 
 .section-accordion .accordion__item {
@@ -523,7 +530,7 @@ select {
 }
 
 .section-header {
-  padding: 18px 16px 14px;
+  padding: var(--space-5) var(--space-4) var(--space-4);
 }
 
 .section-heading {
@@ -534,8 +541,8 @@ select {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 10px;
-  margin-bottom: 8px;
+  gap: var(--space-3);
+  margin-bottom: var(--space-2);
 }
 
 .section-title-row strong {
@@ -545,15 +552,15 @@ select {
 
 .section-body {
   display: grid;
-  gap: 14px;
-  padding-top: 4px;
+  gap: var(--space-4);
+  padding-top: var(--space-1);
 }
 
 .section-tools {
   display: flex;
   flex-wrap: wrap;
   overflow-x: auto;
-  padding-bottom: 2px;
+  padding-bottom: var(--space-1);
   scrollbar-width: none;
 }
 
@@ -564,7 +571,7 @@ select {
 .add-item-form {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: var(--space-3);
 }
 
 .add-item-input {
@@ -574,7 +581,7 @@ select {
 
 .items {
   display: grid;
-  gap: 12px;
+  gap: var(--space-3);
 }
 
 .item-card {
@@ -584,9 +591,9 @@ select {
 .item-card-content {
   display: flex;
   justify-content: space-between;
-  gap: 14px;
+  gap: var(--space-4);
   align-items: flex-start;
-  padding: 16px 18px !important;
+  padding: var(--space-4) var(--space-5) !important;
 }
 
 .item-checkbox {
@@ -611,8 +618,8 @@ select {
 
 .item-body {
   display: grid;
-  gap: 6px;
-  padding-top: 1px;
+  gap: var(--space-2);
+  padding-top: var(--space-1);
 }
 
 .item-label {
@@ -627,8 +634,8 @@ select {
 
 .item-inline-meta {
   display: flex;
-  gap: 8px;
-  margin-top: 4px;
+  gap: var(--space-2);
+  margin-top: var(--space-1);
 }
 
 .item-meta {
@@ -740,7 +747,7 @@ select {
 
 @media (min-width: 640px) {
   .page-shell {
-    padding-inline: 20px;
+    padding-inline: var(--space-5);
   }
 
   .hero-metrics,
