@@ -1,4 +1,5 @@
 import { Button, ButtonGroup, Card, Label, ProgressBar } from "@heroui/react";
+import { ChevronsUpDown, RotateCcw } from "lucide-react";
 import { FILTERS } from "@/constants/filters";
 import type { ChecklistFilter } from "@/types/checklist";
 
@@ -28,16 +29,22 @@ export function ChecklistToolbar({
       <div className="page-shell sticky-inner">
         <Card className="toolbar-card" variant="secondary">
           <Card.Content className="toolbar-content">
+            <div className="progress-heading">
+              <div className="progress-summary">
+                <Label>Packing progress</Label>
+                <p className="progress-copy">
+                  {checked} of {total} packed
+                </p>
+              </div>
+              <div className="progress-percent">{percent}%</div>
+            </div>
+
             <ProgressBar
               aria-label="Checklist progress"
               className="progress-panel"
               color="success"
               value={percent}
             >
-              <div className="progress-heading">
-                <Label>Packing progress</Label>
-                <ProgressBar.Output />
-              </div>
               <ProgressBar.Track className="progress-track">
                 <ProgressBar.Fill className="progress-fill" />
               </ProgressBar.Track>
@@ -59,17 +66,15 @@ export function ChecklistToolbar({
 
               <div className="toolbar-cta-group">
                 <Button onPress={onToggleAllSections} size="sm" variant="outline">
+                  <ChevronsUpDown aria-hidden="true" size={15} strokeWidth={2.1} />
                   {hasVisibleOpenSection ? "Collapse all" : "Expand all"}
                 </Button>
                 <Button onPress={onResetChecks} size="sm" variant="ghost">
+                  <RotateCcw aria-hidden="true" size={15} strokeWidth={2.1} />
                   Reset checks
                 </Button>
               </div>
             </div>
-
-            <p className="progress-copy">
-              {checked} of {total} items packed for this activity.
-            </p>
           </Card.Content>
         </Card>
       </div>

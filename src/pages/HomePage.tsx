@@ -1,15 +1,7 @@
 import { useState } from "react"
 import { Card, Chip, Link } from "@heroui/react"
-import {
-  Backpack,
-  Bike,
-  Briefcase,
-  Flame,
-  Mountain,
-  Trees,
-  type LucideIcon,
-} from "lucide-react"
 import { CHECKLISTS } from "@/data/checklists"
+import { ActivityIcon } from "@/lib/activity-icons"
 import { getStorageKey } from "@/lib/checklist-storage"
 import type { PersistedChecklistState } from "@/types/checklist"
 
@@ -18,15 +10,6 @@ type ResumeChecklist = {
   checkedCount: number
   totalCount: number
   percent: number
-}
-
-const ACTIVITY_ICONS: Record<string, LucideIcon> = {
-  camping: Flame,
-  "trail-running": Trees,
-  "travel-preparation": Briefcase,
-  backpacking: Backpack,
-  "basic-cycling": Bike,
-  "mountain-biking": Mountain,
 }
 
 function loadResumeLists() {
@@ -116,7 +99,6 @@ export function HomePage() {
                   (entry) => entry.slug === list.slug,
                 )
                 if (!checklist) return null
-                const Icon = ACTIVITY_ICONS[checklist.slug] ?? Backpack
 
                 return (
                   <Link
@@ -132,7 +114,7 @@ export function HomePage() {
                               className="activity-card-icon"
                               aria-hidden="true"
                             >
-                              <Icon size={18} strokeWidth={2.1} />
+                              <ActivityIcon slug={checklist.slug} size={18} strokeWidth={2.1} />
                             </span>
                             <Card.Title>{checklist.label}</Card.Title>
                           </div>
@@ -179,7 +161,6 @@ export function HomePage() {
           </Card.Header>
           <Card.Content className="activity-grid">
             {CHECKLISTS.map((list) => {
-              const Icon = ACTIVITY_ICONS[list.slug] ?? Backpack
               const progress = resumeMap[list.slug]
 
               return (
@@ -196,7 +177,7 @@ export function HomePage() {
                             className="activity-card-icon"
                             aria-hidden="true"
                           >
-                            <Icon size={18} strokeWidth={2.1} />
+                            <ActivityIcon slug={list.slug} size={18} strokeWidth={2.1} />
                           </span>
                           <Card.Title>{list.label}</Card.Title>
                         </div>

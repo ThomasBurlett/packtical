@@ -7,21 +7,22 @@ import {
   Chip,
   Input,
   Label,
-} from "@heroui/react";
-import type { ChecklistItem, ChecklistSectionState } from "@/types/checklist";
+} from "@heroui/react"
+import { Check, Plus, Trash2, X } from "lucide-react"
+import type { ChecklistItem, ChecklistSectionState } from "@/types/checklist"
 
 interface ChecklistSectionProps {
-  section: ChecklistSectionState;
-  checkedIds: ReadonlySet<string>;
-  draftValue: string;
-  isFormOpen: boolean;
-  onSetSectionCollapsed: (sectionId: string, isCollapsed: boolean) => void;
-  onSetSectionChecked: (sectionId: string, nextChecked: boolean) => void;
-  onToggleAddForm: (sectionId: string) => void;
-  onDraftChange: (sectionId: string, value: string) => void;
-  onAddCustomItem: (sectionId: string) => void;
-  onDeleteCustomItem: (sectionId: string, itemId: string) => void;
-  onUpdateChecked: (itemId: string, nextChecked: boolean) => void;
+  section: ChecklistSectionState
+  checkedIds: ReadonlySet<string>
+  draftValue: string
+  isFormOpen: boolean
+  onSetSectionCollapsed: (sectionId: string, isCollapsed: boolean) => void
+  onSetSectionChecked: (sectionId: string, nextChecked: boolean) => void
+  onToggleAddForm: (sectionId: string) => void
+  onDraftChange: (sectionId: string, value: string) => void
+  onAddCustomItem: (sectionId: string) => void
+  onDeleteCustomItem: (sectionId: string, itemId: string) => void
+  onUpdateChecked: (itemId: string, nextChecked: boolean) => void
 }
 
 export function ChecklistSection({
@@ -38,7 +39,7 @@ export function ChecklistSection({
   onUpdateChecked,
 }: ChecklistSectionProps) {
   if (section.visibleItems.length === 0) {
-    return null;
+    return null
   }
 
   return (
@@ -47,7 +48,9 @@ export function ChecklistSection({
         className="section-item"
         id={section.id}
         isExpanded={!section.isCollapsed}
-        onExpandedChange={(isExpanded) => onSetSectionCollapsed(section.id, !isExpanded)}
+        onExpandedChange={(isExpanded) =>
+          onSetSectionCollapsed(section.id, !isExpanded)
+        }
       >
         <Accordion.Heading>
           <Accordion.Trigger className="section-header">
@@ -71,17 +74,26 @@ export function ChecklistSection({
         <Accordion.Panel>
           <Accordion.Body className="section-body">
             <ButtonGroup className="section-tools" size="sm" variant="secondary">
-              <Button onPress={() => onSetSectionChecked(section.id, true)}>Select all</Button>
-              <Button onPress={() => onSetSectionChecked(section.id, false)}>Clear</Button>
-              <Button onPress={() => onToggleAddForm(section.id)}>Add item</Button>
+              <Button onPress={() => onSetSectionChecked(section.id, true)}>
+                <Check aria-hidden="true" size={15} strokeWidth={2.2} />
+                Select all
+              </Button>
+              <Button onPress={() => onSetSectionChecked(section.id, false)}>
+                <X aria-hidden="true" size={15} strokeWidth={2.2} />
+                Clear
+              </Button>
+              <Button onPress={() => onToggleAddForm(section.id)}>
+                <Plus aria-hidden="true" size={15} strokeWidth={2.2} />
+                Add item
+              </Button>
             </ButtonGroup>
 
             {isFormOpen ? (
               <form
                 className="add-item-form"
                 onSubmit={(event) => {
-                  event.preventDefault();
-                  onAddCustomItem(section.id);
+                  event.preventDefault()
+                  onAddCustomItem(section.id)
                 }}
               >
                 <Label className="sr-only" htmlFor={`custom-item-${section.id}`}>
@@ -91,7 +103,9 @@ export function ChecklistSection({
                   className="add-item-input"
                   fullWidth
                   id={`custom-item-${section.id}`}
-                  onChange={(event) => onDraftChange(section.id, event.target.value)}
+                  onChange={(event) =>
+                    onDraftChange(section.id, event.target.value)
+                  }
                   placeholder={`Add your own item to ${section.title}`}
                   value={draftValue}
                   variant="secondary"
@@ -116,15 +130,15 @@ export function ChecklistSection({
         </Accordion.Panel>
       </Accordion.Item>
     </Accordion>
-  );
+  )
 }
 
 interface ChecklistSectionItemProps {
-  sectionId: string;
-  item: ChecklistItem;
-  checked: boolean;
-  onDeleteCustomItem: (sectionId: string, itemId: string) => void;
-  onUpdateChecked: (itemId: string, nextChecked: boolean) => void;
+  sectionId: string
+  item: ChecklistItem
+  checked: boolean
+  onDeleteCustomItem: (sectionId: string, itemId: string) => void
+  onUpdateChecked: (itemId: string, nextChecked: boolean) => void
 }
 
 function ChecklistSectionItem({
@@ -134,7 +148,7 @@ function ChecklistSectionItem({
   onDeleteCustomItem,
   onUpdateChecked,
 }: ChecklistSectionItemProps) {
-  const inputId = `${sectionId}-${item.id}`;
+  const inputId = `${sectionId}-${item.id}`
 
   return (
     <Card className={`item-card${checked ? " checked" : ""}`} variant="secondary">
@@ -150,9 +164,23 @@ function ChecklistSectionItem({
             <Checkbox.Indicator />
           </Checkbox.Control>
           <Checkbox.Content className="item-body">
-            <Label className="item-label" htmlFor={inputId}>
-              {item.label}
-            </Label>
+            <div className="item-topline">
+              <Label className="item-label" htmlFor={inputId}>
+                {item.label}
+              </Label>
+              {item.source === "custom" ? (
+                <Button
+                  aria-label={`Delete ${item.label}`}
+                  className="item-delete-button"
+                  isIconOnly
+                  onPress={() => onDeleteCustomItem(sectionId, item.id)}
+                  size="sm"
+                  variant="ghost"
+                >
+                  <Trash2 aria-hidden="true" size={15} strokeWidth={2.1} />
+                </Button>
+              ) : null}
+            </div>
             {item.note ? <span className="item-note">{item.note}</span> : null}
             <div className="item-inline-meta">
               <Chip
@@ -166,44 +194,29 @@ function ChecklistSectionItem({
             </div>
           </Checkbox.Content>
         </Checkbox>
-
-        <div className="item-meta">
-          {item.source === "custom" ? (
-            <Button
-              aria-label={`Delete ${item.label}`}
-              className="item-delete-button"
-              isIconOnly
-              onPress={() => onDeleteCustomItem(sectionId, item.id)}
-              size="sm"
-              variant="ghost"
-            >
-              ×
-            </Button>
-          ) : null}
-        </div>
       </Card.Content>
     </Card>
-  );
+  )
 }
 
 function getItemKindLabel(kind: ChecklistItem["kind"]) {
   switch (kind) {
     case "core":
-      return "Core";
+      return "Core"
     case "optional":
-      return "Optional";
+      return "Optional"
     default:
-      return "Custom";
+      return "Custom"
   }
 }
 
 function getItemChipColor(kind: ChecklistItem["kind"]) {
   switch (kind) {
     case "core":
-      return "success";
+      return "success"
     case "optional":
-      return "warning";
+      return "warning"
     default:
-      return "accent";
+      return "accent"
   }
 }

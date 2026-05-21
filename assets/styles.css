@@ -274,6 +274,123 @@ select {
   color: color-mix(in oklab, var(--foreground) 64%, transparent);
 }
 
+.checklist-hero {
+  gap: 0;
+}
+
+.checklist-hero-header {
+  gap: var(--space-5);
+}
+
+.checklist-hero-title-row {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-4);
+}
+
+.checklist-hero-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 3.5rem;
+  height: 3.5rem;
+  min-width: 3.5rem;
+  border-radius: 1.1rem;
+  color: color-mix(in oklab, var(--accent) 88%, black 12%);
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in oklab, var(--surface) 86%, white 14%),
+      color-mix(in oklab, var(--surface-tertiary) 84%, var(--surface))
+    );
+  box-shadow:
+    inset 0 1px 0 color-mix(in oklab, white 76%, transparent),
+    0 12px 24px color-mix(in oklab, var(--accent) 10%, transparent);
+}
+
+.checklist-hero-title-block {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.page-back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  width: fit-content;
+  padding: 0.72rem 1rem;
+  border-radius: 999px;
+  text-decoration: none;
+  font-weight: 700;
+  color: color-mix(in oklab, var(--accent) 92%, black 8%);
+  background: color-mix(in oklab, var(--surface) 94%, transparent);
+  border: 1px solid color-mix(in oklab, white 32%, var(--border));
+  box-shadow:
+    0 0 0 1px color-mix(in oklab, white 24%, transparent),
+    0 12px 22px color-mix(in oklab, black 6%, transparent);
+}
+
+.page-back-link:hover,
+.page-back-link:focus-visible {
+  border-color: color-mix(in oklab, var(--accent) 28%, white 28%);
+  box-shadow:
+    0 0 0 1px color-mix(in oklab, var(--accent) 14%, transparent),
+    0 14px 26px color-mix(in oklab, black 8%, transparent);
+}
+
+.checklist-hero-stats {
+  display: grid;
+  gap: var(--space-3);
+  grid-template-columns: 1fr;
+}
+
+.checklist-stat-card {
+  gap: var(--space-2);
+  padding: var(--space-4) !important;
+  border: 1px solid color-mix(in oklab, white 28%, var(--border));
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in oklab, var(--surface) 97%, white 3%),
+      color-mix(in oklab, var(--surface-secondary) 95%, var(--surface))
+    );
+}
+
+.checklist-stat-topline {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: color-mix(in oklab, var(--foreground) 72%, transparent);
+}
+
+.checklist-stat-card strong {
+  font-size: 1.45rem;
+  line-height: 1;
+  letter-spacing: -0.04em;
+}
+
+.checklist-stat-card p {
+  margin: 0;
+  color: color-mix(in oklab, var(--foreground) 68%, transparent);
+}
+
+.checklist-hero-footer {
+  margin-top: var(--space-1);
+}
+
+.unknown-card-body {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.unknown-card-copy {
+  margin: 0;
+  font-size: 1rem;
+  color: color-mix(in oklab, var(--foreground) 76%, transparent);
+}
+
 .activity-grid {
   margin-top: var(--space-2);
 }
@@ -434,7 +551,7 @@ select {
 
 .sticky-bar {
   position: sticky;
-  top: 8px;
+  top: 10px;
   z-index: 20;
 }
 
@@ -443,7 +560,17 @@ select {
 }
 
 .toolbar-card {
-  background: color-mix(in oklab, var(--surface-secondary) 96%, transparent);
+  border: 1px solid color-mix(in oklab, white 28%, var(--border));
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in oklab, var(--surface) 98%, white 2%),
+      color-mix(in oklab, var(--surface-secondary) 95%, var(--surface))
+    );
+  box-shadow:
+    0 0 0 1px color-mix(in oklab, white 24%, transparent),
+    0 16px 34px color-mix(in oklab, black 8%, transparent),
+    inset 0 1px 0 color-mix(in oklab, white 72%, transparent);
 }
 
 .toolbar-content {
@@ -458,10 +585,21 @@ select {
 .progress-heading {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-end;
   gap: var(--space-3);
-  margin-bottom: var(--space-2);
-  font-weight: 700;
+}
+
+.progress-summary {
+  display: grid;
+  gap: 0.2rem;
+}
+
+.progress-percent {
+  font-size: 1.6rem;
+  line-height: 1;
+  letter-spacing: -0.05em;
+  font-weight: 750;
+  color: color-mix(in oklab, var(--accent) 92%, black 8%);
 }
 
 .progress-track {
@@ -513,7 +651,7 @@ select {
 
 .activity-nav {
   display: flex;
-  gap: var(--space-3);
+  gap: var(--space-2);
   overflow-x: auto;
   padding: var(--space-1) 0;
   scrollbar-width: none;
@@ -524,6 +662,9 @@ select {
 }
 
 .activity-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
   padding: 0.75rem 1rem;
   border-radius: 999px;
   text-decoration: none;
@@ -535,6 +676,12 @@ select {
     background-color 160ms ease,
     border-color 160ms ease,
     color 160ms ease;
+}
+
+.activity-pill-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .activity-pill.active,
@@ -566,14 +713,21 @@ select {
 }
 
 .section-accordion .accordion__item {
-  border-color: color-mix(in oklab, var(--border) 92%, transparent);
-  border-radius: 22px;
-  background: color-mix(in oklab, var(--surface) 96%, transparent);
-  box-shadow: 0 16px 36px color-mix(in oklab, black 8%, transparent);
+  border: 1px solid color-mix(in oklab, white 26%, var(--border));
+  border-radius: 24px;
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in oklab, var(--surface) 98%, white 2%),
+      color-mix(in oklab, var(--surface-secondary) 95%, var(--surface))
+    );
+  box-shadow:
+    0 0 0 1px color-mix(in oklab, white 18%, transparent),
+    0 16px 34px color-mix(in oklab, black 8%, transparent);
 }
 
 .section-header {
-  padding: var(--space-5) var(--space-4) var(--space-4);
+  padding: var(--space-5) var(--space-5) var(--space-4);
 }
 
 .section-heading {
@@ -589,8 +743,12 @@ select {
 }
 
 .section-title-row strong {
-  font-size: 1.05rem;
+  font-size: 1.12rem;
   line-height: 1.3;
+}
+
+.section-count-chip {
+  padding-inline: 0.65rem;
 }
 
 .section-body {
@@ -611,6 +769,11 @@ select {
   display: none;
 }
 
+.section-tools .button {
+  align-items: center;
+  gap: 0.45rem;
+}
+
 .add-item-form {
   display: flex;
   flex-wrap: wrap;
@@ -628,30 +791,42 @@ select {
 }
 
 .item-card {
-  background: color-mix(in oklab, var(--surface-secondary) 94%, transparent);
+  border: 1px solid color-mix(in oklab, white 22%, var(--border));
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in oklab, var(--surface) 97%, white 3%),
+      color-mix(in oklab, var(--surface-secondary) 95%, var(--surface))
+    );
+  box-shadow:
+    0 0 0 1px color-mix(in oklab, white 16%, transparent),
+    0 14px 30px color-mix(in oklab, black 6%, transparent);
+}
+
+.item-card:hover {
+  border-color: color-mix(in oklab, var(--accent) 24%, white 28%);
 }
 
 .item-card-content {
-  display: flex;
-  justify-content: space-between;
-  gap: var(--space-4);
-  align-items: flex-start;
-  padding: var(--space-4) var(--space-5) !important;
+  padding: var(--space-4) var(--space-4) !important;
 }
 
 .item-checkbox {
-  flex: 1;
+  width: 100%;
   align-items: flex-start;
+  gap: var(--space-3);
 }
 
 .item-checkbox-control {
-  width: 24px;
-  height: 24px;
-  min-width: 24px;
+  width: 26px;
+  height: 26px;
+  min-width: 26px;
   margin-top: 1px;
-  border: 1.5px solid color-mix(in oklab, var(--border) 92%, transparent);
-  background: color-mix(in oklab, var(--surface) 96%, transparent);
-  box-shadow: inset 0 1px 1px color-mix(in oklab, white 50%, transparent);
+  border: 1px solid color-mix(in oklab, var(--border) 96%, transparent);
+  background: color-mix(in oklab, var(--surface) 98%, transparent);
+  box-shadow:
+    inset 0 1px 0 color-mix(in oklab, white 70%, transparent),
+    0 4px 10px color-mix(in oklab, black 4%, transparent);
 }
 
 .item-card.checked .item-checkbox-control {
@@ -661,41 +836,45 @@ select {
 
 .item-body {
   display: grid;
-  gap: var(--space-2);
-  padding-top: var(--space-1);
+  gap: 0.55rem;
+  width: 100%;
+  min-width: 0;
+  padding-top: 0;
+}
+
+.item-topline {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-3);
 }
 
 .item-label {
-  font-weight: 650;
-  line-height: 1.45;
+  font-weight: 700;
+  line-height: 1.4;
   color: var(--foreground);
 }
 
 .item-note {
   font-size: 0.94rem;
+  line-height: 1.55;
 }
 
 .item-inline-meta {
   display: flex;
   gap: var(--space-2);
-  margin-top: var(--space-1);
-}
-
-.item-meta {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  min-height: 24px;
 }
 
 .item-tag {
-  text-transform: uppercase;
+  text-transform: none;
   letter-spacing: 0.04em;
   font-weight: 700;
 }
 
 .item-delete-button {
-  color: color-mix(in oklab, var(--foreground) 72%, transparent);
+  color: color-mix(in oklab, var(--foreground) 62%, transparent);
+  background: color-mix(in oklab, var(--surface) 88%, transparent);
+  border: 1px solid color-mix(in oklab, var(--border) 82%, transparent);
 }
 
 .item-card.checked {
@@ -793,6 +972,10 @@ select {
     padding-inline: var(--space-5);
   }
 
+  .checklist-hero-stats {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
   .hero-metrics,
   .summary-grid,
   .feature-grid,
@@ -816,8 +999,17 @@ select {
     align-items: start;
   }
 
+  .checklist-hero-header {
+    grid-template-columns: minmax(0, 1.25fr) minmax(300px, 0.75fr);
+  }
+
   .toolbar-actions {
     align-items: center;
+  }
+
+  .toolbar-cta-group {
+    grid-template-columns: repeat(2, auto);
+    justify-content: end;
   }
 
   .hero-actions .hero-link-primary,
@@ -863,12 +1055,34 @@ select {
     flex-direction: column;
   }
 
+  .checklist-hero-title-row {
+    gap: var(--space-3);
+  }
+
+  .checklist-hero-icon {
+    width: 3rem;
+    height: 3rem;
+    min-width: 3rem;
+  }
+
+  .progress-heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .progress-percent {
+    font-size: 1.35rem;
+  }
+
+  .toolbar-cta-group {
+    grid-template-columns: 1fr;
+  }
+
   .activity-card-title-row {
     width: 100%;
   }
 
-  .item-meta {
-    width: 100%;
-    justify-content: flex-end;
+  .item-topline {
+    align-items: flex-start;
   }
 }
