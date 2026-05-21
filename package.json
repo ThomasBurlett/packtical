@@ -13,6 +13,7 @@
     "@heroui/react": "^3.0.5",
     "@heroui/styles": "^3.0.5",
     "@tailwindcss/vite": "^4.3.0",
+    "lucide-react": "^1.16.0",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",
     "react-router-dom": "^6.30.3",

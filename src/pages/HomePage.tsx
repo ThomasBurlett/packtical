@@ -1,5 +1,14 @@
 import { useState } from "react";
 import { Card, Chip, Link } from "@heroui/react";
+import {
+  Backpack,
+  Bike,
+  Briefcase,
+  Flame,
+  Mountain,
+  Trees,
+  type LucideIcon,
+} from "lucide-react";
 import { CHECKLISTS } from "@/data/checklists";
 import { getStorageKey } from "@/lib/checklist-storage";
 import type { PersistedChecklistState } from "@/types/checklist";
@@ -9,6 +18,15 @@ type ResumeChecklist = {
   checkedCount: number;
   totalCount: number;
   percent: number;
+};
+
+const ACTIVITY_ICONS: Record<string, LucideIcon> = {
+  camping: Flame,
+  "trail-running": Trees,
+  "travel-preparation": Briefcase,
+  backpacking: Backpack,
+  "basic-cycling": Bike,
+  "mountain-biking": Mountain,
 };
 
 function loadResumeLists() {
@@ -68,7 +86,7 @@ export function HomePage() {
           <Card.Header className="hero-header home-launch-header">
             <div className="hero-copy-block">
               <Chip className="hero-chip" variant="soft">
-                Checklist library
+                Checklist Hub
               </Chip>
               <Card.Title className="hero-title home-launch-title">
                 Pick a checklist and start packing.
@@ -77,28 +95,27 @@ export function HomePage() {
                 Open an activity, keep your progress, and jump back in anytime.
               </Card.Description>
             </div>
-            <div className="home-quick-nav" aria-label="Quick checklist links">
-              {CHECKLISTS.map((list) => (
-                <Link className="quick-link" href={`#/${list.slug}`} key={list.slug}>
-                  {list.shortLabel}
-                </Link>
-              ))}
-            </div>
           </Card.Header>
           {featuredResumeLists.length > 0 ? (
             <Card.Content className="resume-grid">
               {featuredResumeLists.map((list) => {
                 const checklist = CHECKLISTS.find((entry) => entry.slug === list.slug);
                 if (!checklist) return null;
+                const Icon = ACTIVITY_ICONS[checklist.slug] ?? Backpack;
 
                 return (
                   <Link className="activity-card-link" href={`#/${checklist.slug}`} key={checklist.slug}>
                     <Card className="resume-card" variant="secondary">
                       <Card.Header className="resume-card-header">
-                        <Chip className="activity-chip" variant="soft">
-                          Continue
-                        </Chip>
-                        <Card.Title>{checklist.label}</Card.Title>
+                        <div className="activity-card-topline">
+                          <div className="activity-card-title-row">
+                            <span className="activity-card-icon" aria-hidden="true">
+                              <Icon size={18} strokeWidth={2.1} />
+                            </span>
+                            <Card.Title>{checklist.label}</Card.Title>
+                          </div>
+                          <span className="activity-card-status">Continue</span>
+                        </div>
                         <Card.Description>
                           {list.checkedCount} of {list.totalCount} items packed
                         </Card.Description>
@@ -113,7 +130,9 @@ export function HomePage() {
                         </div>
                       </Card.Content>
                       <Card.Footer className="activity-card-footer">
-                        <span>Resume checklist</span>
+                        <span>
+                          Resume checklist <span aria-hidden="true">&rarr;</span>
+                        </span>
                         <strong>{list.percent}%</strong>
                       </Card.Footer>
                     </Card>
@@ -138,44 +157,50 @@ export function HomePage() {
             <div className="library-summary">{CHECKLISTS.length} ready</div>
           </Card.Header>
           <Card.Content className="activity-grid">
-            {CHECKLISTS.map((list) => (
-              <Link className="activity-card-link" href={`#/${list.slug}`} key={list.slug}>
-                <Card className="activity-card" variant="secondary">
-                  <Card.Header className="activity-card-header">
-                    <div className="activity-card-topline">
-                      <Chip className="activity-chip" variant="soft">
-                        {list.shortLabel}
-                      </Chip>
-                      {resumeMap[list.slug] ? (
-                        <span className="activity-card-status">
-                          {resumeMap[list.slug].percent}% complete
-                        </span>
-                      ) : null}
-                    </div>
-                    <Card.Title>{list.label}</Card.Title>
-                    <Card.Description>{list.summary}</Card.Description>
-                  </Card.Header>
-                  <Card.Content className="activity-card-meta">
-                    <span>{list.sections.length} sections</span>
-                    <span>{list.sections.reduce((sum, section) => sum + section.items.length, 0)} items</span>
-                  </Card.Content>
-                  {resumeMap[list.slug] ? (
-                    <Card.Content className="activity-card-progress">
+            {CHECKLISTS.map((list) => {
+              const Icon = ACTIVITY_ICONS[list.slug] ?? Backpack;
+              const progress = resumeMap[list.slug];
+
+              return (
+                <Link className="activity-card-link" href={`#/${list.slug}`} key={list.slug}>
+                  <Card className="activity-card" variant="secondary">
+                    <Card.Header className="activity-card-header">
+                      <div className="activity-card-topline">
+                        <div className="activity-card-title-row">
+                          <span className="activity-card-icon" aria-hidden="true">
+                            <Icon size={18} strokeWidth={2.1} />
+                          </span>
+                          <Card.Title>{list.label}</Card.Title>
+                        </div>
+                        {progress ? (
+                          <span className="activity-card-status">
+                            {progress.percent}% complete
+                          </span>
+                        ) : null}
+                      </div>
+                      <Card.Description>{list.summary}</Card.Description>
+                    </Card.Header>
+                    <Card.Content
+                      className={`activity-card-progress${progress ? "" : " activity-card-progress-empty"}`}
+                    >
                       <div
                         aria-hidden="true"
                         className="activity-card-progress-bar"
                         role="presentation"
                       >
-                        <span style={{ width: `${resumeMap[list.slug].percent}%` }} />
+                        <span style={{ width: `${progress?.percent ?? 0}%` }} />
                       </div>
                     </Card.Content>
-                  ) : null}
-                  <Card.Footer className="activity-card-footer">
-                    <span>{resumeMap[list.slug] ? "Resume checklist" : "Open checklist"}</span>
-                  </Card.Footer>
-                </Card>
-              </Link>
-            ))}
+                    <Card.Footer className="activity-card-footer">
+                      <span>
+                        {progress ? "Resume checklist " : "Open checklist "}
+                        <span aria-hidden="true">&rarr;</span>
+                      </span>
+                    </Card.Footer>
+                  </Card>
+                </Link>
+              );
+            })}
           </Card.Content>
         </Card>
       </section>

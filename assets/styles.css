@@ -220,33 +220,8 @@ select {
   gap: 0;
 }
 
-.home-launch-header {
-  gap: var(--space-4);
-}
-
 .home-launch-title {
   max-width: 11ch;
-}
-
-.home-quick-nav {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-2);
-}
-
-.quick-link {
-  padding: 0.7rem 0.95rem;
-  border: 1px solid color-mix(in oklab, var(--border) 92%, transparent);
-  border-radius: 999px;
-  text-decoration: none;
-  font-weight: 600;
-  background: color-mix(in oklab, var(--surface) 92%, transparent);
-}
-
-.quick-link:hover,
-.quick-link:focus-visible {
-  border-color: color-mix(in oklab, var(--accent) 40%, var(--border));
-  box-shadow: 0 10px 20px color-mix(in oklab, var(--accent) 12%, transparent);
 }
 
 .resume-card {
@@ -262,6 +237,15 @@ select {
 .resume-progress-block,
 .activity-card-progress {
   padding-top: 0 !important;
+}
+
+.activity-card-progress {
+  min-height: 26px;
+}
+
+.activity-card-progress-empty {
+  opacity: 0;
+  pointer-events: none;
 }
 
 .library-heading {
@@ -321,12 +305,26 @@ select {
 }
 
 .activity-card-link {
+  display: block;
+  height: 100%;
   text-decoration: none;
 }
 
 .activity-card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
   min-height: 0;
-  background: color-mix(in oklab, var(--surface-secondary) 96%, transparent);
+  border-color: color-mix(in oklab, var(--border) 98%, oklch(0.9 0.018 96));
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in oklab, var(--surface) 98%, white 2%),
+      color-mix(in oklab, var(--surface-secondary) 94%, var(--surface))
+    );
+  box-shadow:
+    0 18px 38px color-mix(in oklab, black 8%, transparent),
+    inset 0 1px 0 color-mix(in oklab, white 70%, transparent);
   transition:
     transform 160ms ease,
     border-color 160ms ease,
@@ -336,8 +334,10 @@ select {
 .activity-card:hover,
 .activity-card-link:focus-visible .activity-card {
   transform: translateY(-3px);
-  border-color: color-mix(in oklab, var(--accent) 46%, var(--border));
-  box-shadow: 0 20px 42px color-mix(in oklab, var(--accent) 14%, transparent);
+  border-color: color-mix(in oklab, var(--accent) 58%, var(--border));
+  box-shadow:
+    0 24px 46px color-mix(in oklab, black 12%, transparent),
+    0 0 0 1px color-mix(in oklab, var(--accent) 14%, transparent);
 }
 
 .activity-card-header {
@@ -352,20 +352,42 @@ select {
   gap: var(--space-3);
 }
 
+.activity-card-title-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-width: 0;
+}
+
+.activity-card-title-row .card__title {
+  margin: 0;
+}
+
+.activity-card-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.4rem;
+  height: 2.4rem;
+  min-width: 2.4rem;
+  border-radius: 0.9rem;
+  color: color-mix(in oklab, var(--accent) 88%, black 12%);
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in oklab, var(--surface-tertiary) 80%, white 20%),
+      color-mix(in oklab, var(--surface-secondary) 92%, var(--surface))
+    );
+  box-shadow:
+    inset 0 1px 0 color-mix(in oklab, white 68%, transparent),
+    0 10px 20px color-mix(in oklab, var(--accent) 10%, transparent);
+}
+
 .activity-card-status {
   font-size: 0.82rem;
   font-weight: 700;
-  color: var(--accent);
+  color: color-mix(in oklab, var(--accent) 88%, black 12%);
   white-space: nowrap;
-}
-
-.activity-card-meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-3);
-  padding-top: 0 !important;
-  font-size: 0.92rem;
-  color: color-mix(in oklab, var(--foreground) 66%, transparent);
 }
 
 .activity-card-progress-bar {
@@ -387,7 +409,7 @@ select {
   justify-content: space-between;
   align-items: center;
   margin-top: auto;
-  color: var(--accent);
+  color: color-mix(in oklab, var(--accent) 92%, black 8%);
   font-weight: 600;
 }
 
@@ -775,10 +797,6 @@ select {
     align-items: start;
   }
 
-  .home-launch-header {
-    grid-template-columns: minmax(0, 1fr) minmax(280px, 360px);
-  }
-
   .toolbar-actions {
     align-items: center;
   }
@@ -820,25 +838,14 @@ select {
     flex-direction: column;
   }
 
-  .home-quick-nav {
-    overflow-x: auto;
-    flex-wrap: nowrap;
-    padding-bottom: 2px;
-    scrollbar-width: none;
-  }
-
-  .home-quick-nav::-webkit-scrollbar {
-    display: none;
-  }
-
-  .quick-link {
-    flex: 0 0 auto;
-  }
-
   .activity-card-topline,
   .activity-card-footer {
     align-items: flex-start;
     flex-direction: column;
+  }
+
+  .activity-card-title-row {
+    width: 100%;
   }
 
   .item-meta {
