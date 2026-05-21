@@ -226,7 +226,14 @@ select {
 
 .resume-card {
   min-height: 0;
+  border-width: 1px;
+  border-style: solid;
+  border-color: color-mix(in oklab, white 34%, var(--border));
   background: color-mix(in oklab, var(--surface-secondary) 96%, transparent);
+  box-shadow:
+    0 0 0 1px color-mix(in oklab, white 30%, transparent),
+    0 16px 34px color-mix(in oklab, black 8%, transparent),
+    inset 0 1px 0 color-mix(in oklab, white 72%, transparent);
 }
 
 .resume-card-header {
@@ -237,6 +244,10 @@ select {
 .resume-progress-block,
 .activity-card-progress {
   padding-top: 0 !important;
+}
+
+.resume-grid {
+  margin-top: var(--space-2);
 }
 
 .activity-card-progress {
@@ -261,6 +272,10 @@ select {
   font-size: 0.95rem;
   font-weight: 700;
   color: color-mix(in oklab, var(--foreground) 64%, transparent);
+}
+
+.activity-grid {
+  margin-top: var(--space-2);
 }
 
 .hero-link,
@@ -315,7 +330,9 @@ select {
   flex-direction: column;
   height: 100%;
   min-height: 0;
-  border-color: color-mix(in oklab, var(--border) 98%, oklch(0.9 0.018 96));
+  border-width: 1px;
+  border-style: solid;
+  border-color: color-mix(in oklab, white 36%, var(--border));
   background:
     linear-gradient(
       180deg,
@@ -323,6 +340,7 @@ select {
       color-mix(in oklab, var(--surface-secondary) 94%, var(--surface))
     );
   box-shadow:
+    0 0 0 1px color-mix(in oklab, white 34%, transparent),
     0 18px 38px color-mix(in oklab, black 8%, transparent),
     inset 0 1px 0 color-mix(in oklab, white 70%, transparent);
   transition:
@@ -334,10 +352,11 @@ select {
 .activity-card:hover,
 .activity-card-link:focus-visible .activity-card {
   transform: translateY(-3px);
-  border-color: color-mix(in oklab, var(--accent) 58%, var(--border));
+  border-color: color-mix(in oklab, var(--accent) 34%, white 32%);
   box-shadow:
+    0 0 0 1px color-mix(in oklab, var(--accent) 18%, white 12%),
     0 24px 46px color-mix(in oklab, black 12%, transparent),
-    0 0 0 1px color-mix(in oklab, var(--accent) 14%, transparent);
+    inset 0 1px 0 color-mix(in oklab, white 76%, transparent);
 }
 
 .activity-card-header {
