@@ -1,13 +1,7 @@
 import { Button, Card, Chip, Link } from "@heroui/react";
-import { ThemeToggle } from "@/components/ThemeToggle";
 import { CHECKLISTS } from "@/data/checklists";
 
-interface HomePageProps {
-  isDark: boolean;
-  onToggleTheme: () => void;
-}
-
-export function HomePage({ isDark, onToggleTheme }: HomePageProps) {
+export function HomePage() {
   function scrollToActivities() {
     document.getElementById("activities")?.scrollIntoView({ behavior: "smooth" });
   }
@@ -29,11 +23,6 @@ export function HomePage({ isDark, onToggleTheme }: HomePageProps) {
                 use while you pack from your phone.
               </Card.Description>
             </div>
-            <Card className="theme-toggle-card" variant="secondary">
-              <Card.Content className="theme-toggle-content">
-                <ThemeToggle isDark={isDark} onToggleTheme={onToggleTheme} />
-              </Card.Content>
-            </Card>
           </Card.Header>
           <Card.Content className="hero-metrics">
             <Card className="metric-card" variant="secondary">

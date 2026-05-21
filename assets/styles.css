@@ -2,8 +2,7 @@
 @import "@heroui/styles";
 
 @layer theme {
-  :root,
-  [data-theme="pine"] {
+  :root {
     color-scheme: light;
     --background: oklch(0.97 0.012 95);
     --foreground: oklch(0.25 0.03 150);
@@ -27,33 +26,6 @@
     --field-border: oklch(0.82 0.018 96);
     --field-hover: oklch(0.98 0.008 98);
     --field-focus: oklch(0.46 0.11 154);
-  }
-
-  .dark,
-  [data-theme="pine-dark"] {
-    color-scheme: dark;
-    --background: oklch(0.17 0.018 150);
-    --foreground: oklch(0.95 0.008 100);
-    --surface: oklch(0.23 0.018 150 / 97%);
-    --surface-foreground: oklch(0.96 0.008 100);
-    --surface-secondary: oklch(0.27 0.018 150 / 97%);
-    --surface-secondary-foreground: oklch(0.96 0.008 100);
-    --surface-tertiary: oklch(0.31 0.03 135 / 97%);
-    --surface-tertiary-foreground: oklch(0.97 0.008 100);
-    --accent: oklch(0.7 0.12 154);
-    --accent-foreground: oklch(0.18 0.02 150);
-    --success: oklch(0.73 0.13 150);
-    --success-foreground: oklch(0.18 0.02 150);
-    --warning: oklch(0.8 0.13 80);
-    --warning-foreground: oklch(0.18 0.02 80);
-    --danger: oklch(0.74 0.16 28);
-    --danger-foreground: oklch(0.18 0.02 150);
-    --border: oklch(0.35 0.012 150);
-    --field: oklch(0.2 0.015 150);
-    --field-foreground: oklch(0.96 0.008 100);
-    --field-border: oklch(0.37 0.012 150);
-    --field-hover: oklch(0.24 0.016 150);
-    --field-focus: oklch(0.7 0.12 154);
   }
 }
 
@@ -215,80 +187,6 @@ select {
   max-width: 56ch;
   font-size: 1rem;
   line-height: 1.7;
-}
-
-.theme-toggle-card {
-  width: fit-content;
-  min-width: 148px;
-  background: color-mix(in oklab, var(--surface) 96%, transparent);
-}
-
-.theme-toggle-content {
-  padding: 0 !important;
-}
-
-.theme-toggle-shell {
-  display: grid;
-  gap: var(--space-3);
-  min-width: 132px;
-  padding: var(--space-4);
-}
-
-.theme-toggle-title {
-  font-size: 0.78rem;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: color-mix(in oklab, var(--foreground) 68%, transparent);
-}
-
-.theme-switch {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: var(--space-3);
-}
-
-.theme-switch-copy {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-2);
-}
-
-.theme-switch-mode {
-  font-size: 0.95rem;
-  font-weight: 700;
-  color: var(--foreground);
-}
-
-.theme-switch-icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 1.4rem;
-  height: 1.4rem;
-  border-radius: 999px;
-  background: color-mix(in oklab, var(--accent) 14%, transparent);
-  color: var(--accent);
-  font-size: 0.8rem;
-}
-
-.theme-switch-control {
-  width: 46px;
-  min-width: 46px;
-  height: 28px;
-  padding: 3px;
-  border-radius: 999px;
-  border: 1px solid color-mix(in oklab, var(--border) 94%, transparent);
-  background: color-mix(in oklab, var(--surface-secondary) 72%, var(--border));
-}
-
-.theme-switch-thumb {
-  width: 20px;
-  height: 20px;
-  border-radius: 999px;
-  background: linear-gradient(180deg, color-mix(in oklab, white 84%, var(--surface)), var(--surface));
-  box-shadow: 0 3px 10px color-mix(in oklab, black 18%, transparent);
 }
 
 .hero-metrics,

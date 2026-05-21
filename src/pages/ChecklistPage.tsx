@@ -2,17 +2,14 @@ import { Card, Chip, Link } from "@heroui/react";
 import { ActivityNav } from "@/components/checklist/ActivityNav";
 import { ChecklistSection } from "@/components/checklist/ChecklistSection";
 import { ChecklistToolbar } from "@/components/checklist/ChecklistToolbar";
-import { ThemeToggle } from "@/components/ThemeToggle";
 import { CHECKLISTS, CHECKLIST_MAP } from "@/data/checklists";
 import { useChecklistState } from "@/hooks/useChecklistState";
 
 interface ChecklistPageProps {
   slug: string;
-  isDark: boolean;
-  onToggleTheme: () => void;
 }
 
-export function ChecklistPage({ slug, isDark, onToggleTheme }: ChecklistPageProps) {
+export function ChecklistPage({ slug }: ChecklistPageProps) {
   const list = CHECKLIST_MAP[slug];
 
   if (!list) {
@@ -26,18 +23,10 @@ export function ChecklistPage({ slug, isDark, onToggleTheme }: ChecklistPageProp
     );
   }
 
-  return <ChecklistPageContent checklist={list} isDark={isDark} onToggleTheme={onToggleTheme} />;
+  return <ChecklistPageContent checklist={list} />;
 }
 
-function ChecklistPageContent({
-  checklist,
-  isDark,
-  onToggleTheme,
-}: {
-  checklist: (typeof CHECKLISTS)[number];
-  isDark: boolean;
-  onToggleTheme: () => void;
-}) {
+function ChecklistPageContent({ checklist }: { checklist: (typeof CHECKLISTS)[number] }) {
   const { sections, totals, filter, drafts, openForms, checkedIds, hasVisibleOpenSection, actions } =
     useChecklistState(checklist);
 
@@ -56,11 +45,6 @@ function ChecklistPageContent({
               <Card.Title className="page-title">{checklist.label}</Card.Title>
               <Card.Description className="page-subtitle">{checklist.subtitle}</Card.Description>
             </div>
-            <Card className="theme-toggle-card" variant="secondary">
-              <Card.Content className="theme-toggle-content">
-                <ThemeToggle isDark={isDark} onToggleTheme={onToggleTheme} />
-              </Card.Content>
-            </Card>
           </Card.Header>
           <Card.Footer className="page-hero-footer">
             <ActivityNav activeSlug={checklist.slug} checklists={CHECKLISTS} />
