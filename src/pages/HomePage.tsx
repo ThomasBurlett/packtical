@@ -1,106 +1,183 @@
-import { Button, Card, Chip, Link } from "@heroui/react";
+import { useState } from "react";
+import { Card, Chip, Link } from "@heroui/react";
 import { CHECKLISTS } from "@/data/checklists";
+import { getStorageKey } from "@/lib/checklist-storage";
+import type { PersistedChecklistState } from "@/types/checklist";
+
+type ResumeChecklist = {
+  slug: string;
+  checkedCount: number;
+  totalCount: number;
+  percent: number;
+};
+
+function loadResumeLists() {
+  return CHECKLISTS.map((list) => {
+    const totalBaseItems = list.sections.reduce((sum, section) => sum + section.items.length, 0);
+
+    try {
+      const rawState = localStorage.getItem(getStorageKey(list.slug));
+      const parsedState = rawState ? (JSON.parse(rawState) as PersistedChecklistState | null) : null;
+
+      if (!parsedState || typeof parsedState !== "object") {
+        return null;
+      }
+
+      const checkedCount = Array.isArray(parsedState.checkedIds) ? parsedState.checkedIds.length : 0;
+      const customItemCount =
+        parsedState.customItems && typeof parsedState.customItems === "object"
+          ? Object.values(parsedState.customItems).reduce(
+              (sum, items) => sum + (Array.isArray(items) ? items.length : 0),
+              0,
+            )
+          : 0;
+      const totalCount = totalBaseItems + customItemCount;
+      const hasSavedState =
+        checkedCount > 0 ||
+        customItemCount > 0 ||
+        (Array.isArray(parsedState.collapsedSections) && parsedState.collapsedSections.length > 0);
+
+      if (!hasSavedState || totalCount === 0) {
+        return null;
+      }
+
+      return {
+        slug: list.slug,
+        checkedCount,
+        totalCount,
+        percent: Math.round((checkedCount / totalCount) * 100),
+      };
+    } catch {
+      return null;
+    }
+  })
+    .filter((list): list is ResumeChecklist => list !== null)
+    .sort((left, right) => right.percent - left.percent || right.checkedCount - left.checkedCount);
+}
 
 export function HomePage() {
-  function scrollToActivities() {
-    document.getElementById("activities")?.scrollIntoView({ behavior: "smooth" });
-  }
+  const [resumeLists] = useState<ResumeChecklist[]>(loadResumeLists);
+
+  const resumeMap = Object.fromEntries(resumeLists.map((list) => [list.slug, list]));
+  const featuredResumeLists = resumeLists.slice(0, 3);
 
   return (
     <main className="page-frame">
       <section className="page-shell home-layout">
-        <Card className="hero-card" variant="tertiary">
-          <Card.Header className="hero-header">
+        <Card className="hero-card home-launch-card" variant="tertiary">
+          <Card.Header className="hero-header home-launch-header">
             <div className="hero-copy-block">
               <Chip className="hero-chip" variant="soft">
-                Trail-ready planning
+                Checklist library
               </Chip>
-              <Card.Title className="hero-title">
-                Outdoor packing checklists with a cleaner, field-ready design.
+              <Card.Title className="hero-title home-launch-title">
+                Pick a checklist and start packing.
               </Card.Title>
               <Card.Description className="hero-description">
-                Each activity saves its own progress, supports custom additions, and stays easy to
-                use while you pack from your phone.
+                Open an activity, keep your progress, and jump back in anytime.
               </Card.Description>
             </div>
+            <div className="home-quick-nav" aria-label="Quick checklist links">
+              {CHECKLISTS.map((list) => (
+                <Link className="quick-link" href={`#/${list.slug}`} key={list.slug}>
+                  {list.shortLabel}
+                </Link>
+              ))}
+            </div>
           </Card.Header>
-          <Card.Content className="hero-metrics">
-            <Card className="metric-card" variant="secondary">
-              <Card.Title>{CHECKLISTS.length}</Card.Title>
-              <Card.Description>Outdoor scenarios</Card.Description>
-            </Card>
-            <Card className="metric-card" variant="secondary">
-              <Card.Title>Persistent</Card.Title>
-              <Card.Description>Per-activity saved state</Card.Description>
-            </Card>
-            <Card className="metric-card" variant="secondary">
-              <Card.Title>Customizable</Card.Title>
-              <Card.Description>Add personal items section by section</Card.Description>
-            </Card>
-          </Card.Content>
-          <Card.Footer className="hero-actions">
-            <Link className="hero-link hero-link-primary" href="#/camping">
-              Open camping checklist
-            </Link>
-            <Button onPress={scrollToActivities} variant="secondary">
-              Browse all activities
-            </Button>
-          </Card.Footer>
+          {featuredResumeLists.length > 0 ? (
+            <Card.Content className="resume-grid">
+              {featuredResumeLists.map((list) => {
+                const checklist = CHECKLISTS.find((entry) => entry.slug === list.slug);
+                if (!checklist) return null;
+
+                return (
+                  <Link className="activity-card-link" href={`#/${checklist.slug}`} key={checklist.slug}>
+                    <Card className="resume-card" variant="secondary">
+                      <Card.Header className="resume-card-header">
+                        <Chip className="activity-chip" variant="soft">
+                          Continue
+                        </Chip>
+                        <Card.Title>{checklist.label}</Card.Title>
+                        <Card.Description>
+                          {list.checkedCount} of {list.totalCount} items packed
+                        </Card.Description>
+                      </Card.Header>
+                      <Card.Content className="resume-progress-block">
+                        <div
+                          aria-hidden="true"
+                          className="activity-card-progress-bar"
+                          role="presentation"
+                        >
+                          <span style={{ width: `${list.percent}%` }} />
+                        </div>
+                      </Card.Content>
+                      <Card.Footer className="activity-card-footer">
+                        <span>Resume checklist</span>
+                        <strong>{list.percent}%</strong>
+                      </Card.Footer>
+                    </Card>
+                  </Link>
+                );
+              })}
+            </Card.Content>
+          ) : null}
         </Card>
 
         <Card className="library-card" id="activities" variant="default">
-          <Card.Header className="section-heading">
-            <div>
+          <Card.Header className="section-heading library-heading">
+            <div className="library-copy">
               <Chip className="section-chip" variant="soft">
-                Activity library
+                All checklists
               </Chip>
               <Card.Title className="section-title">Choose an activity</Card.Title>
               <Card.Description className="section-description">
-                Each list is based on proven outdoor packing workflows and translated into a
-                cleaner, mobile-first checklist experience.
+                Open any list below.
               </Card.Description>
             </div>
+            <div className="library-summary">{CHECKLISTS.length} ready</div>
           </Card.Header>
           <Card.Content className="activity-grid">
             {CHECKLISTS.map((list) => (
               <Link className="activity-card-link" href={`#/${list.slug}`} key={list.slug}>
                 <Card className="activity-card" variant="secondary">
                   <Card.Header className="activity-card-header">
-                    <Chip className="activity-chip" variant="soft">
-                      {list.shortLabel}
-                    </Chip>
-                    <Card.Title>{list.label} checklist</Card.Title>
+                    <div className="activity-card-topline">
+                      <Chip className="activity-chip" variant="soft">
+                        {list.shortLabel}
+                      </Chip>
+                      {resumeMap[list.slug] ? (
+                        <span className="activity-card-status">
+                          {resumeMap[list.slug].percent}% complete
+                        </span>
+                      ) : null}
+                    </div>
+                    <Card.Title>{list.label}</Card.Title>
                     <Card.Description>{list.summary}</Card.Description>
                   </Card.Header>
+                  <Card.Content className="activity-card-meta">
+                    <span>{list.sections.length} sections</span>
+                    <span>{list.sections.reduce((sum, section) => sum + section.items.length, 0)} items</span>
+                  </Card.Content>
+                  {resumeMap[list.slug] ? (
+                    <Card.Content className="activity-card-progress">
+                      <div
+                        aria-hidden="true"
+                        className="activity-card-progress-bar"
+                        role="presentation"
+                      >
+                        <span style={{ width: `${resumeMap[list.slug].percent}%` }} />
+                      </div>
+                    </Card.Content>
+                  ) : null}
                   <Card.Footer className="activity-card-footer">
-                    <span>Open checklist</span>
+                    <span>{resumeMap[list.slug] ? "Resume checklist" : "Open checklist"}</span>
                   </Card.Footer>
                 </Card>
               </Link>
             ))}
           </Card.Content>
         </Card>
-
-        <div className="feature-grid">
-          <Card className="feature-card" variant="secondary">
-            <Card.Title>Independent progress</Card.Title>
-            <Card.Description>
-              Checked items, collapsed sections, and custom additions stay scoped to each activity.
-            </Card.Description>
-          </Card>
-          <Card className="feature-card" variant="secondary">
-            <Card.Title>Field-friendly workflow</Card.Title>
-            <Card.Description>
-              Large targets, sticky controls, and fast section actions reduce packing friction.
-            </Card.Description>
-          </Card>
-          <Card className="feature-card" variant="secondary">
-            <Card.Title>Clear visual hierarchy</Card.Title>
-            <Card.Description>
-              Stronger contrast, calmer surfaces, and easier scanning help you move faster.
-            </Card.Description>
-          </Card>
-        </div>
       </section>
     </main>
   );

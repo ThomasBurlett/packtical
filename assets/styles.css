@@ -192,7 +192,8 @@ select {
 .hero-metrics,
 .summary-grid,
 .feature-grid,
-.activity-grid {
+.activity-grid,
+.resume-grid {
   display: grid;
   gap: var(--space-4);
   grid-template-columns: 1fr;
@@ -213,6 +214,69 @@ select {
 .hero-actions > *,
 .page-hero-footer > * {
   min-width: 0;
+}
+
+.home-launch-card {
+  gap: 0;
+}
+
+.home-launch-header {
+  gap: var(--space-4);
+}
+
+.home-launch-title {
+  max-width: 11ch;
+}
+
+.home-quick-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.quick-link {
+  padding: 0.7rem 0.95rem;
+  border: 1px solid color-mix(in oklab, var(--border) 92%, transparent);
+  border-radius: 999px;
+  text-decoration: none;
+  font-weight: 600;
+  background: color-mix(in oklab, var(--surface) 92%, transparent);
+}
+
+.quick-link:hover,
+.quick-link:focus-visible {
+  border-color: color-mix(in oklab, var(--accent) 40%, var(--border));
+  box-shadow: 0 10px 20px color-mix(in oklab, var(--accent) 12%, transparent);
+}
+
+.resume-card {
+  min-height: 0;
+  background: color-mix(in oklab, var(--surface-secondary) 96%, transparent);
+}
+
+.resume-card-header {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.resume-progress-block,
+.activity-card-progress {
+  padding-top: 0 !important;
+}
+
+.library-heading {
+  align-items: end;
+}
+
+.library-copy {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.library-summary {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: color-mix(in oklab, var(--foreground) 64%, transparent);
 }
 
 .hero-link,
@@ -261,7 +325,7 @@ select {
 }
 
 .activity-card {
-  min-height: 188px;
+  min-height: 0;
   background: color-mix(in oklab, var(--surface-secondary) 96%, transparent);
   transition:
     transform 160ms ease,
@@ -281,7 +345,47 @@ select {
   gap: var(--space-3);
 }
 
+.activity-card-topline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.activity-card-status {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--accent);
+  white-space: nowrap;
+}
+
+.activity-card-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  padding-top: 0 !important;
+  font-size: 0.92rem;
+  color: color-mix(in oklab, var(--foreground) 66%, transparent);
+}
+
+.activity-card-progress-bar {
+  height: 10px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: color-mix(in oklab, var(--border) 76%, var(--surface));
+}
+
+.activity-card-progress-bar span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, color-mix(in oklab, var(--success) 84%, var(--accent)), var(--accent));
+}
+
 .activity-card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   margin-top: auto;
   color: var(--accent);
   font-weight: 600;
@@ -651,7 +755,8 @@ select {
   .hero-metrics,
   .summary-grid,
   .feature-grid,
-  .activity-grid {
+  .activity-grid,
+  .resume-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
@@ -668,6 +773,10 @@ select {
     grid-template-columns: minmax(0, 1fr) auto;
     display: grid;
     align-items: start;
+  }
+
+  .home-launch-header {
+    grid-template-columns: minmax(0, 1fr) minmax(280px, 360px);
   }
 
   .toolbar-actions {
@@ -688,7 +797,11 @@ select {
   }
 
   .activity-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .resume-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
 
@@ -704,6 +817,27 @@ select {
   }
 
   .item-card-content {
+    flex-direction: column;
+  }
+
+  .home-quick-nav {
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    padding-bottom: 2px;
+    scrollbar-width: none;
+  }
+
+  .home-quick-nav::-webkit-scrollbar {
+    display: none;
+  }
+
+  .quick-link {
+    flex: 0 0 auto;
+  }
+
+  .activity-card-topline,
+  .activity-card-footer {
+    align-items: flex-start;
     flex-direction: column;
   }
 
