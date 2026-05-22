@@ -1,5 +1,5 @@
 import { Card, Chip, Link } from "@heroui/react"
-import { ArrowLeft, CheckCircle2, FolderSync, ListChecks } from "lucide-react"
+import { ArrowLeft, CheckCircle2 } from "lucide-react"
 import { ActivityNav } from "@/components/checklist/ActivityNav"
 import { ChecklistSection } from "@/components/checklist/ChecklistSection"
 import { ChecklistToolbar } from "@/components/checklist/ChecklistToolbar"
@@ -49,17 +49,17 @@ function ChecklistPageContent({ checklist }: { checklist: (typeof CHECKLISTS)[nu
 
   return (
     <main className="page-frame">
-      <header className="page-shell page-header">
+      <header className="page-shell page-header checklist-page-header">
         <Card className="page-hero checklist-hero" variant="tertiary">
-          <Card.Header className="page-hero-header checklist-hero-header">
+          <Card.Header className="page-hero-header checklist-hero-header compact">
             <div className="page-hero-copy">
               <Link className="page-back-link" href="#/">
                 <ArrowLeft aria-hidden="true" size={16} strokeWidth={2.2} />
                 Back to checklist hub
               </Link>
 
-              <div className="checklist-hero-title-row">
-                <span className="checklist-hero-icon" aria-hidden="true">
+              <div className="checklist-hero-main">
+                <span className="checklist-hero-icon align-center" aria-hidden="true">
                   <ActivityIcon slug={checklist.slug} size={28} strokeWidth={2.1} />
                 </span>
                 <div className="checklist-hero-title-block">
@@ -67,44 +67,23 @@ function ChecklistPageContent({ checklist }: { checklist: (typeof CHECKLISTS)[nu
                     {checklist.label} checklist
                   </Chip>
                   <Card.Title className="page-title">{checklist.label}</Card.Title>
+                  <Card.Description className="page-subtitle">
+                    {checklist.subtitle}
+                  </Card.Description>
                 </div>
               </div>
-
-              <Card.Description className="page-subtitle">
-                {checklist.subtitle}
-              </Card.Description>
             </div>
 
-            <div className="checklist-hero-stats">
-              <Card className="summary-card checklist-stat-card" variant="secondary">
-                <div className="checklist-stat-topline">
-                  <CheckCircle2 aria-hidden="true" size={16} strokeWidth={2.1} />
-                  <span>Progress</span>
-                </div>
-                <strong>
-                  {totals.checked}/{totals.total}
-                </strong>
-                <p>{totals.percent}% packed</p>
-              </Card>
-
-              <Card className="summary-card checklist-stat-card" variant="secondary">
-                <div className="checklist-stat-topline">
-                  <ListChecks aria-hidden="true" size={16} strokeWidth={2.1} />
-                  <span>Sections</span>
-                </div>
-                <strong>{sections.length}</strong>
-                <p>Organized by category</p>
-              </Card>
-
-              <Card className="summary-card checklist-stat-card" variant="secondary">
-                <div className="checklist-stat-topline">
-                  <FolderSync aria-hidden="true" size={16} strokeWidth={2.1} />
-                  <span>Saved</span>
-                </div>
-                <strong>Auto</strong>
-                <p>Checks and custom items persist</p>
-              </Card>
-            </div>
+            <Card className="summary-card checklist-stat-card progress-only" variant="secondary">
+              <div className="checklist-stat-topline">
+                <CheckCircle2 aria-hidden="true" size={16} strokeWidth={2.1} />
+                <span>Progress</span>
+              </div>
+              <strong>
+                {totals.checked}/{totals.total}
+              </strong>
+              <p>{totals.percent}% packed</p>
+            </Card>
           </Card.Header>
 
           <Card.Footer className="page-hero-footer checklist-hero-footer">
@@ -124,7 +103,7 @@ function ChecklistPageContent({ checklist }: { checklist: (typeof CHECKLISTS)[nu
         total={totals.total}
       />
 
-      <section className="page-shell page-main">
+      <section className="page-shell page-main checklist-sections-shell">
         <div className="sections-wrap">
           {sections.map((section) => (
             <ChecklistSection

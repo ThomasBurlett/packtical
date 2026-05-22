@@ -1,17 +1,17 @@
-import { Button, ButtonGroup, Card, Label, ProgressBar } from "@heroui/react";
-import { ChevronsUpDown, RotateCcw } from "lucide-react";
-import { FILTERS } from "@/constants/filters";
-import type { ChecklistFilter } from "@/types/checklist";
+import { Button, Card, Label, ProgressBar } from "@heroui/react"
+import { ChevronDown, ChevronsUpDown, RotateCcw } from "lucide-react"
+import { FILTERS } from "@/constants/filters"
+import type { ChecklistFilter } from "@/types/checklist"
 
 interface ChecklistToolbarProps {
-  checked: number;
-  total: number;
-  percent: number;
-  filter: ChecklistFilter;
-  hasVisibleOpenSection: boolean;
-  onFilterChange: (value: ChecklistFilter) => void;
-  onToggleAllSections: () => void;
-  onResetChecks: () => void;
+  checked: number
+  total: number
+  percent: number
+  filter: ChecklistFilter
+  hasVisibleOpenSection: boolean
+  onFilterChange: (value: ChecklistFilter) => void
+  onToggleAllSections: () => void
+  onResetChecks: () => void
 }
 
 export function ChecklistToolbar({
@@ -50,19 +50,26 @@ export function ChecklistToolbar({
               </ProgressBar.Track>
             </ProgressBar>
 
-            <div className="toolbar-actions">
-              <ButtonGroup className="filter-group" size="sm" variant="secondary">
-                {FILTERS.map((item) => (
-                  <Button
-                    className={filter === item.value ? "filter-button-active" : undefined}
-                    key={item.value}
-                    onPress={() => onFilterChange(item.value)}
-                    variant={filter === item.value ? "primary" : "secondary"}
-                  >
-                    {item.label}
-                  </Button>
-                ))}
-              </ButtonGroup>
+            <div className="toolbar-actions toolbar-actions-compact">
+              <label className="toolbar-select-field">
+                <span className="toolbar-select-label">Filter</span>
+                <select
+                  className="toolbar-select"
+                  onChange={(event) =>
+                    onFilterChange(event.target.value as ChecklistFilter)
+                  }
+                  value={filter}
+                >
+                  {FILTERS.map((item) => (
+                    <option key={item.value} value={item.value}>
+                      {item.label}
+                    </option>
+                  ))}
+                </select>
+                <span className="toolbar-select-chevron" aria-hidden="true">
+                  <ChevronDown size={16} strokeWidth={2.2} />
+                </span>
+              </label>
 
               <div className="toolbar-cta-group">
                 <Button onPress={onToggleAllSections} size="sm" variant="outline">
@@ -71,7 +78,7 @@ export function ChecklistToolbar({
                 </Button>
                 <Button onPress={onResetChecks} size="sm" variant="ghost">
                   <RotateCcw aria-hidden="true" size={15} strokeWidth={2.1} />
-                  Reset checks
+                  Reset
                 </Button>
               </div>
             </div>
@@ -79,5 +86,5 @@ export function ChecklistToolbar({
         </Card>
       </div>
     </div>
-  );
+  )
 }

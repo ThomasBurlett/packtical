@@ -21,7 +21,10 @@ export function useChecklistState(checklist: Checklist) {
 
   const [checkedIds, setCheckedIds] = useState<Set<string>>(() => new Set(storedState.checkedIds));
   const [collapsedSections, setCollapsedSections] = useState<Set<string>>(
-    () => new Set(storedState.collapsedSections),
+    () =>
+      storedState.collapsedSections.length > 0
+        ? new Set(storedState.collapsedSections)
+        : new Set(sectionIds.slice(1)),
   );
   const [customItems, setCustomItems] = useState<CustomItemMap>(() => storedState.customItems);
   const [filter, setFilter] = useState<ChecklistFilter>("all");
@@ -103,9 +106,15 @@ export function useChecklistState(checklist: Checklist) {
       });
     },
     toggleAllSections: () => {
-      setCollapsedSections(() => {
-        if (hasVisibleOpenSection) {
-          return new Set(sections.map((section) => section.id));
+      setCollapsedSections((current) => {
+        const visibleSectionIds = sections
+          .filter((section) => section.visibleItems.length > 0)
+          .map((section) => section.id);
+
+        const hasOpenVisibleSection = visibleSectionIds.some((sectionId) => !current.has(sectionId));
+
+        if (hasOpenVisibleSection) {
+          return new Set(visibleSectionIds);
         }
 
         return new Set();
