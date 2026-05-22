@@ -51,7 +51,7 @@ function ChecklistPageContent({ checklist }: { checklist: (typeof CHECKLISTS)[nu
   return (
     <main className="page-frame checklist-page">
       <header className="page-shell checklist-shell page-header checklist-page-header">
-        <section className="checklist-hero">
+        <section className="home-hero checklist-hero" aria-labelledby="checklist-title">
           <div className="checklist-hero-topbar">
             <Link className="page-back-link" href="#/">
               <ArrowLeft aria-hidden="true" size={16} strokeWidth={2.2} />
@@ -63,42 +63,42 @@ function ChecklistPageContent({ checklist }: { checklist: (typeof CHECKLISTS)[nu
             </div>
           </div>
 
-          <div className="checklist-hero-body">
-            <div className="page-hero-copy checklist-hero-copy">
-              <div className="checklist-hero-main">
-                <span className="checklist-hero-icon align-center" aria-hidden="true">
-                  <ActivityIcon slug={checklist.slug} size={28} strokeWidth={2.1} />
-                </span>
-                <div className="checklist-hero-title-block">
-                  <Card.Title className="page-title">{checklist.label}</Card.Title>
-                  <Card.Description className="page-subtitle">
-                    {checklist.subtitle}
-                  </Card.Description>
-                </div>
-              </div>
-
-              <div className="checklist-hero-facts" aria-label="Checklist summary">
-                <div className="checklist-hero-fact">
-                  <Layers3 aria-hidden="true" size={15} strokeWidth={2.1} />
-                  <span>{sectionsCount} sections</span>
-                </div>
+          <div className="home-hero-copy checklist-hero-copy">
+            <div className="checklist-hero-main">
+              <span className="checklist-hero-icon align-center" aria-hidden="true">
+                <ActivityIcon slug={checklist.slug} size={28} strokeWidth={2.1} />
+              </span>
+              <div className="checklist-hero-title-block">
+                <Card.Title className="page-title" id="checklist-title">
+                  {checklist.label}
+                </Card.Title>
+                <Card.Description className="page-subtitle">
+                  {checklist.subtitle}
+                </Card.Description>
               </div>
             </div>
 
-            <div className="checklist-hero-controls">
-              <ChecklistToolbar
-                checked={totals.checked}
-                filter={filter}
-                hasVisibleOpenSection={hasVisibleOpenSection}
-                onFilterChange={actions.setFilter}
-                onResetChecks={actions.resetChecks}
-                onToggleAllSections={actions.toggleAllSections}
-                percent={totals.percent}
-                total={totals.total}
-              />
+            <div className="home-hero-facts checklist-hero-facts" aria-label="Checklist summary">
+              <div className="home-hero-fact checklist-hero-fact">
+                <Layers3 aria-hidden="true" size={15} strokeWidth={2.1} />
+                <span>{sectionsCount} sections</span>
+              </div>
             </div>
           </div>
         </section>
+
+        <div className="checklist-hero-controls">
+          <ChecklistToolbar
+            checked={totals.checked}
+            filter={filter}
+            hasVisibleOpenSection={hasVisibleOpenSection}
+            onFilterChange={actions.setFilter}
+            onResetChecks={actions.resetChecks}
+            onToggleAllSections={actions.toggleAllSections}
+            percent={totals.percent}
+            total={totals.total}
+          />
+        </div>
       </header>
 
       <section className="page-shell checklist-shell page-main checklist-sections-shell">
