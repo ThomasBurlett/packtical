@@ -1,5 +1,5 @@
 import { Card, Chip, Link } from "@heroui/react"
-import { ArrowLeft, CheckCircle2 } from "lucide-react"
+import { ArrowLeft } from "lucide-react"
 import { ActivityNav } from "@/components/checklist/ActivityNav"
 import { ChecklistSection } from "@/components/checklist/ChecklistSection"
 import { ChecklistToolbar } from "@/components/checklist/ChecklistToolbar"
@@ -73,35 +73,25 @@ function ChecklistPageContent({ checklist }: { checklist: (typeof CHECKLISTS)[nu
                 </div>
               </div>
             </div>
-
-            <Card className="summary-card checklist-stat-card progress-only" variant="secondary">
-              <div className="checklist-stat-topline">
-                <CheckCircle2 aria-hidden="true" size={16} strokeWidth={2.1} />
-                <span>Progress</span>
-              </div>
-              <strong>
-                {totals.checked}/{totals.total}
-              </strong>
-              <p>{totals.percent}% packed</p>
-            </Card>
           </Card.Header>
 
           <Card.Footer className="page-hero-footer checklist-hero-footer">
-            <ActivityNav activeSlug={checklist.slug} checklists={CHECKLISTS} />
+            <div className="checklist-hero-controls">
+              <ActivityNav activeSlug={checklist.slug} checklists={CHECKLISTS} />
+              <ChecklistToolbar
+                checked={totals.checked}
+                filter={filter}
+                hasVisibleOpenSection={hasVisibleOpenSection}
+                onFilterChange={actions.setFilter}
+                onResetChecks={actions.resetChecks}
+                onToggleAllSections={actions.toggleAllSections}
+                percent={totals.percent}
+                total={totals.total}
+              />
+            </div>
           </Card.Footer>
         </Card>
       </header>
-
-      <ChecklistToolbar
-        checked={totals.checked}
-        filter={filter}
-        hasVisibleOpenSection={hasVisibleOpenSection}
-        onFilterChange={actions.setFilter}
-        onResetChecks={actions.resetChecks}
-        onToggleAllSections={actions.toggleAllSections}
-        percent={totals.percent}
-        total={totals.total}
-      />
 
       <section className="page-shell page-main checklist-sections-shell">
         <div className="sections-wrap">

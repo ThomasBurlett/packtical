@@ -379,7 +379,13 @@ select {
 }
 
 .checklist-hero-footer {
-  margin-top: var(--space-2);
+  margin-top: var(--space-3);
+}
+
+.checklist-hero-controls {
+  display: grid;
+  gap: var(--space-4);
+  width: 100%;
 }
 
 .unknown-card-body {
@@ -551,19 +557,12 @@ select {
   font-weight: 600;
 }
 
-.sticky-bar {
-  position: sticky;
-  top: 10px;
-  z-index: 20;
-  margin-top: var(--space-4);
-}
-
-.sticky-inner {
+.hero-toolbar {
   display: grid;
-}
-
-.toolbar-card {
-  border: 1px solid color-mix(in oklab, white 28%, var(--border));
+  gap: var(--space-4);
+  padding: var(--space-4);
+  border-radius: 24px;
+  border: 1px solid color-mix(in oklab, white 24%, var(--border));
   background:
     linear-gradient(
       180deg,
@@ -571,14 +570,19 @@ select {
       color-mix(in oklab, var(--surface-secondary) 95%, var(--surface))
     );
   box-shadow:
-    0 0 0 1px color-mix(in oklab, white 24%, transparent),
-    0 16px 34px color-mix(in oklab, black 8%, transparent),
+    0 0 0 1px color-mix(in oklab, white 18%, transparent),
+    0 12px 26px color-mix(in oklab, black 6%, transparent),
     inset 0 1px 0 color-mix(in oklab, white 72%, transparent);
 }
 
-.toolbar-content {
+.hero-toolbar-controls {
   display: grid;
-  gap: var(--space-4);
+  gap: var(--space-3);
+}
+
+.hero-toolbar-progress {
+  display: grid;
+  gap: var(--space-3);
 }
 
 .progress-panel {
@@ -597,12 +601,20 @@ select {
   gap: 0.2rem;
 }
 
+.progress-heading.compact {
+  align-items: center;
+}
+
 .progress-percent {
   font-size: 1.6rem;
   line-height: 1;
   letter-spacing: -0.05em;
   font-weight: 750;
   color: color-mix(in oklab, var(--accent) 92%, black 8%);
+}
+
+.progress-percent.compact {
+  font-size: 1.3rem;
 }
 
 .progress-track {
@@ -614,16 +626,6 @@ select {
 .progress-fill {
   background: linear-gradient(90deg, color-mix(in oklab, var(--success) 86%, var(--accent)), var(--accent));
   border-radius: 999px;
-}
-
-.toolbar-actions {
-  display: grid;
-  gap: var(--space-3);
-}
-
-.toolbar-actions-compact {
-  grid-template-columns: minmax(0, 1fr) auto;
-  align-items: end;
 }
 
 .toolbar-select-field {
@@ -670,59 +672,10 @@ select {
   gap: var(--space-3);
 }
 
-.activity-switcher {
-  display: grid;
-  gap: var(--space-3);
-  width: 100%;
-}
-
-.activity-switcher-current {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.8rem;
-}
-
-.activity-switcher-icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 2.5rem;
-  height: 2.5rem;
-  min-width: 2.5rem;
-  border-radius: 0.95rem;
-  color: color-mix(in oklab, var(--accent) 88%, black 12%);
-  background:
-    linear-gradient(
-      180deg,
-      color-mix(in oklab, var(--surface) 92%, white 8%),
-      color-mix(in oklab, var(--surface-secondary) 92%, var(--surface))
-    );
-  box-shadow:
-    inset 0 1px 0 color-mix(in oklab, white 74%, transparent),
-    0 10px 18px color-mix(in oklab, black 5%, transparent);
-}
-
-.activity-switcher-copy {
-  display: grid;
-  gap: 0.12rem;
-}
-
-.activity-switcher-copy strong {
-  font-size: 1rem;
-  line-height: 1.2;
-}
-
-.activity-switcher-label {
-  font-size: 0.8rem;
-  font-weight: 700;
-  color: color-mix(in oklab, var(--foreground) 64%, transparent);
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-}
-
 .activity-switcher-field {
   position: relative;
-  display: block;
+  display: grid;
+  gap: 0.45rem;
 }
 
 .activity-switcher-select {
@@ -742,8 +695,7 @@ select {
 .activity-switcher-chevron {
   position: absolute;
   right: 1rem;
-  top: 50%;
-  transform: translateY(-50%);
+  bottom: 0.9rem;
   display: inline-flex;
   color: color-mix(in oklab, var(--foreground) 62%, transparent);
 }
@@ -1067,19 +1019,15 @@ select {
 
 @media (min-width: 768px) {
   .hero-header,
-  .page-hero-header,
-  .toolbar-actions {
+  .page-hero-header {
     grid-template-columns: minmax(0, 1fr) auto;
     display: grid;
     align-items: start;
   }
 
-  .checklist-hero-header.compact {
-    grid-template-columns: minmax(0, 1.3fr) minmax(180px, 0.7fr);
-  }
-
-  .toolbar-actions {
-    align-items: center;
+  .checklist-hero-controls {
+    grid-template-columns: minmax(220px, 280px) minmax(0, 1fr);
+    align-items: end;
   }
 
   .toolbar-cta-group {
@@ -1156,10 +1104,6 @@ select {
   }
 
   .toolbar-cta-group {
-    grid-template-columns: 1fr;
-  }
-
-  .toolbar-actions-compact {
     grid-template-columns: 1fr;
   }
 
