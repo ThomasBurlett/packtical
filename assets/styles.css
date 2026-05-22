@@ -375,18 +375,18 @@ select {
 
 .checklist-hero-main {
   display: flex;
-  align-items: flex-start;
-  gap: 0.85rem;
+  align-items: center;
+  gap: 1rem;
 }
 
 .checklist-hero-icon {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 2.9rem;
-  height: 2.9rem;
-  min-width: 2.9rem;
-  border-radius: 1rem;
+  width: 4.2rem;
+  height: 4.2rem;
+  min-width: 4.2rem;
+  border-radius: 1.35rem;
   color: color-mix(in oklab, var(--accent) 88%, black 12%);
   background:
     linear-gradient(
@@ -512,6 +512,10 @@ select {
   margin-top: var(--space-2);
 }
 
+.activity-grid > * {
+  min-width: 0;
+}
+
 .hero-link,
 .back-link {
   width: fit-content;
@@ -538,6 +542,9 @@ select {
 .activity-card-link {
   display: block;
   height: 100%;
+  width: 100%;
+  min-width: 0;
+  justify-self: stretch;
   text-decoration: none;
 }
 
@@ -545,6 +552,7 @@ select {
   display: flex;
   flex-direction: column;
   height: 100%;
+  width: 100%;
   min-height: 0;
   border-width: 1px;
   border-style: solid;
@@ -1365,8 +1373,8 @@ select {
   }
 
   .checklist-hero-main {
-    gap: 0.55rem;
-    align-items: flex-start;
+    gap: 0.75rem;
+    align-items: center;
     flex-direction: row;
   }
 
@@ -1385,9 +1393,9 @@ select {
   }
 
   .checklist-hero-icon {
-    width: 2.45rem;
-    height: 2.45rem;
-    min-width: 2.45rem;
+    width: 3.5rem;
+    height: 3.5rem;
+    min-width: 3.5rem;
   }
 
   .checklist-stat-card.progress-only {

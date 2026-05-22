@@ -66,7 +66,7 @@ function ChecklistPageContent({ checklist }: { checklist: (typeof CHECKLISTS)[nu
           <div className="home-hero-copy checklist-hero-copy">
             <div className="checklist-hero-main">
               <span className="checklist-hero-icon align-center" aria-hidden="true">
-                <ActivityIcon slug={checklist.slug} size={28} strokeWidth={2.1} />
+                <ActivityIcon slug={checklist.slug} size={42} strokeWidth={1.9} />
               </span>
               <div className="checklist-hero-title-block">
                 <Card.Title className="page-title" id="checklist-title">
