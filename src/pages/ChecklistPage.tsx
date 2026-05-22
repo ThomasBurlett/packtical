@@ -1,5 +1,5 @@
-import { Card, Chip, Link } from "@heroui/react"
-import { ArrowLeft } from "lucide-react"
+import { Card, Link } from "@heroui/react"
+import { ArrowLeft, Layers3 } from "lucide-react"
 import { ActivityNav } from "@/components/checklist/ActivityNav"
 import { ChecklistSection } from "@/components/checklist/ChecklistSection"
 import { ChecklistToolbar } from "@/components/checklist/ChecklistToolbar"
@@ -47,37 +47,45 @@ function ChecklistPageContent({ checklist }: { checklist: (typeof CHECKLISTS)[nu
     actions,
   } = useChecklistState(checklist)
 
+  const sectionsCount = sections.length
   return (
-    <main className="page-frame">
-      <header className="page-shell page-header checklist-page-header">
-        <Card className="page-hero checklist-hero" variant="tertiary">
-          <Card.Header className="page-hero-header checklist-hero-header compact">
-            <div className="page-hero-copy">
-              <Link className="page-back-link" href="#/">
-                <ArrowLeft aria-hidden="true" size={16} strokeWidth={2.2} />
-                Back to checklist hub
-              </Link>
+    <main className="page-frame checklist-page">
+      <header className="page-shell checklist-shell page-header checklist-page-header">
+        <section className="checklist-hero">
+          <div className="checklist-hero-topbar">
+            <Link className="page-back-link" href="#/">
+              <ArrowLeft aria-hidden="true" size={16} strokeWidth={2.2} />
+              Back to checklist hub
+            </Link>
 
+            <div className="checklist-hero-switcher">
+              <ActivityNav activeSlug={checklist.slug} checklists={CHECKLISTS} />
+            </div>
+          </div>
+
+          <div className="checklist-hero-body">
+            <div className="page-hero-copy checklist-hero-copy">
               <div className="checklist-hero-main">
                 <span className="checklist-hero-icon align-center" aria-hidden="true">
                   <ActivityIcon slug={checklist.slug} size={28} strokeWidth={2.1} />
                 </span>
                 <div className="checklist-hero-title-block">
-                  <Chip className="section-chip" variant="soft">
-                    {checklist.label} checklist
-                  </Chip>
                   <Card.Title className="page-title">{checklist.label}</Card.Title>
                   <Card.Description className="page-subtitle">
                     {checklist.subtitle}
                   </Card.Description>
                 </div>
               </div>
-            </div>
-          </Card.Header>
 
-          <Card.Footer className="page-hero-footer checklist-hero-footer">
+              <div className="checklist-hero-facts" aria-label="Checklist summary">
+                <div className="checklist-hero-fact">
+                  <Layers3 aria-hidden="true" size={15} strokeWidth={2.1} />
+                  <span>{sectionsCount} sections</span>
+                </div>
+              </div>
+            </div>
+
             <div className="checklist-hero-controls">
-              <ActivityNav activeSlug={checklist.slug} checklists={CHECKLISTS} />
               <ChecklistToolbar
                 checked={totals.checked}
                 filter={filter}
@@ -89,24 +97,26 @@ function ChecklistPageContent({ checklist }: { checklist: (typeof CHECKLISTS)[nu
                 total={totals.total}
               />
             </div>
-          </Card.Footer>
-        </Card>
+          </div>
+        </section>
       </header>
 
-      <section className="page-shell page-main checklist-sections-shell">
+      <section className="page-shell checklist-shell page-main checklist-sections-shell">
         <div className="sections-wrap">
           {sections.map((section) => (
             <ChecklistSection
               checkedIds={checkedIds}
-              draftValue={drafts[section.id] ?? ""}
+              draftKind={drafts[section.id]?.kind ?? "core"}
+              draftValue={drafts[section.id]?.label ?? ""}
               isFormOpen={openForms.has(section.id)}
               key={section.id}
               onAddCustomItem={actions.addCustomItem}
               onDeleteCustomItem={actions.deleteCustomItem}
               onDraftChange={actions.setDraft}
+              onDraftKindChange={actions.setDraftKind}
+              onSetAddFormOpen={actions.setAddFormOpen}
               onSetSectionChecked={actions.setSectionChecked}
               onSetSectionCollapsed={actions.setSectionCollapsed}
-              onToggleAddForm={actions.toggleAddForm}
               onUpdateChecked={actions.updateChecked}
               section={section}
             />

@@ -5,15 +5,25 @@ import type {
   Checklist,
   ChecklistFilter,
   ChecklistItem,
+  ChecklistKind,
   ChecklistSectionState,
 } from "@/types/checklist";
 
-type DraftMap = Record<string, string>;
+type DraftState = {
+  kind: Exclude<ChecklistKind, "custom">;
+  label: string;
+};
+
+type DraftMap = Record<string, DraftState>;
 type CustomItemMap = Record<string, ChecklistItem[]>;
 
 export function useChecklistState(checklist: Checklist) {
   const baseSections = useMemo(() => cloneSections(checklist.sections), [checklist.sections]);
   const sectionIds = useMemo(() => baseSections.map((section) => section.id), [baseSections]);
+  const defaultCollapsedSections = useMemo(
+    () => new Set(sectionIds.slice(1)),
+    [sectionIds],
+  );
   const storedState = useMemo(
     () => loadChecklistState(checklist.slug, sectionIds),
     [checklist.slug, sectionIds],
@@ -24,7 +34,7 @@ export function useChecklistState(checklist: Checklist) {
     () =>
       storedState.collapsedSections.length > 0
         ? new Set(storedState.collapsedSections)
-        : new Set(sectionIds.slice(1)),
+        : new Set(defaultCollapsedSections),
   );
   const [customItems, setCustomItems] = useState<CustomItemMap>(() => storedState.customItems);
   const [filter, setFilter] = useState<ChecklistFilter>("all");
@@ -37,11 +47,17 @@ export function useChecklistState(checklist: Checklist) {
 
   useEffect(() => {
     try {
-      saveChecklistState(checklist.slug, checkedIds, collapsedSections, customItems);
+      saveChecklistState(
+        checklist.slug,
+        checkedIds,
+        collapsedSections,
+        customItems,
+        defaultCollapsedSections,
+      );
     } catch {
       return;
     }
-  }, [checklist.slug, checkedIds, collapsedSections, customItems]);
+  }, [checklist.slug, checkedIds, collapsedSections, customItems, defaultCollapsedSections]);
 
   const sections = useMemo<ChecklistSectionState[]>(
     () =>
@@ -88,6 +104,11 @@ export function useChecklistState(checklist: Checklist) {
     },
     resetChecks: () => {
       setCheckedIds(new Set());
+      setCollapsedSections(new Set(defaultCollapsedSections));
+      setCustomItems({});
+      setFilter("all");
+      setDrafts({});
+      setOpenForms(new Set());
     },
     toggleSection: (sectionId: string) => {
       setCollapsedSections((current) => {
@@ -131,6 +152,14 @@ export function useChecklistState(checklist: Checklist) {
         return next;
       });
     },
+    setAddFormOpen: (sectionId: string, isOpen: boolean) => {
+      setOpenForms((current) => {
+        const next = new Set(current);
+        if (isOpen) next.add(sectionId);
+        else next.delete(sectionId);
+        return next;
+      });
+    },
     toggleAddForm: (sectionId: string) => {
       setOpenForms((current) => {
         const next = new Set(current);
@@ -142,11 +171,23 @@ export function useChecklistState(checklist: Checklist) {
     setDraft: (sectionId: string, value: string) => {
       setDrafts((current) => ({
         ...current,
-        [sectionId]: value,
+        [sectionId]: {
+          kind: current[sectionId]?.kind ?? "core",
+          label: value,
+        },
+      }));
+    },
+    setDraftKind: (sectionId: string, kind: Exclude<ChecklistKind, "custom">) => {
+      setDrafts((current) => ({
+        ...current,
+        [sectionId]: {
+          kind,
+          label: current[sectionId]?.label ?? "",
+        },
       }));
     },
     addCustomItem: (sectionId: string) => {
-      const label = drafts[sectionId]?.trim();
+      const label = drafts[sectionId]?.label.trim();
       if (!label) return;
 
       setCustomItems((current) => ({
@@ -156,14 +197,20 @@ export function useChecklistState(checklist: Checklist) {
           {
             id: buildCustomItemId(sectionId),
             label,
-            kind: "custom",
+            kind: drafts[sectionId]?.kind ?? "core",
             note: "",
             source: "custom",
           },
         ],
       }));
 
-      setDrafts((current) => ({ ...current, [sectionId]: "" }));
+      setDrafts((current) => ({
+        ...current,
+        [sectionId]: {
+          kind: "core",
+          label: "",
+        },
+      }));
       setOpenForms((current) => {
         const next = new Set(current);
         next.delete(sectionId);

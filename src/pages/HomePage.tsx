@@ -69,98 +69,62 @@ function loadResumeLists() {
 
 export function HomePage() {
   const [resumeLists] = useState<ResumeChecklist[]>(loadResumeLists)
+  const activeResumeLists = resumeLists.filter((list) => list.percent > 0)
 
   const resumeMap = Object.fromEntries(
-    resumeLists.map((list) => [list.slug, list]),
+    activeResumeLists.map((list) => [list.slug, list]),
   )
-  const featuredResumeLists = resumeLists.slice(0, 3)
+  const orderedChecklists = [...CHECKLISTS].sort((left, right) => {
+    const leftInProgress = Number((resumeMap[left.slug]?.percent ?? 0) > 0)
+    const rightInProgress = Number((resumeMap[right.slug]?.percent ?? 0) > 0)
+
+    if (leftInProgress !== rightInProgress) {
+      return rightInProgress - leftInProgress
+    }
+
+    return left.label.localeCompare(right.label)
+  })
 
   return (
     <main className="page-frame">
       <section className="page-shell home-layout">
-        <Card className="hero-card home-launch-card" variant="tertiary">
-          <Card.Header className="hero-header home-launch-header">
-            <div className="hero-copy-block">
-              <Chip className="hero-chip" variant="soft">
-                Checklist Hub
-              </Chip>
-              <Card.Title className="hero-title home-launch-title">
-                Pick a checklist and start packing.
-              </Card.Title>
-              <Card.Description className="hero-description">
-                Open an activity, keep your progress, and jump back in anytime.
-              </Card.Description>
+        <header className="home-hero" aria-labelledby="home-title">
+          <div className="home-hero-copy">
+            <Chip className="hero-chip" variant="soft">
+              Checklist Hub
+            </Chip>
+            <h1 className="hero-title home-launch-title" id="home-title">
+              Pick a checklist and start packing.
+            </h1>
+            <p className="hero-description">
+              Choose an activity below, keep your progress locally, and come
+              back to the same list whenever you need it.
+            </p>
+          </div>
+          <div className="home-hero-support">
+            <div className="home-hero-facts" aria-label="Checklist overview">
+              <span className="home-hero-fact">
+                {CHECKLISTS.length} activities ready
+              </span>
+              <span className="home-hero-fact">
+                {activeResumeLists.length > 0
+                  ? `${activeResumeLists.length} in progress`
+                  : "Progress saves automatically"}
+              </span>
             </div>
-          </Card.Header>
-          {featuredResumeLists.length > 0 ? (
-            <Card.Content className="resume-grid">
-              {featuredResumeLists.map((list) => {
-                const checklist = CHECKLISTS.find(
-                  (entry) => entry.slug === list.slug,
-                )
-                if (!checklist) return null
+          </div>
+        </header>
 
-                return (
-                  <Link
-                    className="activity-card-link"
-                    href={`#/${checklist.slug}`}
-                    key={checklist.slug}
-                  >
-                    <Card className="resume-card" variant="secondary">
-                      <Card.Header className="resume-card-header">
-                        <div className="activity-card-topline">
-                          <div className="activity-card-title-row">
-                            <span
-                              className="activity-card-icon"
-                              aria-hidden="true"
-                            >
-                              <ActivityIcon slug={checklist.slug} size={18} strokeWidth={2.1} />
-                            </span>
-                            <Card.Title>{checklist.label}</Card.Title>
-                          </div>
-                          <span className="activity-card-status">Continue</span>
-                        </div>
-                        <Card.Description>
-                          {list.checkedCount} of {list.totalCount} items packed
-                        </Card.Description>
-                      </Card.Header>
-                      <Card.Content className="resume-progress-block">
-                        <div
-                          aria-hidden="true"
-                          className="activity-card-progress-bar"
-                          role="presentation"
-                        >
-                          <span style={{ width: `${list.percent}%` }} />
-                        </div>
-                      </Card.Content>
-                      <Card.Footer className="activity-card-footer">
-                        <span>
-                          Resume checklist{" "}
-                          <span aria-hidden="true">&rarr;</span>
-                        </span>
-                        <strong>{list.percent}%</strong>
-                      </Card.Footer>
-                    </Card>
-                  </Link>
-                )
-              })}
-            </Card.Content>
-          ) : null}
-        </Card>
-
-        <Card className="library-card" id="activities" variant="default">
-          <Card.Header className="section-heading library-heading">
-            <div className="library-copy">
-              <Chip className="section-chip" variant="soft">
-                All checklists
-              </Chip>
-              <Card.Title className="section-title">
+        <section className="activity-library" id="activities" aria-labelledby="activities-title">
+          <header className="section-heading library-heading">
+            <div>
+              <h2 className="section-title" id="activities-title">
                 Choose an activity
-              </Card.Title>
+              </h2>
             </div>
-          </Card.Header>
-          <Card.Content className="activity-grid">
-            {CHECKLISTS.map((list) => {
+          </header>
+          <div className="activity-grid">
+            {orderedChecklists.map((list) => {
               const progress = resumeMap[list.slug]
 
               return (
@@ -210,8 +174,8 @@ export function HomePage() {
                 </Link>
               )
             })}
-          </Card.Content>
-        </Card>
+          </div>
+        </section>
       </section>
     </main>
   )

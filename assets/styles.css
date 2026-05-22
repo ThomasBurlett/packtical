@@ -109,6 +109,14 @@ select {
   padding: var(--space-4) 0 var(--space-8);
 }
 
+.checklist-page {
+  padding: 0.5rem 0 0.9rem;
+}
+
+.checklist-shell {
+  width: min(100%, 1120px);
+}
+
 .home-layout,
 .page-main,
 .page-header {
@@ -116,9 +124,7 @@ select {
   gap: var(--space-5);
 }
 
-.hero-card,
 .page-hero,
-.library-card,
 .toolbar-card,
 .summary-card,
 .feature-card,
@@ -131,7 +137,6 @@ select {
     inset 0 1px 0 color-mix(in oklab, white 55%, transparent);
 }
 
-.hero-card,
 .page-hero {
   overflow: hidden;
   background:
@@ -177,7 +182,6 @@ select {
 .page-subtitle,
 .section-description,
 .progress-copy,
-.section-count,
 .item-note {
   color: color-mix(in oklab, var(--foreground) 76%, transparent);
 }
@@ -192,8 +196,7 @@ select {
 .hero-metrics,
 .summary-grid,
 .feature-grid,
-.activity-grid,
-.resume-grid {
+.activity-grid {
   display: grid;
   gap: var(--space-4);
   grid-template-columns: 1fr;
@@ -216,38 +219,12 @@ select {
   min-width: 0;
 }
 
-.home-launch-card {
-  gap: 0;
-}
-
 .home-launch-title {
   max-width: 11ch;
 }
 
-.resume-card {
-  min-height: 0;
-  border-width: 1px;
-  border-style: solid;
-  border-color: color-mix(in oklab, white 34%, var(--border));
-  background: color-mix(in oklab, var(--surface-secondary) 96%, transparent);
-  box-shadow:
-    0 0 0 1px color-mix(in oklab, white 30%, transparent),
-    0 16px 34px color-mix(in oklab, black 8%, transparent),
-    inset 0 1px 0 color-mix(in oklab, white 72%, transparent);
-}
-
-.resume-card-header {
-  display: grid;
-  gap: var(--space-2);
-}
-
-.resume-progress-block,
 .activity-card-progress {
   padding-top: 0 !important;
-}
-
-.resume-grid {
-  margin-top: var(--space-2);
 }
 
 .activity-card-progress {
@@ -263,39 +240,156 @@ select {
   align-items: end;
 }
 
-.library-copy {
+.home-hero {
+  position: relative;
   display: grid;
-  gap: var(--space-2);
+  gap: var(--space-5);
+  padding: clamp(0.75rem, 2vw, 1.25rem) 0;
 }
 
-.library-summary {
-  font-size: 0.95rem;
+.home-hero::before {
+  content: "";
+  position: absolute;
+  inset: -1rem -1.5rem auto auto;
+  width: clamp(11rem, 28vw, 18rem);
+  height: clamp(11rem, 28vw, 18rem);
+  border-radius: 999px;
+  background:
+    radial-gradient(circle, color-mix(in oklab, var(--accent) 18%, transparent) 0%, transparent 70%);
+  filter: blur(6px);
+  pointer-events: none;
+  opacity: 0.95;
+}
+
+.home-hero::after {
+  content: "";
+  position: absolute;
+  inset: auto auto 0 0;
+  width: min(100%, 22rem);
+  height: 1px;
+  background: linear-gradient(90deg, color-mix(in oklab, var(--accent) 24%, transparent), transparent 88%);
+  pointer-events: none;
+}
+
+.home-hero-copy,
+.home-hero-support {
+  position: relative;
+  z-index: 1;
+}
+
+.home-hero-copy {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.home-hero-support {
+  display: grid;
+  gap: var(--space-4);
+  align-items: start;
+}
+
+.activity-library {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.home-hero-facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.home-hero-fact {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2rem;
+  padding: 0.42rem 0.8rem;
+  border-radius: 999px;
+  border: 1px solid color-mix(in oklab, white 26%, var(--border));
+  background: color-mix(in oklab, var(--surface) 78%, transparent);
+  box-shadow:
+    inset 0 1px 0 color-mix(in oklab, white 70%, transparent),
+    0 10px 20px color-mix(in oklab, black 5%, transparent);
+  font-size: 0.76rem;
   font-weight: 700;
-  color: color-mix(in oklab, var(--foreground) 64%, transparent);
+  color: color-mix(in oklab, var(--foreground) 78%, transparent);
+}
+
+.checklist-page-header {
+  position: relative;
+  margin-bottom: 0.7rem;
 }
 
 .checklist-hero {
-  gap: 0;
+  position: relative;
+  display: grid;
+  gap: 0.55rem;
+  padding: 0.85rem 0.95rem;
+  border-radius: 20px;
+  border: 1px solid color-mix(in oklab, white 26%, var(--border));
+  background:
+    radial-gradient(circle at top left, color-mix(in oklab, var(--accent) 12%, transparent), transparent 30%),
+    linear-gradient(135deg, color-mix(in oklab, var(--foreground) 2.5%, transparent) 25%, transparent 25%) 0 0 / 18px 18px,
+    linear-gradient(
+      180deg,
+      color-mix(in oklab, var(--surface) 90%, white 10%),
+      color-mix(in oklab, var(--surface-secondary) 97%, var(--surface))
+    );
+  box-shadow:
+    0 24px 52px color-mix(in oklab, black 9%, transparent),
+    inset 0 1px 0 color-mix(in oklab, white 70%, transparent);
+  overflow: clip;
 }
 
-.checklist-hero-header {
-  gap: var(--space-5);
+.checklist-hero::after {
+  content: "";
+  position: absolute;
+  inset: auto -8% -28% auto;
+  width: 12rem;
+  height: 12rem;
+  border-radius: 999px;
+  background: color-mix(in oklab, var(--accent) 9%, transparent);
+  filter: blur(14px);
+  pointer-events: none;
+}
+
+.checklist-hero-topbar {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  gap: 0.4rem;
+  align-items: start;
+}
+
+.checklist-hero-body {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  gap: 0.55rem;
+}
+
+.checklist-hero-switcher {
+  width: 100%;
+}
+
+.checklist-hero-copy {
+  gap: 0.35rem;
 }
 
 .checklist-hero-main {
   display: flex;
   align-items: center;
-  gap: var(--space-4);
+  gap: 0.65rem;
 }
 
 .checklist-hero-icon {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 3.5rem;
-  height: 3.5rem;
-  min-width: 3.5rem;
-  border-radius: 1.1rem;
+  width: 2.45rem;
+  height: 2.45rem;
+  min-width: 2.45rem;
+  border-radius: 0.85rem;
   color: color-mix(in oklab, var(--accent) 88%, black 12%);
   background:
     linear-gradient(
@@ -308,13 +402,50 @@ select {
     0 12px 24px color-mix(in oklab, var(--accent) 10%, transparent);
 }
 
-.checklist-hero-icon.align-center {
-  margin-top: 0.15rem;
-}
-
 .checklist-hero-title-block {
   display: grid;
-  gap: var(--space-3);
+  gap: 0.12rem;
+}
+
+.checklist-hero .page-title {
+  font-size: clamp(1.45rem, 4vw, 2.35rem);
+  line-height: 0.95;
+}
+
+.checklist-hero .page-subtitle {
+  max-width: 52ch;
+  font-size: 0.84rem;
+  line-height: 1.35;
+}
+
+.checklist-hero-chip {
+  background: color-mix(in oklab, var(--surface) 74%, transparent);
+  min-height: 1.3rem;
+  padding-inline: 0.42rem;
+  font-size: 0.66rem;
+}
+
+.checklist-hero-facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.checklist-hero-fact {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  min-height: 1.45rem;
+  padding: 0.18rem 0.48rem;
+  border-radius: 999px;
+  border: 1px solid color-mix(in oklab, white 22%, var(--border));
+  background: color-mix(in oklab, var(--surface) 82%, transparent);
+  box-shadow:
+    inset 0 1px 0 color-mix(in oklab, white 72%, transparent),
+    0 8px 16px color-mix(in oklab, black 4%, transparent);
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: color-mix(in oklab, var(--foreground) 84%, transparent);
 }
 
 .page-back-link {
@@ -322,10 +453,11 @@ select {
   align-items: center;
   gap: 0.55rem;
   width: fit-content;
-  padding: 0.72rem 1rem;
+  padding: 0.36rem 0.65rem;
   border-radius: 999px;
   text-decoration: none;
   font-weight: 700;
+  font-size: 0.78rem;
   color: color-mix(in oklab, var(--accent) 92%, black 8%);
   background: color-mix(in oklab, var(--surface) 94%, transparent);
   border: 1px solid color-mix(in oklab, white 32%, var(--border));
@@ -409,19 +541,6 @@ select {
   text-decoration: none;
 }
 
-.hero-link-primary {
-  padding: 0.8rem 1.15rem;
-  border-radius: 999px;
-  background: linear-gradient(135deg, color-mix(in oklab, var(--accent) 86%, black), var(--accent));
-  color: var(--accent-foreground);
-  box-shadow: 0 16px 28px color-mix(in oklab, var(--accent) 24%, transparent);
-}
-
-.hero-link-primary,
-.hero-actions .button {
-  min-height: 46px;
-}
-
 .section-heading {
   display: flex;
   justify-content: space-between;
@@ -437,11 +556,6 @@ select {
 .section-description {
   max-width: 60ch;
   line-height: 1.65;
-}
-
-.library-card .card__content,
-.hero-card .card__content {
-  padding-top: 0;
 }
 
 .activity-card-link {
@@ -559,30 +673,47 @@ select {
 
 .hero-toolbar {
   display: grid;
-  gap: var(--space-4);
-  padding: var(--space-4);
-  border-radius: 24px;
-  border: 1px solid color-mix(in oklab, white 24%, var(--border));
+  gap: 0.55rem;
+  padding: 0.65rem;
+  border-radius: 16px;
+  border: 1px solid color-mix(in oklab, white 30%, var(--border));
   background:
     linear-gradient(
       180deg,
-      color-mix(in oklab, var(--surface) 98%, white 2%),
-      color-mix(in oklab, var(--surface-secondary) 95%, var(--surface))
+      color-mix(in oklab, var(--surface) 92%, white 8%),
+      color-mix(in oklab, var(--surface-secondary) 96%, var(--surface))
     );
   box-shadow:
-    0 0 0 1px color-mix(in oklab, white 18%, transparent),
-    0 12px 26px color-mix(in oklab, black 6%, transparent),
+    0 0 0 1px color-mix(in oklab, white 22%, transparent),
+    0 12px 24px color-mix(in oklab, black 7%, transparent),
     inset 0 1px 0 color-mix(in oklab, white 72%, transparent);
 }
 
-.hero-toolbar-controls {
+.hero-toolbar-summary,
+.hero-toolbar-status,
+.hero-toolbar-view,
+.hero-toolbar-actions {
   display: grid;
-  gap: var(--space-3);
+  gap: 0.45rem;
 }
 
-.hero-toolbar-progress {
-  display: grid;
-  gap: var(--space-3);
+.hero-toolbar-metric-line {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem 0.55rem;
+}
+
+.hero-toolbar-note {
+  margin: 0;
+  width: fit-content;
+  padding: 0.18rem 0.42rem;
+  border-radius: 999px;
+  font-size: 0.66rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  color: color-mix(in oklab, var(--accent) 88%, black 8%);
+  background: color-mix(in oklab, var(--accent) 10%, white 18%);
 }
 
 .progress-panel {
@@ -601,10 +732,6 @@ select {
   gap: 0.2rem;
 }
 
-.progress-heading.compact {
-  align-items: center;
-}
-
 .progress-percent {
   font-size: 1.6rem;
   line-height: 1;
@@ -614,11 +741,11 @@ select {
 }
 
 .progress-percent.compact {
-  font-size: 1.3rem;
+  font-size: 1.08rem;
 }
 
 .progress-track {
-  height: 12px;
+  height: 8px;
   border-radius: 999px;
   background: color-mix(in oklab, var(--border) 74%, var(--surface-secondary));
 }
@@ -628,48 +755,54 @@ select {
   border-radius: 999px;
 }
 
-.toolbar-select-field {
-  position: relative;
-  display: grid;
-  gap: 0.45rem;
-}
-
-.toolbar-select-label {
-  font-size: 0.84rem;
+.toolbar-group-label {
+  font-size: 0.68rem;
   font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
   color: color-mix(in oklab, var(--foreground) 68%, transparent);
 }
 
-.toolbar-select {
-  appearance: none;
-  width: 100%;
-  min-height: 44px;
-  padding: 0.75rem 2.6rem 0.75rem 0.95rem;
-  border-radius: 16px;
-  border: 1px solid color-mix(in oklab, white 24%, var(--border));
-  background: color-mix(in oklab, var(--surface) 98%, transparent);
-  color: var(--foreground);
-  box-shadow:
-    inset 0 1px 0 color-mix(in oklab, white 76%, transparent),
-    0 10px 20px color-mix(in oklab, black 4%, transparent);
+.toolbar-filter-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
 }
 
-.toolbar-select-chevron {
-  position: absolute;
-  right: 0.9rem;
-  bottom: 0.82rem;
-  display: inline-flex;
-  color: color-mix(in oklab, var(--foreground) 62%, transparent);
+.toolbar-filter-chip {
+  min-height: 1.7rem;
+  padding: 0.24rem 0.52rem;
+  border: 1px solid color-mix(in oklab, white 22%, var(--border));
+  border-radius: 999px;
+  background: color-mix(in oklab, var(--surface) 96%, transparent);
+  color: color-mix(in oklab, var(--foreground) 76%, transparent);
+  font: inherit;
+  font-size: 0.72rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: inset 0 1px 0 color-mix(in oklab, white 70%, transparent);
 }
 
-.section-tools .button {
-  flex: 0 0 auto;
+.toolbar-filter-chip.active {
+  border-color: color-mix(in oklab, var(--accent) 26%, white 16%);
+  background: color-mix(in oklab, var(--accent) 10%, white 16%);
+  color: color-mix(in oklab, var(--accent) 92%, black 8%);
+}
+
+.toolbar-filter-chip:focus-visible {
+  outline: 2px solid color-mix(in oklab, var(--accent) 34%, white 10%);
+  outline-offset: 2px;
 }
 
 .toolbar-cta-group {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: var(--space-3);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.4rem;
+}
+
+.toolbar-action-button {
+  min-height: 30px;
+  justify-content: center;
 }
 
 .activity-switcher-field {
@@ -678,12 +811,27 @@ select {
   gap: 0.45rem;
 }
 
+.activity-switcher-inline {
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.activity-switcher-inline-label {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: color-mix(in oklab, var(--foreground) 66%, transparent);
+  white-space: nowrap;
+}
+
 .activity-switcher-select {
   appearance: none;
   width: 100%;
-  min-height: 46px;
-  padding: 0.8rem 2.7rem 0.8rem 1rem;
-  border-radius: 16px;
+  min-height: 34px;
+  padding: 0.4rem 2rem 0.4rem 0.7rem;
+  border-radius: 12px;
   border: 1px solid color-mix(in oklab, white 24%, var(--border));
   background: color-mix(in oklab, var(--surface) 98%, transparent);
   color: var(--foreground);
@@ -692,10 +840,16 @@ select {
     0 10px 20px color-mix(in oklab, black 4%, transparent);
 }
 
+.activity-switcher-select:focus-visible {
+  outline: 2px solid color-mix(in oklab, var(--accent) 34%, white 10%);
+  outline-offset: 2px;
+  border-color: color-mix(in oklab, var(--accent) 30%, white 16%);
+}
+
 .activity-switcher-chevron {
   position: absolute;
   right: 1rem;
-  bottom: 0.9rem;
+  bottom: 0.45rem;
   display: inline-flex;
   color: color-mix(in oklab, var(--foreground) 62%, transparent);
 }
@@ -718,12 +872,12 @@ select {
 
 .sections-wrap {
   display: grid;
-  gap: var(--space-4);
+  gap: 0.5rem;
 }
 
 .section-card {
   border: 1px solid color-mix(in oklab, white 26%, var(--border));
-  border-radius: 24px;
+  border-radius: 14px;
   background:
     linear-gradient(
       180deg,
@@ -732,40 +886,56 @@ select {
     );
   box-shadow:
     0 0 0 1px color-mix(in oklab, white 18%, transparent),
-    0 16px 34px color-mix(in oklab, black 8%, transparent);
+    0 10px 24px color-mix(in oklab, black 6%, transparent);
 }
 
 .section-header {
-  padding: var(--space-5) var(--space-5) var(--space-4);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.45rem;
+  align-items: start;
+  padding: 0.48rem 0.55rem 0.42rem !important;
 }
 
 .section-header-button {
   width: 100%;
+  min-width: 0;
+  padding: 0.18rem 0.2rem;
+  border-radius: 12px;
   border: 0;
   background: transparent;
   cursor: pointer;
   text-align: left;
 }
 
+.section-header-button:hover,
+.section-header-button:focus-visible {
+  background: color-mix(in oklab, var(--surface) 72%, transparent);
+}
+
 .section-heading {
   width: 100%;
+  gap: 0.6rem;
+  align-items: center;
 }
 
 .section-title-row {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: var(--space-3);
-  margin-bottom: var(--space-2);
+  gap: 0.35rem;
+  margin-bottom: 0.05rem;
 }
 
 .section-title-row strong {
-  font-size: 1.12rem;
-  line-height: 1.3;
+  font-size: 0.88rem;
+  line-height: 1.2;
 }
 
 .section-count-chip {
-  padding-inline: 0.65rem;
+  padding-inline: 0.55rem;
+  min-height: 1.2rem;
+  font-size: 0.66rem;
 }
 
 .section-chevron {
@@ -780,33 +950,30 @@ select {
   transform: rotate(180deg);
 }
 
+.section-header-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.3rem;
+  align-items: center;
+}
+
 .section-body {
   display: grid;
-  gap: var(--space-4);
-  padding-top: var(--space-1);
+  gap: 0.38rem;
+  padding: 0 0.55rem 0.58rem !important;
 }
 
-.section-tools {
-  display: flex;
-  flex-wrap: wrap;
-  overflow-x: auto;
-  padding-bottom: var(--space-1);
-  scrollbar-width: none;
-}
-
-.section-tools::-webkit-scrollbar {
-  display: none;
-}
-
-.section-tools .button {
+.section-tool-button {
+  min-height: 1.85rem;
+  padding-inline: 0.5rem;
+  border-radius: 999px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
   align-items: center;
-  gap: 0.45rem;
-}
-
-.add-item-form {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-3);
+  gap: 0.28rem;
+  white-space: nowrap;
 }
 
 .add-item-input {
@@ -814,13 +981,74 @@ select {
   flex: 1;
 }
 
+.add-item-modal {
+  width: min(100%, 30rem);
+  border: 1px solid color-mix(in oklab, white 24%, var(--border));
+  border-radius: 22px;
+  background-color: oklch(0.995 0.004 95 / 99%);
+  background-image:
+    linear-gradient(
+      180deg,
+      color-mix(in oklab, white 92%, var(--surface-tertiary)),
+      color-mix(in oklab, white 96%, var(--surface-secondary))
+    );
+  box-shadow:
+    0 28px 64px color-mix(in oklab, black 18%, transparent),
+    inset 0 1px 0 color-mix(in oklab, white 74%, transparent);
+}
+
+.add-item-modal-form,
+.add-item-modal-body {
+  display: grid;
+  gap: 0.7rem;
+}
+
+.add-item-modal-header,
+.add-item-modal-footer {
+  padding-inline: 1rem !important;
+}
+
+.add-item-modal-header {
+  padding-top: 1rem !important;
+  padding-bottom: 0.25rem !important;
+}
+
+.add-item-modal-body {
+  padding: 0 1rem 0.2rem !important;
+}
+
+.add-item-modal-copy {
+  margin: 0;
+  font-size: 0.8rem;
+  line-height: 1.45;
+  color: color-mix(in oklab, var(--foreground) 72%, transparent);
+}
+
+.add-item-modal-field {
+  display: grid;
+  gap: 0.3rem;
+}
+
+.add-item-kind-select {
+  min-height: 2.65rem;
+}
+
+.add-item-modal-footer {
+  justify-content: flex-end;
+  gap: 0.45rem;
+  padding-top: 0.15rem !important;
+  padding-bottom: 1rem !important;
+}
+
 .items {
   display: grid;
-  gap: var(--space-3);
+  gap: 0.4rem;
 }
 
 .item-card {
   border: 1px solid color-mix(in oklab, white 22%, var(--border));
+  border-radius: 10px;
+  cursor: pointer;
   background:
     linear-gradient(
       180deg,
@@ -829,7 +1057,7 @@ select {
     );
   box-shadow:
     0 0 0 1px color-mix(in oklab, white 16%, transparent),
-    0 14px 30px color-mix(in oklab, black 6%, transparent);
+    0 6px 16px color-mix(in oklab, black 4%, transparent);
 }
 
 .item-card:hover {
@@ -837,20 +1065,20 @@ select {
 }
 
 .item-card-content {
-  padding: var(--space-4) var(--space-4) !important;
+  padding: 0.32rem 0.55rem !important;
 }
 
 .item-checkbox {
   width: 100%;
-  align-items: flex-start;
-  gap: var(--space-3);
+  align-items: center;
+  gap: 0.45rem;
 }
 
 .item-checkbox-control {
-  width: 26px;
-  height: 26px;
-  min-width: 26px;
-  margin-top: 1px;
+  width: 17px;
+  height: 17px;
+  min-width: 17px;
+  margin-top: 0;
   border: 1px solid color-mix(in oklab, var(--border) 96%, transparent);
   background: color-mix(in oklab, var(--surface) 98%, transparent);
   box-shadow:
@@ -865,7 +1093,7 @@ select {
 
 .item-body {
   display: grid;
-  gap: 0.55rem;
+  gap: 0.12rem;
   width: 100%;
   min-width: 0;
   padding-top: 0;
@@ -875,25 +1103,50 @@ select {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: var(--space-3);
+  gap: 0.55rem;
+}
+
+.item-main-meta {
+  display: grid;
+  gap: 0.18rem;
+  min-width: 0;
 }
 
 .item-side-meta {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.28rem;
+  margin-left: auto;
+  flex-wrap: wrap;
+  flex-shrink: 0;
+}
+
+.item-source-indicator {
   display: inline-flex;
   align-items: center;
-  gap: var(--space-2);
-  margin-left: auto;
+  min-height: 1.05rem;
+  padding-inline: 0.34rem;
+  border-radius: 0.45rem;
+  font-size: 0.54rem;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: color-mix(in oklab, var(--foreground) 58%, var(--accent));
+  background: color-mix(in oklab, var(--surface-secondary) 92%, white 8%);
+  border: 1px solid color-mix(in oklab, var(--border) 82%, white 18%);
 }
 
 .item-label {
   font-weight: 700;
-  line-height: 1.4;
+  font-size: 0.8rem;
+  line-height: 1.15;
   color: var(--foreground);
 }
 
 .item-note {
-  font-size: 0.94rem;
-  line-height: 1.55;
+  font-size: 0.7rem;
+  line-height: 1.2;
 }
 
 .item-inline-meta {
@@ -903,14 +1156,21 @@ select {
 
 .item-tag {
   text-transform: none;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.02em;
   font-weight: 700;
+  min-height: 1.1rem;
+  padding-inline: 0.32rem;
+  font-size: 0.6rem;
+  width: fit-content;
 }
 
 .item-delete-button {
+  min-width: 1.45rem;
+  min-height: 1.45rem;
   color: color-mix(in oklab, var(--foreground) 62%, transparent);
   background: color-mix(in oklab, var(--surface) 88%, transparent);
   border: 1px solid color-mix(in oklab, var(--border) 82%, transparent);
+  box-shadow: inset 0 1px 0 color-mix(in oklab, white 62%, transparent);
 }
 
 .item-card.checked {
@@ -1006,8 +1266,7 @@ select {
   .hero-metrics,
   .summary-grid,
   .feature-grid,
-  .activity-grid,
-  .resume-grid {
+  .activity-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
@@ -1025,17 +1284,63 @@ select {
     align-items: start;
   }
 
-  .checklist-hero-controls {
-    grid-template-columns: minmax(220px, 280px) minmax(0, 1fr);
+  .home-hero {
+    grid-template-columns: minmax(0, 1.35fr) minmax(16rem, auto);
     align-items: end;
   }
 
-  .toolbar-cta-group {
-    grid-template-columns: repeat(2, auto);
-    justify-content: end;
+  .home-hero-support {
+    justify-items: end;
   }
 
-  .hero-actions .hero-link-primary,
+  .checklist-hero-switcher {
+    width: min(280px, 100%);
+  }
+
+  .checklist-hero-topbar {
+    grid-template-columns: minmax(0, 1fr) minmax(240px, 280px);
+    align-items: center;
+  }
+
+  .checklist-hero-body {
+    grid-template-columns: minmax(0, 1fr) minmax(300px, auto);
+    align-items: center;
+  }
+
+  .checklist-hero-controls {
+    align-self: stretch;
+  }
+
+  .hero-toolbar {
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.3fr) auto;
+    align-items: end;
+  }
+
+  .hero-toolbar-status {
+    min-width: 0;
+  }
+
+  .hero-toolbar-view {
+    min-width: 0;
+  }
+
+  .hero-toolbar-actions {
+    min-width: 176px;
+  }
+
+  .hero-toolbar-metric-line {
+    align-items: center;
+  }
+
+  .toolbar-cta-group {
+    grid-template-columns: 1fr;
+  }
+
+  .sections-wrap {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+  }
+
   .hero-actions .button {
     width: auto;
   }
@@ -1051,18 +1356,18 @@ select {
   .activity-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
-
-  .resume-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
 }
 
 @media (max-width: 767px) {
+  .checklist-hero-topbar {
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: start;
+  }
+
   .hero-actions {
     display: grid;
   }
 
-  .hero-actions .hero-link-primary,
   .hero-actions .button,
   .toolbar-cta-group .button {
     width: 100%;
@@ -1078,29 +1383,72 @@ select {
     flex-direction: column;
   }
 
+  .home-hero-support {
+    justify-items: start;
+  }
+
   .checklist-hero-main {
-    gap: var(--space-3);
-    align-items: flex-start;
-    flex-direction: column;
+    gap: 0.55rem;
+    align-items: center;
+    flex-direction: row;
+  }
+
+  .checklist-hero {
+    border-radius: 18px;
+    padding: 0.8rem;
+  }
+
+  .checklist-hero-switcher {
+    width: min(170px, 44vw);
+    justify-self: end;
+  }
+
+  .activity-switcher-inline-label {
+    display: none;
   }
 
   .checklist-hero-icon {
-    width: 3rem;
-    height: 3rem;
-    min-width: 3rem;
+    width: 2.2rem;
+    height: 2.2rem;
+    min-width: 2.2rem;
   }
 
   .checklist-stat-card.progress-only {
     min-width: 0;
   }
 
-  .progress-heading {
-    align-items: flex-start;
-    flex-direction: column;
+  .progress-percent {
+    font-size: 1rem;
   }
 
-  .progress-percent {
-    font-size: 1.35rem;
+  .hero-toolbar {
+    padding: 0.55rem;
+    grid-template-columns: 1fr;
+  }
+
+  .hero-toolbar-metric-line {
+    gap: 0.3rem 0.45rem;
+  }
+
+  .checklist-hero-facts {
+    gap: 0.55rem;
+  }
+
+  .checklist-hero-fact {
+    font-size: 0.68rem;
+  }
+
+  .sections-wrap {
+    grid-template-columns: 1fr;
+  }
+
+  .section-header {
+    grid-template-columns: 1fr;
+  }
+
+  .section-header-actions {
+    justify-content: flex-start;
+    padding-left: 0.2rem;
   }
 
   .toolbar-cta-group {
@@ -1113,10 +1461,11 @@ select {
 
   .item-topline {
     align-items: flex-start;
-    flex-direction: column;
+    gap: 0.4rem;
   }
 
   .item-side-meta {
     margin-left: 0;
+    justify-content: flex-start;
   }
 }

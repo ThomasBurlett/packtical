@@ -44,5 +44,5 @@ export interface ChecklistSectionState {
 export interface PersistedChecklistState {
   checkedIds: string[];
   collapsedSections: string[];
-  customItems: Record<string, Array<Pick<ChecklistItem, "id" | "label">>>;
+  customItems: Record<string, Array<Pick<ChecklistItem, "id" | "label" | "kind">>>;
 }

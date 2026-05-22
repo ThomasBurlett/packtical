@@ -1,5 +1,5 @@
 import { Button, Label, ProgressBar } from "@heroui/react"
-import { ChevronDown, ChevronsUpDown, RotateCcw } from "lucide-react"
+import { ChevronsUpDown, RotateCcw } from "lucide-react"
 import { FILTERS } from "@/constants/filters"
 import type { ChecklistFilter } from "@/types/checklist"
 
@@ -24,19 +24,22 @@ export function ChecklistToolbar({
   onToggleAllSections,
   onResetChecks,
 }: ChecklistToolbarProps) {
+  const remaining = Math.max(total - checked, 0)
+  const statusLabel = remaining === 0 ? "Everything packed" : `${remaining} left`
+
   return (
     <div className="hero-toolbar">
-      <div className="hero-toolbar-progress">
-        <div className="progress-heading compact">
-          <div className="progress-summary">
-            <Label>Packing progress</Label>
+      <div className="hero-toolbar-status">
+        <div className="hero-toolbar-summary">
+          <Label>Packing progress</Label>
+          <div className="hero-toolbar-metric-line">
+            <div className="progress-percent compact">{percent}%</div>
             <p className="progress-copy">
-              {checked} of {total} packed
+              {checked}/{total} packed
             </p>
+            <p className="hero-toolbar-note">{statusLabel}</p>
           </div>
-          <div className="progress-percent compact">{percent}%</div>
         </div>
-
         <ProgressBar
           aria-label="Checklist progress"
           className="progress-panel"
@@ -49,31 +52,35 @@ export function ChecklistToolbar({
         </ProgressBar>
       </div>
 
-      <div className="hero-toolbar-controls">
-        <label className="toolbar-select-field">
-          <span className="toolbar-select-label">Filter</span>
-          <select
-            className="toolbar-select"
-            onChange={(event) => onFilterChange(event.target.value as ChecklistFilter)}
-            value={filter}
-          >
-            {FILTERS.map((item) => (
-              <option key={item.value} value={item.value}>
-                {item.label}
-              </option>
-            ))}
-          </select>
-          <span className="toolbar-select-chevron" aria-hidden="true">
-            <ChevronDown size={16} strokeWidth={2.2} />
-          </span>
-        </label>
+      <div className="hero-toolbar-view">
+        <span className="toolbar-group-label">Show</span>
+        <div className="toolbar-filter-group" role="tablist" aria-label="Checklist filter">
+          {FILTERS.map((item) => {
+            const isActive = filter === item.value
 
+            return (
+              <button
+                aria-pressed={isActive}
+                className={`toolbar-filter-chip${isActive ? " active" : ""}`}
+                key={item.value}
+                onClick={() => onFilterChange(item.value)}
+                type="button"
+              >
+                {item.label}
+              </button>
+            )
+          })}
+        </div>
+      </div>
+
+      <div className="hero-toolbar-actions">
+        <span className="toolbar-group-label">Actions</span>
         <div className="toolbar-cta-group compact">
-          <Button onPress={onToggleAllSections} size="sm" variant="outline">
+          <Button className="toolbar-action-button" onPress={onToggleAllSections} size="sm" variant="outline">
             <ChevronsUpDown aria-hidden="true" size={15} strokeWidth={2.1} />
             {hasVisibleOpenSection ? "Collapse all" : "Expand all"}
           </Button>
-          <Button onPress={onResetChecks} size="sm" variant="ghost">
+          <Button className="toolbar-action-button subtle" onPress={onResetChecks} size="sm" variant="ghost">
             <RotateCcw aria-hidden="true" size={15} strokeWidth={2.1} />
             Reset
           </Button>

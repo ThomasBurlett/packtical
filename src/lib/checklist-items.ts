@@ -29,7 +29,7 @@ export function normalizeCustomItems(parsedItems: unknown): ChecklistItem[] {
         return [];
       }
 
-      const { id, label } = item as { id?: unknown; label?: unknown };
+      const { id, kind, label } = item as { id?: unknown; kind?: unknown; label?: unknown };
       if (typeof label !== "string") {
         return [];
       }
@@ -43,7 +43,7 @@ export function normalizeCustomItems(parsedItems: unknown): ChecklistItem[] {
         {
           id: typeof id === "string" && id.trim() ? id : buildCustomItemId(),
           label: trimmedLabel,
-          kind: "custom",
+          kind: kind === "optional" ? "optional" : kind === "custom" ? "custom" : "core",
           note: "",
           source: "custom",
         } satisfies ChecklistItem,

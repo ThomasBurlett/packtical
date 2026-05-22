@@ -53,16 +53,32 @@ export function saveChecklistState(
   checkedIds: ReadonlySet<string>,
   collapsedSections: ReadonlySet<string>,
   customItems: Record<string, ChecklistItem[]>,
+  defaultCollapsedSections: ReadonlySet<string>,
 ) {
   const serializableCustomItems = Object.fromEntries(
     Object.entries(customItems).map(([sectionId, items]) => [
       sectionId,
-      items.map(({ id, label }) => ({
+      items.map(({ id, kind, label }) => ({
         id: id || buildCustomItemId(sectionId),
+        kind,
         label,
       })),
     ]),
   );
+
+  const hasCustomItems = Object.values(serializableCustomItems).some(
+    (items) => items.length > 0,
+  );
+  const isDefaultCollapsedState =
+    collapsedSections.size === defaultCollapsedSections.size &&
+    [...collapsedSections].every((sectionId) =>
+      defaultCollapsedSections.has(sectionId),
+    );
+
+  if (checkedIds.size === 0 && !hasCustomItems && isDefaultCollapsedState) {
+    localStorage.removeItem(getStorageKey(slug));
+    return;
+  }
 
   localStorage.setItem(
     getStorageKey(slug),

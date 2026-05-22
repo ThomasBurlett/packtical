@@ -1,16 +1,18 @@
-import { Button, ButtonGroup, Card, Checkbox, Chip, Input, Label } from "@heroui/react"
+import { Button, Card, Checkbox, Chip, Input, Label, Modal } from "@heroui/react"
 import { Check, ChevronDown, Plus, Trash2, X } from "lucide-react"
-import type { ChecklistItem, ChecklistSectionState } from "@/types/checklist"
+import type { ChecklistItem, ChecklistSectionState, ChecklistKind } from "@/types/checklist"
 
 interface ChecklistSectionProps {
   section: ChecklistSectionState
   checkedIds: ReadonlySet<string>
   draftValue: string
+  draftKind: Exclude<ChecklistKind, "custom">
   isFormOpen: boolean
+  onSetAddFormOpen: (sectionId: string, isOpen: boolean) => void
   onSetSectionCollapsed: (sectionId: string, isCollapsed: boolean) => void
   onSetSectionChecked: (sectionId: string, nextChecked: boolean) => void
-  onToggleAddForm: (sectionId: string) => void
   onDraftChange: (sectionId: string, value: string) => void
+  onDraftKindChange: (sectionId: string, kind: Exclude<ChecklistKind, "custom">) => void
   onAddCustomItem: (sectionId: string) => void
   onDeleteCustomItem: (sectionId: string, itemId: string) => void
   onUpdateChecked: (itemId: string, nextChecked: boolean) => void
@@ -19,12 +21,14 @@ interface ChecklistSectionProps {
 export function ChecklistSection({
   section,
   checkedIds,
+  draftKind,
   draftValue,
   isFormOpen,
+  onSetAddFormOpen,
   onSetSectionCollapsed,
   onSetSectionChecked,
-  onToggleAddForm,
   onDraftChange,
+  onDraftKindChange,
   onAddCustomItem,
   onDeleteCustomItem,
   onUpdateChecked,
@@ -33,76 +37,67 @@ export function ChecklistSection({
     return null
   }
 
+  const areAllItemsChecked = section.items.length > 0 && section.checkedCount === section.items.length
+
   return (
     <Card className="section-card" variant="secondary">
-      <button
-        className="section-header section-header-button"
-        onClick={() => onSetSectionCollapsed(section.id, !section.isCollapsed)}
-        type="button"
-      >
-        <div className="section-heading">
-          <div>
-            <div className="section-title-row">
-              <strong>{section.title}</strong>
-              <Chip className="section-count-chip" variant="soft">
-                {section.checkedCount}/{section.items.length}
-              </Chip>
+      <div className="section-header">
+        <button
+          className="section-header-button"
+          onClick={() => onSetSectionCollapsed(section.id, !section.isCollapsed)}
+          type="button"
+        >
+          <div className="section-heading">
+            <div>
+              <div className="section-title-row">
+                <strong>{section.title}</strong>
+                <Chip className="section-count-chip" variant="soft">
+                  {section.checkedCount}/{section.items.length}
+                </Chip>
+              </div>
             </div>
-            <span className="section-count">
-              {section.visibleItems.length} visible item
-              {section.visibleItems.length === 1 ? "" : "s"}
+            <span
+              className={`section-chevron${section.isCollapsed ? "" : " open"}`}
+              aria-hidden="true"
+            >
+              <ChevronDown size={18} strokeWidth={2.2} />
             </span>
           </div>
-          <span
-            className={`section-chevron${section.isCollapsed ? "" : " open"}`}
-            aria-hidden="true"
+        </button>
+
+        <div className="section-header-actions" aria-label={`${section.title} actions`}>
+          <Button
+            className="section-tool-button"
+            onPress={() => onSetSectionChecked(section.id, !areAllItemsChecked)}
+            size="sm"
+            variant="secondary"
           >
-            <ChevronDown size={18} strokeWidth={2.2} />
-          </span>
+            <Check aria-hidden="true" size={14} strokeWidth={2.2} />
+            Mark all
+          </Button>
+          <Button
+            className="section-tool-button"
+            onPress={() => onSetSectionChecked(section.id, false)}
+            size="sm"
+            variant="secondary"
+          >
+            <X aria-hidden="true" size={14} strokeWidth={2.2} />
+            Clear
+          </Button>
+          <Button
+            className="section-tool-button"
+            onPress={() => onSetAddFormOpen(section.id, true)}
+            size="sm"
+            variant="secondary"
+          >
+            <Plus aria-hidden="true" size={14} strokeWidth={2.2} />
+            Add
+          </Button>
         </div>
-      </button>
+      </div>
 
       {!section.isCollapsed ? (
         <Card.Content className="section-body">
-          <ButtonGroup className="section-tools" size="sm" variant="secondary">
-            <Button onPress={() => onSetSectionChecked(section.id, true)}>
-              <Check aria-hidden="true" size={15} strokeWidth={2.2} />
-              Select all
-            </Button>
-            <Button onPress={() => onSetSectionChecked(section.id, false)}>
-              <X aria-hidden="true" size={15} strokeWidth={2.2} />
-              Clear
-            </Button>
-            <Button onPress={() => onToggleAddForm(section.id)}>
-              <Plus aria-hidden="true" size={15} strokeWidth={2.2} />
-              Add item
-            </Button>
-          </ButtonGroup>
-
-          {isFormOpen ? (
-            <form
-              className="add-item-form"
-              onSubmit={(event) => {
-                event.preventDefault()
-                onAddCustomItem(section.id)
-              }}
-            >
-              <Label className="sr-only" htmlFor={`custom-item-${section.id}`}>
-                Add custom item to {section.title}
-              </Label>
-              <Input
-                className="add-item-input"
-                fullWidth
-                id={`custom-item-${section.id}`}
-                onChange={(event) => onDraftChange(section.id, event.target.value)}
-                placeholder={`Add your own item to ${section.title}`}
-                value={draftValue}
-                variant="secondary"
-              />
-              <Button type="submit">Save item</Button>
-            </form>
-          ) : null}
-
           <div className="items">
             {section.visibleItems.map((item) => (
               <ChecklistSectionItem
@@ -117,6 +112,74 @@ export function ChecklistSection({
           </div>
         </Card.Content>
       ) : null}
+
+      <Modal>
+        <Modal.Backdrop
+          isDismissable
+          isOpen={isFormOpen}
+          isKeyboardDismissDisabled={false}
+          onOpenChange={(isOpen) => onSetAddFormOpen(section.id, isOpen)}
+          variant="blur"
+        >
+        <Modal.Container placement="center" size="md">
+          <Modal.Dialog className="add-item-modal">
+            <form
+              className="add-item-modal-form"
+              onSubmit={(event) => {
+                event.preventDefault()
+                onAddCustomItem(section.id)
+              }}
+            >
+              <Modal.Header className="add-item-modal-header">
+                <Modal.Heading>Add Item</Modal.Heading>
+              </Modal.Header>
+              <Modal.Body className="add-item-modal-body">
+                <p className="add-item-modal-copy">
+                  Add a custom checklist item to {section.title} and choose whether it should read
+                  as a core or optional piece of gear.
+                </p>
+                <div className="add-item-modal-field">
+                  <Label htmlFor={`custom-item-${section.id}`}>Item name</Label>
+                  <Input
+                    autoFocus
+                    className="add-item-input"
+                    fullWidth
+                    id={`custom-item-${section.id}`}
+                    onChange={(event) => onDraftChange(section.id, event.target.value)}
+                    placeholder={`Add your own item to ${section.title}`}
+                    value={draftValue}
+                    variant="secondary"
+                  />
+                </div>
+                <div className="add-item-modal-field">
+                  <Label htmlFor={`custom-kind-${section.id}`}>Priority</Label>
+                  <select
+                    className="activity-switcher-select add-item-kind-select"
+                    id={`custom-kind-${section.id}`}
+                    onChange={(event) =>
+                      onDraftKindChange(
+                        section.id,
+                        event.target.value === "optional" ? "optional" : "core",
+                      )
+                    }
+                    value={draftKind}
+                  >
+                    <option value="core">Core</option>
+                    <option value="optional">Optional</option>
+                  </select>
+                </div>
+              </Modal.Body>
+              <Modal.Footer className="add-item-modal-footer">
+                <Button onPress={() => onSetAddFormOpen(section.id, false)} variant="ghost">
+                  Cancel
+                </Button>
+                <Button type="submit">Save item</Button>
+              </Modal.Footer>
+            </form>
+          </Modal.Dialog>
+        </Modal.Container>
+        </Modal.Backdrop>
+      </Modal>
     </Card>
   )
 }
@@ -137,9 +200,22 @@ function ChecklistSectionItem({
   onUpdateChecked,
 }: ChecklistSectionItemProps) {
   const inputId = `${sectionId}-${item.id}`
+  const handleCardClick = (event: React.MouseEvent<HTMLDivElement>) => {
+    const target = event.target as HTMLElement
+
+    if (target.closest(".item-checkbox")) {
+      return
+    }
+
+    onUpdateChecked(item.id, !checked)
+  }
 
   return (
-    <Card className={`item-card${checked ? " checked" : ""}`} variant="secondary">
+    <Card
+      className={`item-card${checked ? " checked" : ""}`}
+      onClick={handleCardClick}
+      variant="secondary"
+    >
       <Card.Content className="item-card-content">
         <Checkbox
           className="item-checkbox"
@@ -153,10 +229,10 @@ function ChecklistSectionItem({
           </Checkbox.Control>
           <Checkbox.Content className="item-body">
             <div className="item-topline">
-              <Label className="item-label" htmlFor={inputId}>
-                {item.label}
-              </Label>
-              <div className="item-side-meta">
+              <div className="item-main-meta">
+                <Label className="item-label" htmlFor={inputId}>
+                  {item.label}
+                </Label>
                 <Chip
                   className="item-tag"
                   color={getItemChipColor(item.kind)}
@@ -165,17 +241,22 @@ function ChecklistSectionItem({
                 >
                   {getItemKindLabel(item.kind)}
                 </Chip>
+              </div>
+              <div className="item-side-meta">
                 {item.source === "custom" ? (
-                  <Button
-                    aria-label={`Delete ${item.label}`}
-                    className="item-delete-button"
-                    isIconOnly
-                    onPress={() => onDeleteCustomItem(sectionId, item.id)}
-                    size="sm"
-                    variant="ghost"
-                  >
-                    <Trash2 aria-hidden="true" size={15} strokeWidth={2.1} />
-                  </Button>
+                  <>
+                    <span className="item-source-indicator">Added by you</span>
+                    <Button
+                      aria-label={`Delete ${item.label}`}
+                      className="item-delete-button"
+                      isIconOnly
+                      onPress={() => onDeleteCustomItem(sectionId, item.id)}
+                      size="sm"
+                      variant="ghost"
+                    >
+                      <Trash2 aria-hidden="true" size={15} strokeWidth={2.1} />
+                    </Button>
+                  </>
                 ) : null}
               </div>
             </div>

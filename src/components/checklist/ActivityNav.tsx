@@ -8,8 +8,8 @@ interface ActivityNavProps {
 
 export function ActivityNav({ checklists, activeSlug }: ActivityNavProps) {
   return (
-    <label className="activity-switcher-field">
-      <span className="toolbar-select-label">Switch activity</span>
+    <label className="activity-switcher-field activity-switcher-inline">
+      <span className="activity-switcher-inline-label">Activity</span>
       <select
         aria-label="Switch activity checklist"
         className="activity-switcher-select"
