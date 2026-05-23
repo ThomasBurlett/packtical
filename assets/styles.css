@@ -689,6 +689,9 @@ select {
 }
 
 .progress-panel {
+  --progress-glow-strength: 0.18;
+  --progress-glow-blur: 10px;
+  --progress-glow-spread: 2px;
   width: 100%;
 }
 
@@ -716,15 +719,143 @@ select {
   font-size: 1.08rem;
 }
 
+.progress-percent.complete {
+  color: color-mix(in oklab, var(--success) 80%, var(--accent));
+  text-shadow:
+    0 0 16px color-mix(in oklab, var(--success) 22%, transparent),
+    0 0 32px color-mix(in oklab, var(--warning) 14%, transparent);
+}
+
 .progress-track {
+  position: relative;
   height: 8px;
   border-radius: 999px;
+  overflow: hidden;
   background: color-mix(in oklab, var(--border) 74%, var(--surface-secondary));
+  box-shadow:
+    inset 0 1px 0 color-mix(in oklab, white 58%, transparent),
+    0 0 var(--progress-glow-blur) var(--progress-glow-spread)
+      color-mix(in oklab, var(--success) calc(var(--progress-glow-strength) * 28%), transparent);
+  transition: box-shadow 280ms ease, background-color 280ms ease;
+}
+
+.progress-track::after {
+  content: "";
+  position: absolute;
+  inset: -3px;
+  border-radius: inherit;
+  background:
+    radial-gradient(
+      circle at 20% 50%,
+      color-mix(in oklab, var(--success) calc(var(--progress-glow-strength) * 18%), transparent) 0%,
+      transparent 52%
+    );
+  opacity: var(--progress-glow-strength);
+  pointer-events: none;
+  transition: opacity 280ms ease;
 }
 
 .progress-fill {
+  position: relative;
   background: linear-gradient(90deg, color-mix(in oklab, var(--success) 86%, var(--accent)), var(--accent));
   border-radius: 999px;
+  box-shadow:
+    0 0 calc(var(--progress-glow-blur) * 0.55)
+      color-mix(in oklab, var(--success) calc(var(--progress-glow-strength) * 48%), transparent),
+    inset 0 1px 0 color-mix(in oklab, white 48%, transparent);
+  transition: box-shadow 280ms ease, filter 280ms ease;
+}
+
+.progress-fill::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background:
+    linear-gradient(
+      90deg,
+      color-mix(in oklab, white 0%, transparent) 0%,
+      color-mix(in oklab, white calc(var(--progress-glow-strength) * 42%), transparent) 45%,
+      color-mix(in oklab, white 0%, transparent) 100%
+    );
+  opacity: calc(0.14 + var(--progress-glow-strength) * 0.34);
+  pointer-events: none;
+}
+
+.progress-panel.is-complete .progress-track {
+  box-shadow:
+    inset 0 1px 0 color-mix(in oklab, white 64%, transparent),
+    0 0 22px 5px color-mix(in oklab, var(--success) 18%, transparent),
+    0 0 44px 12px color-mix(in oklab, var(--warning) 10%, transparent);
+}
+
+.progress-panel.is-complete .progress-track::after {
+  opacity: 0.95;
+  background:
+    radial-gradient(circle at 12% 50%, color-mix(in oklab, var(--warning) 16%, transparent) 0%, transparent 40%),
+    radial-gradient(circle at 82% 50%, color-mix(in oklab, var(--success) 18%, transparent) 0%, transparent 42%);
+}
+
+.progress-panel.is-complete .progress-fill {
+  filter: saturate(1.08);
+  animation: progress-bar-celebrate 2.2s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+}
+
+.progress-panel.is-complete .progress-fill::before {
+  background:
+    linear-gradient(
+      110deg,
+      transparent 0%,
+      color-mix(in oklab, white 10%, transparent) 28%,
+      color-mix(in oklab, white 76%, transparent) 48%,
+      color-mix(in oklab, var(--warning) 28%, transparent) 56%,
+      transparent 76%
+    );
+  opacity: 0.9;
+  animation: progress-bar-sheen 1.9s linear infinite;
+}
+
+@keyframes progress-bar-sheen {
+  0% {
+    transform: translateX(-130%);
+  }
+
+  100% {
+    transform: translateX(130%);
+  }
+}
+
+@keyframes progress-bar-celebrate {
+  0%,
+  100% {
+    transform: scaleY(1);
+    box-shadow:
+      0 0 12px color-mix(in oklab, var(--success) 24%, transparent),
+      inset 0 1px 0 color-mix(in oklab, white 50%, transparent);
+  }
+
+  35% {
+    transform: scaleY(1.22);
+    box-shadow:
+      0 0 20px color-mix(in oklab, var(--success) 34%, transparent),
+      0 0 34px color-mix(in oklab, var(--warning) 16%, transparent),
+      inset 0 1px 0 color-mix(in oklab, white 62%, transparent);
+  }
+
+  65% {
+    transform: scaleY(0.94);
+    box-shadow:
+      0 0 18px color-mix(in oklab, var(--accent) 24%, transparent),
+      0 0 28px color-mix(in oklab, var(--success) 16%, transparent),
+      inset 0 1px 0 color-mix(in oklab, white 58%, transparent);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .progress-panel.is-complete .progress-fill,
+  .progress-panel.is-complete .progress-fill::before {
+    animation: none;
+  }
 }
 
 .toolbar-group-label {

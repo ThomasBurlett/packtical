@@ -1,3 +1,4 @@
+import type { CSSProperties } from "react"
 import { Button, Label, ProgressBar } from "@heroui/react"
 import { ChevronsUpDown, RotateCcw } from "lucide-react"
 import { FILTERS } from "@/constants/filters"
@@ -26,6 +27,14 @@ export function ChecklistToolbar({
 }: ChecklistToolbarProps) {
   const remaining = Math.max(total - checked, 0)
   const statusLabel = remaining === 0 ? "Everything packed" : `${remaining} left`
+  const progressRatio = Math.min(Math.max(percent / 100, 0), 1)
+  const glowStrength = (0.18 + progressRatio * 0.82).toFixed(3)
+  const progressPanelStyle = {
+    "--progress-glow-strength": glowStrength,
+    "--progress-glow-blur": `${10 + progressRatio * 22}px`,
+    "--progress-glow-spread": `${2 + progressRatio * 8}px`,
+  } as CSSProperties
+  const isComplete = percent === 100 && total > 0
 
   return (
     <div className="hero-toolbar">
@@ -33,7 +42,7 @@ export function ChecklistToolbar({
         <div className="hero-toolbar-summary">
           <Label>Packing progress</Label>
           <div className="hero-toolbar-metric-line">
-            <div className="progress-percent compact">{percent}%</div>
+            <div className={`progress-percent compact${isComplete ? " complete" : ""}`}>{percent}%</div>
             <p className="progress-copy">
               {checked}/{total} packed
             </p>
@@ -42,8 +51,9 @@ export function ChecklistToolbar({
         </div>
         <ProgressBar
           aria-label="Checklist progress"
-          className="progress-panel"
+          className={`progress-panel${isComplete ? " is-complete" : ""}`}
           color="success"
+          style={progressPanelStyle}
           value={percent}
         >
           <ProgressBar.Track className="progress-track">
