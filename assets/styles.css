@@ -1978,17 +1978,21 @@ select {
   }
 
   .section-header {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: start;
   }
 
   .section-header-actions {
+    grid-column: 1 / -1;
     justify-content: flex-start;
     padding-left: 0.2rem;
   }
 
   .section-chevron {
-    justify-self: flex-start;
-    margin-left: 0.2rem;
+    grid-column: 2;
+    grid-row: 1;
+    justify-self: end;
+    margin-left: 0;
   }
 
   .toolbar-cta-group {
