@@ -1,3 +1,4 @@
+import { useEffect, useRef } from "react"
 import { Card, Link } from "@heroui/react"
 import { ArrowLeft, Layers3 } from "lucide-react"
 import { ActivityNav } from "@/components/checklist/ActivityNav"
@@ -5,6 +6,7 @@ import { ChecklistSection } from "@/components/checklist/ChecklistSection"
 import { ChecklistToolbar } from "@/components/checklist/ChecklistToolbar"
 import { CHECKLISTS, CHECKLIST_MAP } from "@/data/checklists"
 import { ActivityIcon } from "@/lib/activity-icons"
+import { fireCompletionConfetti, fireItemConfetti } from "@/lib/confetti"
 import { useChecklistState } from "@/hooks/useChecklistState"
 
 interface ChecklistPageProps {
@@ -46,6 +48,35 @@ function ChecklistPageContent({ checklist }: { checklist: (typeof CHECKLISTS)[nu
     hasVisibleOpenSection,
     actions,
   } = useChecklistState(checklist)
+  const previousCheckedIdsRef = useRef<Set<string>>(new Set(checkedIds))
+  const wasCompleteRef = useRef(totals.total > 0 && totals.checked === totals.total)
+
+  useEffect(() => {
+    const previousCheckedIds = previousCheckedIdsRef.current
+    const newlyCheckedIds = [...checkedIds].filter((itemId) => !previousCheckedIds.has(itemId))
+
+    if (newlyCheckedIds.length === 1) {
+      const itemElement = document.querySelector<HTMLElement>(
+        `[data-checklist-item-id="${newlyCheckedIds[0]}"]`,
+      )
+
+      if (itemElement) {
+        fireItemConfetti(itemElement)
+      }
+    }
+
+    previousCheckedIdsRef.current = new Set(checkedIds)
+  }, [checkedIds])
+
+  useEffect(() => {
+    const isComplete = totals.total > 0 && totals.checked === totals.total
+
+    if (isComplete && !wasCompleteRef.current) {
+      fireCompletionConfetti()
+    }
+
+    wasCompleteRef.current = isComplete
+  }, [totals.checked, totals.total])
 
   const sectionsCount = sections.length
   return (

@@ -213,6 +213,7 @@ function ChecklistSectionItem({
   return (
     <Card
       className={`item-card${checked ? " checked" : ""}`}
+      data-checklist-item-id={item.id}
       onClick={handleCardClick}
       variant="secondary"
     >
