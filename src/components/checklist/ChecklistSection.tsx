@@ -1,5 +1,6 @@
 import { Button, Card, Checkbox, Chip, Input, Label, Modal } from "@heroui/react"
 import { Check, ChevronDown, Plus, Trash2, X } from "lucide-react"
+import { getViewportOrigin, type ConfettiOrigin } from "@/lib/confetti"
 import type { ChecklistItem, ChecklistSectionState, ChecklistKind } from "@/types/checklist"
 
 interface ChecklistSectionProps {
@@ -15,7 +16,7 @@ interface ChecklistSectionProps {
   onDraftKindChange: (sectionId: string, kind: Exclude<ChecklistKind, "custom">) => void
   onAddCustomItem: (sectionId: string) => void
   onDeleteCustomItem: (sectionId: string, itemId: string) => void
-  onUpdateChecked: (itemId: string, nextChecked: boolean) => void
+  onUpdateChecked: (itemId: string, nextChecked: boolean, origin?: ConfettiOrigin) => void
 }
 
 export function ChecklistSection({
@@ -189,7 +190,7 @@ interface ChecklistSectionItemProps {
   item: ChecklistItem
   checked: boolean
   onDeleteCustomItem: (sectionId: string, itemId: string) => void
-  onUpdateChecked: (itemId: string, nextChecked: boolean) => void
+  onUpdateChecked: (itemId: string, nextChecked: boolean, origin?: ConfettiOrigin) => void
 }
 
 function ChecklistSectionItem({
@@ -200,6 +201,18 @@ function ChecklistSectionItem({
   onUpdateChecked,
 }: ChecklistSectionItemProps) {
   const inputId = `${sectionId}-${item.id}`
+  const pointerOriginRef = React.useRef<ConfettiOrigin | undefined>(undefined)
+
+  const rememberPressOrigin = (event: React.PointerEvent<HTMLDivElement>) => {
+    pointerOriginRef.current = getViewportOrigin(event.clientX, event.clientY)
+  }
+
+  const consumePressOrigin = () => {
+    const origin = pointerOriginRef.current
+    pointerOriginRef.current = undefined
+    return origin
+  }
+
   const handleCardClick = (event: React.MouseEvent<HTMLDivElement>) => {
     const target = event.target as HTMLElement
 
@@ -207,7 +220,7 @@ function ChecklistSectionItem({
       return
     }
 
-    onUpdateChecked(item.id, !checked)
+    onUpdateChecked(item.id, !checked, consumePressOrigin())
   }
 
   return (
@@ -215,6 +228,7 @@ function ChecklistSectionItem({
       className={`item-card${checked ? " checked" : ""}`}
       data-checklist-item-id={item.id}
       onClick={handleCardClick}
+      onPointerDownCapture={rememberPressOrigin}
       variant="secondary"
     >
       <Card.Content className="item-card-content">
@@ -222,7 +236,7 @@ function ChecklistSectionItem({
           className="item-checkbox"
           id={inputId}
           isSelected={checked}
-          onChange={(isSelected) => onUpdateChecked(item.id, isSelected)}
+          onChange={(isSelected) => onUpdateChecked(item.id, isSelected, consumePressOrigin())}
           variant="secondary"
         >
           <Checkbox.Control className="item-checkbox-control">

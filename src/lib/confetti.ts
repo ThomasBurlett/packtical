@@ -1,9 +1,18 @@
 import confetti from "canvas-confetti"
 
+export interface ConfettiOrigin {
+  x: number
+  y: number
+}
+
 function getElementOrigin(element: HTMLElement) {
   const rect = element.getBoundingClientRect()
-  const x = (rect.left + rect.width / 2) / window.innerWidth
-  const y = (rect.top + rect.height / 2) / window.innerHeight
+  return getViewportOrigin(rect.left + rect.width / 2, rect.top + rect.height / 2)
+}
+
+export function getViewportOrigin(clientX: number, clientY: number): ConfettiOrigin {
+  const x = clientX / window.innerWidth
+  const y = clientY / window.innerHeight
 
   return {
     x: Math.min(Math.max(x, 0.08), 0.92),
@@ -11,12 +20,12 @@ function getElementOrigin(element: HTMLElement) {
   }
 }
 
-export function fireItemConfetti(element: HTMLElement) {
+export function fireItemConfetti(target: HTMLElement | ConfettiOrigin) {
   if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
     return
   }
 
-  const origin = getElementOrigin(element)
+  const origin = target instanceof HTMLElement ? getElementOrigin(target) : target
 
   void confetti({
     angle: 82,

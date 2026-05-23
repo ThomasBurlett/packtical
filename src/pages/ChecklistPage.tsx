@@ -6,7 +6,11 @@ import { ChecklistSection } from "@/components/checklist/ChecklistSection"
 import { ChecklistToolbar } from "@/components/checklist/ChecklistToolbar"
 import { CHECKLISTS, CHECKLIST_MAP } from "@/data/checklists"
 import { ActivityIcon } from "@/lib/activity-icons"
-import { fireCompletionConfetti, fireItemConfetti } from "@/lib/confetti"
+import {
+  fireCompletionConfetti,
+  fireItemConfetti,
+  type ConfettiOrigin,
+} from "@/lib/confetti"
 import { useChecklistState } from "@/hooks/useChecklistState"
 
 interface ChecklistPageProps {
@@ -50,12 +54,17 @@ function ChecklistPageContent({ checklist }: { checklist: (typeof CHECKLISTS)[nu
   } = useChecklistState(checklist)
   const previousCheckedIdsRef = useRef<Set<string>>(new Set(checkedIds))
   const wasCompleteRef = useRef(totals.total > 0 && totals.checked === totals.total)
+  const pendingItemConfettiRef = useRef<{ itemId: string; origin?: ConfettiOrigin } | null>(null)
 
   useEffect(() => {
     const previousCheckedIds = previousCheckedIdsRef.current
     const newlyCheckedIds = [...checkedIds].filter((itemId) => !previousCheckedIds.has(itemId))
 
     if (newlyCheckedIds.length === 1) {
+      const pendingItemConfetti = pendingItemConfettiRef.current
+      if (pendingItemConfetti?.itemId === newlyCheckedIds[0] && pendingItemConfetti.origin) {
+        fireItemConfetti(pendingItemConfetti.origin)
+      } else {
       const itemElement = document.querySelector<HTMLElement>(
         `[data-checklist-item-id="${newlyCheckedIds[0]}"]`,
       )
@@ -63,8 +72,10 @@ function ChecklistPageContent({ checklist }: { checklist: (typeof CHECKLISTS)[nu
       if (itemElement) {
         fireItemConfetti(itemElement)
       }
+      }
     }
 
+    pendingItemConfettiRef.current = null
     previousCheckedIdsRef.current = new Set(checkedIds)
   }, [checkedIds])
 
@@ -77,6 +88,11 @@ function ChecklistPageContent({ checklist }: { checklist: (typeof CHECKLISTS)[nu
 
     wasCompleteRef.current = isComplete
   }, [totals.checked, totals.total])
+
+  const handleUpdateChecked = (itemId: string, nextChecked: boolean, origin?: ConfettiOrigin) => {
+    pendingItemConfettiRef.current = nextChecked ? { itemId, origin } : null
+    actions.updateChecked(itemId, nextChecked)
+  }
 
   const sectionsCount = sections.length
   return (
@@ -150,7 +166,7 @@ function ChecklistPageContent({ checklist }: { checklist: (typeof CHECKLISTS)[nu
               onSetAddFormOpen={actions.setAddFormOpen}
               onSetSectionChecked={actions.setSectionChecked}
               onSetSectionCollapsed={actions.setSectionCollapsed}
-              onUpdateChecked={actions.updateChecked}
+              onUpdateChecked={handleUpdateChecked}
               section={section}
             />
           ))}
