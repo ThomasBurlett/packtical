@@ -1,6 +1,6 @@
 import { useRef, type MouseEvent, type PointerEvent } from "react"
 import { Button, Card, Checkbox, Chip, Input, Label, Modal } from "@heroui/react"
-import { Check, ChevronDown, Plus, Trash2, X } from "lucide-react"
+import { Check, ChevronDown, Pencil, Plus, Trash2, X } from "lucide-react"
 import { getViewportOrigin, type ConfettiOrigin } from "@/lib/confetti"
 import type { ChecklistItem, ChecklistSectionState, ChecklistKind } from "@/types/checklist"
 
@@ -9,13 +9,15 @@ interface ChecklistSectionProps {
   checkedIds: ReadonlySet<string>
   draftValue: string
   draftKind: Exclude<ChecklistKind, "custom">
+  editingItemId?: string
   isFormOpen: boolean
   onSetAddFormOpen: (sectionId: string, isOpen: boolean) => void
   onSetSectionCollapsed: (sectionId: string, isCollapsed: boolean) => void
   onSetSectionChecked: (sectionId: string, nextChecked: boolean) => void
   onDraftChange: (sectionId: string, value: string) => void
   onDraftKindChange: (sectionId: string, kind: Exclude<ChecklistKind, "custom">) => void
-  onAddCustomItem: (sectionId: string) => void
+  onSaveCustomItem: (sectionId: string) => void
+  onEditCustomItem: (sectionId: string, itemId: string) => void
   onDeleteCustomItem: (sectionId: string, itemId: string) => void
   onUpdateChecked: (itemId: string, nextChecked: boolean, origin?: ConfettiOrigin) => void
 }
@@ -25,13 +27,15 @@ export function ChecklistSection({
   checkedIds,
   draftKind,
   draftValue,
+  editingItemId,
   isFormOpen,
   onSetAddFormOpen,
   onSetSectionCollapsed,
   onSetSectionChecked,
   onDraftChange,
   onDraftKindChange,
-  onAddCustomItem,
+  onSaveCustomItem,
+  onEditCustomItem,
   onDeleteCustomItem,
   onUpdateChecked,
 }: ChecklistSectionProps) {
@@ -40,13 +44,28 @@ export function ChecklistSection({
   }
 
   const areAllItemsChecked = section.items.length > 0 && section.checkedCount === section.items.length
+  const toggleCollapsed = () => onSetSectionCollapsed(section.id, !section.isCollapsed)
+
+  const handleSectionCardClick = (event: MouseEvent<HTMLDivElement>) => {
+    const target = event.target as HTMLElement
+
+    if (
+      target.closest(
+        ".section-header-button, .section-header-actions, .item-card, .item-checkbox, .button, button, input, select, label",
+      )
+    ) {
+      return
+    }
+
+    toggleCollapsed()
+  }
 
   return (
-    <Card className="section-card" variant="secondary">
+    <Card className="section-card" onClick={handleSectionCardClick} variant="secondary">
       <div className="section-header">
         <button
           className="section-header-button"
-          onClick={() => onSetSectionCollapsed(section.id, !section.isCollapsed)}
+          onClick={toggleCollapsed}
           type="button"
         >
           <div className="section-heading">
@@ -69,7 +88,7 @@ export function ChecklistSection({
 
         <div className="section-header-actions" aria-label={`${section.title} actions`}>
           <Button
-            className="section-tool-button"
+            className="section-tool-button section-tool-button-mark"
             onPress={() => onSetSectionChecked(section.id, !areAllItemsChecked)}
             size="sm"
             variant="secondary"
@@ -78,7 +97,7 @@ export function ChecklistSection({
             Mark all
           </Button>
           <Button
-            className="section-tool-button"
+            className="section-tool-button section-tool-button-clear"
             onPress={() => onSetSectionChecked(section.id, false)}
             size="sm"
             variant="secondary"
@@ -87,7 +106,7 @@ export function ChecklistSection({
             Clear
           </Button>
           <Button
-            className="section-tool-button"
+            className="section-tool-button section-tool-button-add"
             onPress={() => onSetAddFormOpen(section.id, true)}
             size="sm"
             variant="secondary"
@@ -108,6 +127,7 @@ export function ChecklistSection({
                 key={item.id}
                 sectionId={section.id}
                 onDeleteCustomItem={onDeleteCustomItem}
+                onEditCustomItem={onEditCustomItem}
                 onUpdateChecked={onUpdateChecked}
               />
             ))}
@@ -129,16 +149,17 @@ export function ChecklistSection({
               className="add-item-modal-form"
               onSubmit={(event) => {
                 event.preventDefault()
-                onAddCustomItem(section.id)
+                onSaveCustomItem(section.id)
               }}
             >
               <Modal.Header className="add-item-modal-header">
-                <Modal.Heading>Add Item</Modal.Heading>
+                <Modal.Heading>{editingItemId ? "Edit Item" : "Add Item"}</Modal.Heading>
               </Modal.Header>
               <Modal.Body className="add-item-modal-body">
                 <p className="add-item-modal-copy">
-                  Add a custom checklist item to {section.title} and choose whether it should read
-                  as a core or optional piece of gear.
+                  {editingItemId
+                    ? `Update this custom checklist item in ${section.title} and choose whether it should read as a core or optional piece of gear.`
+                    : `Add a custom checklist item to ${section.title} and choose whether it should read as a core or optional piece of gear.`}
                 </p>
                 <div className="add-item-modal-field">
                   <Label htmlFor={`custom-item-${section.id}`}>Item name</Label>
@@ -175,7 +196,7 @@ export function ChecklistSection({
                 <Button onPress={() => onSetAddFormOpen(section.id, false)} variant="ghost">
                   Cancel
                 </Button>
-                <Button type="submit">Save item</Button>
+                <Button type="submit">{editingItemId ? "Save changes" : "Save item"}</Button>
               </Modal.Footer>
             </form>
           </Modal.Dialog>
@@ -190,6 +211,7 @@ interface ChecklistSectionItemProps {
   sectionId: string
   item: ChecklistItem
   checked: boolean
+  onEditCustomItem: (sectionId: string, itemId: string) => void
   onDeleteCustomItem: (sectionId: string, itemId: string) => void
   onUpdateChecked: (itemId: string, nextChecked: boolean, origin?: ConfettiOrigin) => void
 }
@@ -198,6 +220,7 @@ function ChecklistSectionItem({
   sectionId,
   item,
   checked,
+  onEditCustomItem,
   onDeleteCustomItem,
   onUpdateChecked,
 }: ChecklistSectionItemProps) {
@@ -262,6 +285,16 @@ function ChecklistSectionItem({
                 {item.source === "custom" ? (
                   <>
                     <span className="item-source-indicator">Added by you</span>
+                    <Button
+                      aria-label={`Edit ${item.label}`}
+                      className="item-delete-button"
+                      isIconOnly
+                      onPress={() => onEditCustomItem(sectionId, item.id)}
+                      size="sm"
+                      variant="ghost"
+                    >
+                      <Pencil aria-hidden="true" size={14} strokeWidth={2.1} />
+                    </Button>
                     <Button
                       aria-label={`Delete ${item.label}`}
                       className="item-delete-button"

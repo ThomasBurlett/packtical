@@ -29,10 +29,16 @@ export function ChecklistToolbar({
   const statusLabel = remaining === 0 ? "Everything packed" : `${remaining} left`
   const progressRatio = Math.min(Math.max(percent / 100, 0), 1)
   const glowStrength = (0.18 + progressRatio * 0.82).toFixed(3)
+  const energy = (0.2 + progressRatio * 0.8).toFixed(3)
+  const progressHue = 18 + progressRatio * 132
   const progressPanelStyle = {
+    "--progress-energy": energy,
     "--progress-glow-strength": glowStrength,
     "--progress-glow-blur": `${10 + progressRatio * 22}px`,
     "--progress-glow-spread": `${2 + progressRatio * 8}px`,
+    "--progress-hue": progressHue.toFixed(1),
+    "--progress-pulse-depth": `${1 + progressRatio * 0.22}`,
+    "--progress-shimmer-duration": `${3.2 - progressRatio * 1.35}s`,
   } as CSSProperties
   const isComplete = percent === 100 && total > 0
 
@@ -40,9 +46,11 @@ export function ChecklistToolbar({
     <div className="hero-toolbar">
       <div className="hero-toolbar-status">
         <div className="hero-toolbar-summary">
-          <Label>Packing progress</Label>
-          <div className="hero-toolbar-metric-line">
+          <div className="hero-toolbar-summary-topline">
+            <Label>Packing progress</Label>
             <div className={`progress-percent compact${isComplete ? " complete" : ""}`}>{percent}%</div>
+          </div>
+          <div className="hero-toolbar-metric-line">
             <p className="progress-copy">
               {checked}/{total} packed
             </p>
@@ -57,7 +65,15 @@ export function ChecklistToolbar({
           value={percent}
         >
           <ProgressBar.Track className="progress-track">
-            <ProgressBar.Fill className="progress-fill" />
+            <div className="progress-track-grid" aria-hidden="true" />
+            <div className="progress-track-aurora" aria-hidden="true" />
+            <ProgressBar.Fill className="progress-fill">
+              <span className="progress-fill-surface" aria-hidden="true" />
+              <span className="progress-fill-shine" aria-hidden="true" />
+              <span className="progress-fill-spark progress-fill-spark-a" aria-hidden="true" />
+              <span className="progress-fill-spark progress-fill-spark-b" aria-hidden="true" />
+              <span className="progress-fill-spark progress-fill-spark-c" aria-hidden="true" />
+            </ProgressBar.Fill>
           </ProgressBar.Track>
         </ProgressBar>
       </div>

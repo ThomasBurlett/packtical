@@ -12,6 +12,7 @@ import type {
 type DraftState = {
   kind: Exclude<ChecklistKind, "custom">;
   label: string;
+  editingItemId?: string;
 };
 
 type DraftMap = Record<string, DraftState>;
@@ -186,22 +187,33 @@ export function useChecklistState(checklist: Checklist) {
         },
       }));
     },
-    addCustomItem: (sectionId: string) => {
+    saveCustomItem: (sectionId: string) => {
       const label = drafts[sectionId]?.label.trim();
       if (!label) return;
+      const editingItemId = drafts[sectionId]?.editingItemId;
 
       setCustomItems((current) => ({
         ...current,
-        [sectionId]: [
-          ...(current[sectionId] ?? []),
-          {
-            id: buildCustomItemId(sectionId),
-            label,
-            kind: drafts[sectionId]?.kind ?? "core",
-            note: "",
-            source: "custom",
-          },
-        ],
+        [sectionId]: editingItemId
+          ? (current[sectionId] ?? []).map((item) =>
+              item.id === editingItemId
+                ? {
+                    ...item,
+                    label,
+                    kind: drafts[sectionId]?.kind ?? "core",
+                  }
+                : item,
+            )
+          : [
+              ...(current[sectionId] ?? []),
+              {
+                id: buildCustomItemId(sectionId),
+                label,
+                kind: drafts[sectionId]?.kind ?? "core",
+                note: "",
+                source: "custom",
+              },
+            ],
       }));
 
       setDrafts((current) => ({
@@ -209,6 +221,7 @@ export function useChecklistState(checklist: Checklist) {
         [sectionId]: {
           kind: "core",
           label: "",
+          editingItemId: undefined,
         },
       }));
       setOpenForms((current) => {
@@ -217,11 +230,45 @@ export function useChecklistState(checklist: Checklist) {
         return next;
       });
     },
+    editCustomItem: (sectionId: string, itemId: string) => {
+      const item = (customItems[sectionId] ?? []).find((entry) => entry.id === itemId);
+      if (!item) return;
+
+      setDrafts((current) => ({
+        ...current,
+        [sectionId]: {
+          kind: item.kind === "optional" ? "optional" : "core",
+          label: item.label,
+          editingItemId: item.id,
+        },
+      }));
+
+      setOpenForms((current) => {
+        const next = new Set(current);
+        next.add(sectionId);
+        return next;
+      });
+    },
     deleteCustomItem: (sectionId: string, itemId: string) => {
       setCustomItems((current) => ({
         ...current,
         [sectionId]: (current[sectionId] ?? []).filter((item) => item.id !== itemId),
       }));
+
+      setDrafts((current) => {
+        if (current[sectionId]?.editingItemId !== itemId) {
+          return current;
+        }
+
+        return {
+          ...current,
+          [sectionId]: {
+            kind: "core",
+            label: "",
+            editingItemId: undefined,
+          },
+        };
+      });
 
       setCheckedIds((current) => {
         const next = new Set(current);

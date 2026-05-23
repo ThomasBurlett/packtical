@@ -156,13 +156,15 @@ function ChecklistPageContent({ checklist }: { checklist: (typeof CHECKLISTS)[nu
             <ChecklistSection
               checkedIds={checkedIds}
               draftKind={drafts[section.id]?.kind ?? "core"}
+              editingItemId={drafts[section.id]?.editingItemId}
               draftValue={drafts[section.id]?.label ?? ""}
               isFormOpen={openForms.has(section.id)}
               key={section.id}
-              onAddCustomItem={actions.addCustomItem}
               onDeleteCustomItem={actions.deleteCustomItem}
               onDraftChange={actions.setDraft}
               onDraftKindChange={actions.setDraftKind}
+              onEditCustomItem={actions.editCustomItem}
+              onSaveCustomItem={actions.saveCustomItem}
               onSetAddFormOpen={actions.setAddFormOpen}
               onSetSectionChecked={actions.setSectionChecked}
               onSetSectionCollapsed={actions.setSectionCollapsed}
