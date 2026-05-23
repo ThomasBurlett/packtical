@@ -77,12 +77,6 @@ export function ChecklistSection({
                 </Chip>
               </div>
             </div>
-            <span
-              className={`section-chevron${section.isCollapsed ? "" : " open"}`}
-              aria-hidden="true"
-            >
-              <ChevronDown size={18} strokeWidth={2.2} />
-            </span>
           </div>
         </button>
 
@@ -115,6 +109,12 @@ export function ChecklistSection({
             Add
           </Button>
         </div>
+        <span
+          className={`section-chevron${section.isCollapsed ? "" : " open"}`}
+          aria-hidden="true"
+        >
+          <ChevronDown size={18} strokeWidth={2.2} />
+        </span>
       </div>
 
       {!section.isCollapsed ? (

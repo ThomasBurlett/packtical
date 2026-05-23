@@ -1250,6 +1250,16 @@ select {
   border-bottom-color: color-mix(in oklab, var(--accent) 58%, transparent);
 }
 
+.activity-switcher-hero-select option,
+.activity-switcher-select option {
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: normal;
+  color: var(--foreground);
+  background: color-mix(in oklab, white 96%, var(--surface));
+}
+
 .activity-switcher-hero-chevron {
   position: absolute;
   right: 0;
@@ -1293,6 +1303,8 @@ select {
 .section-card {
   position: relative;
   overflow: hidden;
+  break-inside: avoid;
+  page-break-inside: avoid;
   border: 1px solid color-mix(in oklab, white 18%, var(--border));
   border-radius: 20px;
   background:
@@ -1308,7 +1320,7 @@ select {
 
 .section-header {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-columns: minmax(0, 1fr) auto auto;
   gap: 0.7rem;
   align-items: start;
   padding: 0.8rem 0.9rem 0.72rem 1rem !important;
@@ -1332,8 +1344,6 @@ select {
 
 .section-heading {
   width: 100%;
-  gap: 0.8rem;
-  align-items: center;
 }
 
 .section-title-row {
@@ -1364,6 +1374,7 @@ select {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  align-self: center;
   color: color-mix(in oklab, var(--foreground) 62%, transparent);
   transition: transform 160ms ease;
 }
@@ -1805,8 +1816,23 @@ select {
     justify-items: end;
   }
 
+  .checklist-page-header {
+    position: relative;
+    gap: 0.9rem;
+  }
+
+  .checklist-hero {
+    padding-top: 0.2rem;
+    padding-right: min(16rem, 22vw);
+  }
+
   .checklist-hero-topbar {
-    align-items: center;
+    position: absolute;
+    top: 0;
+    right: 0;
+    margin: 0;
+    justify-content: flex-end;
+    align-items: flex-start;
   }
 
   .checklist-hero-controls {
@@ -1839,8 +1865,16 @@ select {
   }
 
   .sections-wrap {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    align-items: start;
+    display: block;
+    column-count: 2;
+    column-gap: 0.75rem;
+  }
+
+  .section-card {
+    display: inline-block;
+    width: 100%;
+    margin-bottom: 0.75rem;
+    vertical-align: top;
   }
 
   .hero-actions .button {
@@ -1934,7 +1968,13 @@ select {
   }
 
   .sections-wrap {
+    display: grid;
     grid-template-columns: 1fr;
+  }
+
+  .section-card {
+    display: block;
+    margin-bottom: 0;
   }
 
   .section-header {
@@ -1944,6 +1984,11 @@ select {
   .section-header-actions {
     justify-content: flex-start;
     padding-left: 0.2rem;
+  }
+
+  .section-chevron {
+    justify-self: flex-start;
+    margin-left: 0.2rem;
   }
 
   .toolbar-cta-group {
