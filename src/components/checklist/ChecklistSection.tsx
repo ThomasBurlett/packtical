@@ -1,3 +1,4 @@
+import { useRef, type MouseEvent, type PointerEvent } from "react"
 import { Button, Card, Checkbox, Chip, Input, Label, Modal } from "@heroui/react"
 import { Check, ChevronDown, Plus, Trash2, X } from "lucide-react"
 import { getViewportOrigin, type ConfettiOrigin } from "@/lib/confetti"
@@ -201,9 +202,9 @@ function ChecklistSectionItem({
   onUpdateChecked,
 }: ChecklistSectionItemProps) {
   const inputId = `${sectionId}-${item.id}`
-  const pointerOriginRef = React.useRef<ConfettiOrigin | undefined>(undefined)
+  const pointerOriginRef = useRef<ConfettiOrigin | undefined>(undefined)
 
-  const rememberPressOrigin = (event: React.PointerEvent<HTMLDivElement>) => {
+  const rememberPressOrigin = (event: PointerEvent<HTMLDivElement>) => {
     pointerOriginRef.current = getViewportOrigin(event.clientX, event.clientY)
   }
 
@@ -213,7 +214,7 @@ function ChecklistSectionItem({
     return origin
   }
 
-  const handleCardClick = (event: React.MouseEvent<HTMLDivElement>) => {
+  const handleCardClick = (event: MouseEvent<HTMLDivElement>) => {
     const target = event.target as HTMLElement
 
     if (target.closest(".item-checkbox")) {
