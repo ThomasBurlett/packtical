@@ -57,21 +57,19 @@ function ChecklistPageContent({ checklist }: { checklist: (typeof CHECKLISTS)[nu
               <ArrowLeft aria-hidden="true" size={16} strokeWidth={2.2} />
               Back to checklist hub
             </Link>
-
-            <div className="checklist-hero-switcher">
-              <ActivityNav activeSlug={checklist.slug} checklists={CHECKLISTS} />
-            </div>
           </div>
 
           <div className="home-hero-copy checklist-hero-copy">
             <div className="checklist-hero-main">
-              <span className="checklist-hero-icon align-center" aria-hidden="true">
-                <ActivityIcon slug={checklist.slug} size={42} strokeWidth={1.9} />
-              </span>
               <div className="checklist-hero-title-block">
-                <Card.Title className="page-title" id="checklist-title">
+                <h1 className="sr-only" id="checklist-title">
                   {checklist.label}
-                </Card.Title>
+                </h1>
+                <ActivityNav
+                  activeSlug={checklist.slug}
+                  checklists={CHECKLISTS}
+                  variant="hero-title"
+                />
                 <Card.Description className="page-subtitle">
                   {checklist.subtitle}
                 </Card.Description>
@@ -79,6 +77,10 @@ function ChecklistPageContent({ checklist }: { checklist: (typeof CHECKLISTS)[nu
             </div>
 
             <div className="home-hero-facts checklist-hero-facts" aria-label="Checklist summary">
+              <div className="home-hero-fact checklist-hero-fact checklist-hero-icon-fact">
+                <ActivityIcon slug={checklist.slug} size={16} strokeWidth={2} />
+                <span>{checklist.label}</span>
+              </div>
               <div className="home-hero-fact checklist-hero-fact">
                 <Layers3 aria-hidden="true" size={15} strokeWidth={2.1} />
                 <span>{sectionsCount} sections</span>

@@ -24,8 +24,8 @@ Interactive checklist hub for multiple outdoor activities and travel prep.
 Install dependencies and start the Vite dev server:
 
 ```bash
-npm install
-npm run dev
+pnpm install
+pnpm dev
 ```
 
 Then open the local URL printed by Vite.
