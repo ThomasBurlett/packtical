@@ -29,7 +29,7 @@ type DraftMap = Record<string, DraftState>;
 type CustomItemMap = Record<string, ChecklistItem[]>;
 
 export function useChecklistState(checklist: Checklist) {
-  const { user } = useAuth();
+  const { syncVersion, user } = useAuth();
   const baseSections = useMemo(() => cloneSections(checklist.sections), [checklist.sections]);
   const sectionIds = useMemo(() => baseSections.map((section) => section.id), [baseSections]);
   const defaultCollapsedSections = useMemo(
@@ -103,7 +103,7 @@ export function useChecklistState(checklist: Checklist) {
     return () => {
       isCancelled = true;
     };
-  }, [checklist.slug, defaultCollapsedSections, sectionIds, user]);
+  }, [checklist.slug, defaultCollapsedSections, sectionIds, syncVersion, user]);
 
   useEffect(() => {
     if (!user || remoteReadyUserId !== user.id) {

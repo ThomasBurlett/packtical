@@ -4,7 +4,7 @@ import { AuthStatus } from "@/components/auth/AuthStatus";
 import { useAuth } from "@/auth/auth-context";
 
 export function AuthGate({ children }: { children: ReactNode }) {
-  const { authError, isConfigured, isLoading, user } = useAuth();
+  const { isConfigured, isLoading, user } = useAuth();
 
   if (isLoading) {
     return (
@@ -15,8 +15,8 @@ export function AuthGate({ children }: { children: ReactNode }) {
               <Chip className="hero-chip" variant="soft">
                 Packtical
               </Chip>
-              <h1 className="auth-gate-title">Starting your packing space.</h1>
-              <p className="auth-gate-copy">Creating a synced guest session.</p>
+              <h1 className="auth-gate-title">Loading your packing space.</h1>
+              <p className="auth-gate-copy">Checking your saved session.</p>
             </Card.Content>
           </Card>
         </section>
@@ -53,9 +53,9 @@ export function AuthGate({ children }: { children: ReactNode }) {
               <Chip className="hero-chip" variant="soft">
                 Packtical
               </Chip>
-              <h1 className="auth-gate-title">Guest session unavailable.</h1>
+              <h1 className="auth-gate-title">Start packing your way.</h1>
               <p className="auth-gate-copy">
-                {authError || "Refresh the page to try starting a guest session again."}
+                Sign in, create an account, or continue as a guest. Guest progress is synced and can be connected to an account later.
               </p>
               <AuthStatus />
             </Card.Content>

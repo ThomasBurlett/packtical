@@ -1,14 +1,25 @@
 import { useState, type FormEvent } from "react";
 import { Button, Input } from "@heroui/react";
-import { Cloud, CloudOff, LogOut, Mail } from "lucide-react";
-import { useAuth } from "@/auth/auth-context";
+import { Cloud, CloudOff, LogOut, Mail, UserRound } from "lucide-react";
+import { useAuth, type EmailAuthMode } from "@/auth/auth-context";
 
 export function AuthStatus() {
-  const { authError, isAnonymous, isConfigured, isLoading, user, signInWithEmail, signOut } = useAuth();
+  const {
+    authError,
+    isAnonymous,
+    isConfigured,
+    isLoading,
+    user,
+    signInWithEmail,
+    signOut,
+    startAnonymousSession,
+  } = useAuth();
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
+  const [mode, setMode] = useState<EmailAuthMode>("sign-in");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const emailMode = getEmailMode(mode, isAnonymous);
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -20,17 +31,27 @@ export function AuthStatus() {
     setMessage("");
     setError("");
 
-    void signInWithEmail(trimmedEmail)
+    void signInWithEmail(trimmedEmail, emailMode)
       .then(() => {
-        setMessage(
-          isAnonymous
-            ? "Check your email to finish saving this account."
-            : "Check your email for the sign-in link.",
-        );
+        setMessage(getSuccessMessage(emailMode));
         setEmail("");
       })
       .catch((signInError: unknown) => {
         setError(signInError instanceof Error ? signInError.message : "Could not send sign-in link.");
+      })
+      .finally(() => {
+        setIsSubmitting(false);
+      });
+  };
+
+  const handleAnonymousStart = () => {
+    setIsSubmitting(true);
+    setMessage("");
+    setError("");
+
+    void startAnonymousSession()
+      .catch((anonymousError: unknown) => {
+        setError(anonymousError instanceof Error ? anonymousError.message : "Could not start a guest session.");
       })
       .finally(() => {
         setIsSubmitting(false);
@@ -86,31 +107,135 @@ export function AuthStatus() {
   }
 
   return (
-    <form className="auth-form" onSubmit={handleSubmit}>
-      <Mail aria-hidden="true" size={15} strokeWidth={2.1} />
-      <Input
-        aria-label="Email address"
-        className="auth-email-input"
-        onChange={(event) => setEmail(event.target.value)}
-        placeholder={isAnonymous ? "Save with email" : "Email for sync"}
-        type="email"
-        value={email}
-        variant="secondary"
-      />
-      <Button
-        className="auth-submit-button"
-        isDisabled={isSubmitting}
-        size="sm"
-        type="submit"
-        variant="secondary"
-      >
-        {isSubmitting ? "Sending" : isAnonymous ? "Save" : "Send link"}
-      </Button>
+    <div className="auth-panel">
+      <div className="auth-mode-tabs" aria-label={isAnonymous ? "Connect account options" : "Account options"}>
+        {isAnonymous ? (
+          <>
+            <button
+              aria-pressed={emailMode === "connect-new"}
+              className={`auth-mode-tab${emailMode === "connect-new" ? " active" : ""}`}
+              onClick={() => setMode("connect-new")}
+              type="button"
+            >
+              Create account
+            </button>
+            <button
+              aria-pressed={emailMode === "connect-existing"}
+              className={`auth-mode-tab${emailMode === "connect-existing" ? " active" : ""}`}
+              onClick={() => setMode("connect-existing")}
+              type="button"
+            >
+              Existing account
+            </button>
+          </>
+        ) : (
+          <>
+            <button
+              aria-pressed={emailMode === "sign-in"}
+              className={`auth-mode-tab${emailMode === "sign-in" ? " active" : ""}`}
+              onClick={() => setMode("sign-in")}
+              type="button"
+            >
+              Sign in
+            </button>
+            <button
+              aria-pressed={emailMode === "create"}
+              className={`auth-mode-tab${emailMode === "create" ? " active" : ""}`}
+              onClick={() => setMode("create")}
+              type="button"
+            >
+              Create account
+            </button>
+          </>
+        )}
+      </div>
+
+      <form className="auth-form" onSubmit={handleSubmit}>
+        <Mail aria-hidden="true" size={15} strokeWidth={2.1} />
+        <Input
+          aria-label="Email address"
+          className="auth-email-input"
+          onChange={(event) => setEmail(event.target.value)}
+          placeholder={getEmailPlaceholder(emailMode)}
+          type="email"
+          value={email}
+          variant="secondary"
+        />
+        <Button
+          className="auth-submit-button"
+          isDisabled={isSubmitting}
+          size="sm"
+          type="submit"
+          variant="secondary"
+        >
+          {isSubmitting ? "Sending" : getSubmitLabel(emailMode)}
+        </Button>
+      </form>
+
+      {!user ? (
+        <Button
+          className="auth-guest-button"
+          isDisabled={isSubmitting}
+          onPress={handleAnonymousStart}
+          size="sm"
+          variant="ghost"
+        >
+          <UserRound aria-hidden="true" size={14} strokeWidth={2.1} />
+          Continue as guest
+        </Button>
+      ) : null}
+
       {message || error ? (
         <span className={`auth-message${error ? " error" : ""}`}>
           {error || message}
         </span>
       ) : null}
-    </form>
+    </div>
   );
+}
+
+function getEmailMode(mode: EmailAuthMode, isAnonymous: boolean): EmailAuthMode {
+  if (isAnonymous) {
+    return mode === "connect-existing" ? "connect-existing" : "connect-new";
+  }
+
+  return mode === "create" ? "create" : "sign-in";
+}
+
+function getEmailPlaceholder(mode: EmailAuthMode) {
+  switch (mode) {
+    case "create":
+    case "connect-new":
+      return "Email for new account";
+    case "connect-existing":
+      return "Existing account email";
+    default:
+      return "Email for sign in";
+  }
+}
+
+function getSubmitLabel(mode: EmailAuthMode) {
+  switch (mode) {
+    case "create":
+      return "Create";
+    case "connect-new":
+      return "Save";
+    case "connect-existing":
+      return "Sign in";
+    default:
+      return "Sign in";
+  }
+}
+
+function getSuccessMessage(mode: EmailAuthMode) {
+  switch (mode) {
+    case "connect-new":
+      return "Check your email to finish saving this account.";
+    case "connect-existing":
+      return "Check your email to sign in and sync guest progress.";
+    case "create":
+      return "Check your email to finish creating your account.";
+    default:
+      return "Check your email for the sign-in link.";
+  }
 }

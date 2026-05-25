@@ -1,13 +1,17 @@
 import { createContext, useContext } from "react";
 import type { SupabaseUser } from "@/lib/supabase";
 
+export type EmailAuthMode = "sign-in" | "create" | "connect-existing" | "connect-new";
+
 export type AuthContextValue = {
   authError: string;
   isConfigured: boolean;
   isAnonymous: boolean;
   isLoading: boolean;
+  syncVersion: number;
   user: SupabaseUser | null;
-  signInWithEmail: (email: string) => Promise<void>;
+  signInWithEmail: (email: string, mode: EmailAuthMode) => Promise<void>;
+  startAnonymousSession: () => Promise<void>;
   signOut: () => Promise<void>;
 };
 

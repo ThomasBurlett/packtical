@@ -33,13 +33,13 @@ Then open the local URL printed by Vite.
 
 ## Supabase sync
 
-Supabase is required for checklist persistence. The app creates an anonymous Supabase user automatically so people can start packing immediately, then lets them attach an email later:
+Supabase is required for checklist persistence. Visitors can sign in, create an account, or continue with an anonymous Supabase user and attach that progress to an email account later:
 
 1. Create a Supabase project.
 2. Run [docs/supabase.sql](docs/supabase.sql) in the Supabase SQL editor.
 3. In Supabase Auth Providers, enable anonymous sign-ins.
 4. In Supabase Auth Providers, keep Email enabled and confirm magic links are allowed.
-5. In Supabase Auth settings, enable manual identity linking so anonymous users can connect an email identity.
+5. If Supabase shows a manual identity linking setting, enable it so anonymous users can connect an email identity.
 6. Copy `.env.example` to `.env.local` and fill in `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY`.
 7. In Supabase Auth URL settings, add your local dev URL and GitHub Pages URL, for example:
    - `http://localhost:5173`
@@ -49,6 +49,8 @@ Supabase is required for checklist persistence. The app creates an anonymous Sup
    - `VITE_SUPABASE_ANON_KEY`
 
 Only the public anon key belongs in the frontend. Keep the service role key out of GitHub Pages.
+
+When an anonymous user signs in to an existing email account, the app temporarily stores their guest checklist state in `sessionStorage`, then merges it into the signed-in account after the magic link returns.
 
 ## GitHub Pages
 

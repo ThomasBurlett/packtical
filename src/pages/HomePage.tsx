@@ -62,7 +62,7 @@ function createResumeLists(states: Record<string, PersistedChecklistState | null
 }
 
 export function HomePage() {
-  const { user } = useAuth()
+  const { syncVersion, user } = useAuth()
   const [resumeLists, setResumeLists] = useState<ResumeChecklist[]>([])
   const activeResumeLists = resumeLists.filter((list) => list.percent > 0)
 
@@ -93,7 +93,7 @@ export function HomePage() {
     return () => {
       isCancelled = true
     }
-  }, [user])
+  }, [syncVersion, user])
 
   const resumeMap = Object.fromEntries(
     activeResumeLists.map((list) => [list.slug, list]),

@@ -466,6 +466,37 @@ select {
   color: inherit;
 }
 
+.auth-panel {
+  display: grid;
+  gap: 0.42rem;
+  width: min(100%, 25rem);
+}
+
+.auth-mode-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.32rem;
+}
+
+.auth-mode-tab {
+  min-height: 1.82rem;
+  padding: 0.28rem 0.58rem;
+  border-radius: 999px;
+  border: 1px solid color-mix(in oklab, var(--border) 82%, white 18%);
+  background: color-mix(in oklab, var(--surface) 76%, transparent);
+  color: color-mix(in oklab, var(--foreground) 68%, transparent);
+  box-shadow: inset 0 1px 0 color-mix(in oklab, white 64%, transparent);
+  font-size: 0.68rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.auth-mode-tab.active {
+  border-color: color-mix(in oklab, var(--accent) 24%, var(--border));
+  background: color-mix(in oklab, var(--accent) 10%, white 10%);
+  color: color-mix(in oklab, var(--accent) 84%, black 12%);
+}
+
 .auth-form {
   position: relative;
   flex-wrap: wrap;
@@ -489,6 +520,16 @@ select {
   min-height: 2rem;
   border-radius: 12px;
   white-space: nowrap;
+}
+
+.auth-guest-button {
+  width: fit-content;
+  min-height: 2rem;
+  border-radius: 999px;
+  color: color-mix(in oklab, var(--foreground) 70%, transparent);
+  background: color-mix(in oklab, var(--surface) 74%, transparent);
+  border: 1px solid color-mix(in oklab, var(--border) 82%, white 18%);
+  box-shadow: inset 0 1px 0 color-mix(in oklab, white 64%, transparent);
 }
 
 .auth-message {
@@ -2032,7 +2073,12 @@ select {
     align-items: start;
   }
 
+  .auth-panel,
   .auth-form {
+    width: 100%;
+  }
+
+  .auth-guest-button {
     width: 100%;
   }
 
