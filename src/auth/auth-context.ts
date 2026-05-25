@@ -2,7 +2,9 @@ import { createContext, useContext } from "react";
 import type { SupabaseUser } from "@/lib/supabase";
 
 export type AuthContextValue = {
+  authError: string;
   isConfigured: boolean;
+  isAnonymous: boolean;
   isLoading: boolean;
   user: SupabaseUser | null;
   signInWithEmail: (email: string) => Promise<void>;

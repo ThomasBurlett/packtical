@@ -33,16 +33,18 @@ Then open the local URL printed by Vite.
 
 ## Supabase sync
 
-Supabase is required for sign-in and checklist persistence:
+Supabase is required for checklist persistence. The app creates an anonymous Supabase user automatically so people can start packing immediately, then lets them attach an email later:
 
 1. Create a Supabase project.
 2. Run [docs/supabase.sql](docs/supabase.sql) in the Supabase SQL editor.
-3. In Supabase Auth Providers, keep Email enabled and confirm magic links are allowed.
-4. Copy `.env.example` to `.env.local` and fill in `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY`.
-5. In Supabase Auth URL settings, add your local dev URL and GitHub Pages URL, for example:
+3. In Supabase Auth Providers, enable anonymous sign-ins.
+4. In Supabase Auth Providers, keep Email enabled and confirm magic links are allowed.
+5. In Supabase Auth settings, enable manual identity linking so anonymous users can connect an email identity.
+6. Copy `.env.example` to `.env.local` and fill in `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY`.
+7. In Supabase Auth URL settings, add your local dev URL and GitHub Pages URL, for example:
    - `http://localhost:5173`
    - `https://<my-github-username>.github.io/packtical/`
-6. In GitHub, add repository Actions variables or secrets named:
+8. In GitHub, add repository Actions variables or secrets named:
    - `VITE_SUPABASE_URL`
    - `VITE_SUPABASE_ANON_KEY`
 

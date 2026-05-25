@@ -4,7 +4,7 @@ import { Cloud, CloudOff, LogOut, Mail } from "lucide-react";
 import { useAuth } from "@/auth/auth-context";
 
 export function AuthStatus() {
-  const { isConfigured, isLoading, user, signInWithEmail, signOut } = useAuth();
+  const { authError, isAnonymous, isConfigured, isLoading, user, signInWithEmail, signOut } = useAuth();
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
@@ -22,7 +22,11 @@ export function AuthStatus() {
 
     void signInWithEmail(trimmedEmail)
       .then(() => {
-        setMessage("Check your email for the sign-in link.");
+        setMessage(
+          isAnonymous
+            ? "Check your email to finish saving this account."
+            : "Check your email for the sign-in link.",
+        );
         setEmail("");
       })
       .catch((signInError: unknown) => {
@@ -51,7 +55,7 @@ export function AuthStatus() {
     );
   }
 
-  if (user) {
+  if (user && !isAnonymous) {
     return (
       <div className="auth-status auth-status-signed-in">
         <Cloud aria-hidden="true" size={15} strokeWidth={2.1} />
@@ -72,6 +76,15 @@ export function AuthStatus() {
     );
   }
 
+  if (!user && authError) {
+    return (
+      <div className="auth-status auth-status-local">
+        <CloudOff aria-hidden="true" size={15} strokeWidth={2.1} />
+        <span title={authError}>Guest session unavailable</span>
+      </div>
+    );
+  }
+
   return (
     <form className="auth-form" onSubmit={handleSubmit}>
       <Mail aria-hidden="true" size={15} strokeWidth={2.1} />
@@ -79,7 +92,7 @@ export function AuthStatus() {
         aria-label="Email address"
         className="auth-email-input"
         onChange={(event) => setEmail(event.target.value)}
-        placeholder="Email for sync"
+        placeholder={isAnonymous ? "Save with email" : "Email for sync"}
         type="email"
         value={email}
         variant="secondary"
@@ -91,7 +104,7 @@ export function AuthStatus() {
         type="submit"
         variant="secondary"
       >
-        {isSubmitting ? "Sending" : "Send link"}
+        {isSubmitting ? "Sending" : isAnonymous ? "Save" : "Send link"}
       </Button>
       {message || error ? (
         <span className={`auth-message${error ? " error" : ""}`}>
