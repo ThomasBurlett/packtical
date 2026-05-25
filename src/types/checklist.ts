@@ -7,6 +7,7 @@ export type ChecklistItemTuple = [
   label: string,
   kind: Exclude<ChecklistKind, "custom">,
   note?: string,
+  relatedChecklistSlug?: string,
 ];
 
 export interface ChecklistItem {
@@ -14,6 +15,7 @@ export interface ChecklistItem {
   label: string;
   kind: ChecklistKind;
   note: string;
+  relatedChecklistSlug?: string;
   source: ItemSource;
 }
 
@@ -27,6 +29,7 @@ export interface Checklist {
   slug: string;
   label: string;
   shortLabel: string;
+  category: string;
   subtitle: string;
   summary: string;
   sections: ChecklistSectionData[];

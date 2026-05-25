@@ -61,12 +61,19 @@ export function itemMatchesFilter(
   return item.kind === filter;
 }
 
-function mapTupleToItem([id, label, kind, note = ""]: ChecklistItemTuple): ChecklistItem {
+function mapTupleToItem([
+  id,
+  label,
+  kind,
+  note = "",
+  relatedChecklistSlug,
+]: ChecklistItemTuple): ChecklistItem {
   return {
     id,
     label,
     kind,
     note,
+    relatedChecklistSlug,
     source: "base",
   };
 }

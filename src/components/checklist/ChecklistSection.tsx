@@ -1,5 +1,5 @@
 import { useRef, type MouseEvent, type PointerEvent } from "react"
-import { Button, Card, Checkbox, Chip, Input, Label, Modal } from "@heroui/react"
+import { Button, Card, Checkbox, Chip, Input, Label, Link, Modal } from "@heroui/react"
 import { Check, ChevronDown, Pencil, Plus, Trash2, X } from "lucide-react"
 import { getViewportOrigin, type ConfettiOrigin } from "@/lib/confetti"
 import type { ChecklistItem, ChecklistSectionState, ChecklistKind } from "@/types/checklist"
@@ -309,7 +309,25 @@ function ChecklistSectionItem({
                 ) : null}
               </div>
             </div>
-            {item.note ? <span className="item-note">{item.note}</span> : null}
+            {item.note || item.relatedChecklistSlug ? (
+              <span className="item-note">
+                {item.note ? <span>{item.note}</span> : null}
+                {item.relatedChecklistSlug ? (
+                  <Link
+                    className="item-related-link"
+                    href={`#/${item.relatedChecklistSlug}`}
+                    onClick={(event) => {
+                      event.preventDefault()
+                      event.stopPropagation()
+                      window.location.hash = `#/${item.relatedChecklistSlug}`
+                    }}
+                    onPointerDown={(event) => event.stopPropagation()}
+                  >
+                    Open related checklist
+                  </Link>
+                ) : null}
+              </span>
+            ) : null}
           </Checkbox.Content>
         </Checkbox>
       </Card.Content>

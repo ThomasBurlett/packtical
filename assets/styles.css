@@ -395,6 +395,44 @@ select {
   gap: var(--space-4);
 }
 
+.activity-groups {
+  display: grid;
+  gap: var(--space-5);
+}
+
+.activity-group {
+  display: grid;
+  gap: 0.85rem;
+}
+
+.activity-group-heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  justify-content: space-between;
+  gap: var(--space-3);
+  min-height: 2rem;
+  padding-bottom: 0.55rem;
+  border-bottom: 1px solid color-mix(in oklab, var(--border) 78%, transparent);
+}
+
+.activity-group-heading h3 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(1.05rem, 3vw, 1.35rem);
+  line-height: 1.1;
+  color: color-mix(in oklab, var(--foreground) 96%, black 4%);
+}
+
+.activity-group-heading span {
+  flex-shrink: 0;
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: color-mix(in oklab, var(--foreground) 54%, transparent);
+}
+
 .home-hero-facts {
   display: flex;
   flex-wrap: wrap;
@@ -470,8 +508,7 @@ select {
   margin-bottom: 0.05rem;
 }
 
-.auth-status,
-.auth-form {
+.auth-status {
   display: inline-flex;
   align-items: center;
   min-width: 0;
@@ -551,73 +588,161 @@ select {
 
 .auth-panel {
   display: grid;
-  gap: 0.42rem;
-  width: min(100%, 25rem);
+  gap: 0.65rem;
+  width: min(100%, 22rem);
 }
 
 .auth-mode-tabs {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.32rem;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.28rem;
+  padding: 0.24rem;
+  border: 1px solid color-mix(in oklab, var(--border) 82%, white 18%);
+  border-radius: 14px;
+  background: color-mix(in oklab, var(--surface-secondary) 78%, transparent);
+  box-shadow:
+    inset 0 1px 0 color-mix(in oklab, white 70%, transparent),
+    0 8px 18px color-mix(in oklab, black 4%, transparent);
 }
 
 .auth-mode-tab {
-  min-height: 1.82rem;
-  padding: 0.28rem 0.58rem;
-  border-radius: 999px;
-  border: 1px solid color-mix(in oklab, var(--border) 82%, white 18%);
-  background: color-mix(in oklab, var(--surface) 76%, transparent);
-  color: color-mix(in oklab, var(--foreground) 68%, transparent);
-  box-shadow: inset 0 1px 0 color-mix(in oklab, white 64%, transparent);
+  min-height: 2rem;
+  padding: 0.34rem 0.56rem;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: color-mix(in oklab, var(--foreground) 62%, transparent);
+  box-shadow: none;
   font-size: 0.68rem;
   font-weight: 800;
   cursor: pointer;
+  white-space: nowrap;
 }
 
 .auth-mode-tab.active {
-  border-color: color-mix(in oklab, var(--accent) 24%, var(--border));
-  background: color-mix(in oklab, var(--accent) 10%, white 10%);
+  border-color: color-mix(in oklab, var(--accent) 18%, white 28%);
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in oklab, white 96%, var(--surface)),
+      color-mix(in oklab, var(--accent) 8%, white 92%)
+    );
   color: color-mix(in oklab, var(--accent) 84%, black 12%);
+  box-shadow:
+    inset 0 1px 0 color-mix(in oklab, white 76%, transparent),
+    0 6px 12px color-mix(in oklab, var(--accent) 8%, transparent);
 }
 
 .auth-form {
-  position: relative;
-  flex-wrap: wrap;
-  gap: 0.42rem;
-  width: min(100%, 25rem);
-  padding: 0.32rem;
+  display: grid;
+  gap: 0.58rem;
+  width: 100%;
+  padding: 0.72rem;
   border-radius: 16px;
+  border: 1px solid color-mix(in oklab, var(--border) 84%, white 16%);
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in oklab, white 92%, var(--surface)),
+      color-mix(in oklab, var(--surface-secondary) 96%, var(--surface))
+    );
+  box-shadow:
+    inset 0 1px 0 color-mix(in oklab, white 74%, transparent),
+    0 10px 22px color-mix(in oklab, black 5%, transparent);
+}
+
+.auth-email-field {
+  display: grid;
+  gap: 0.3rem;
+  min-width: 0;
+}
+
+.auth-email-field > span {
+  padding-inline: 0.1rem;
+  font-size: 0.66rem;
+  font-weight: 850;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: color-mix(in oklab, var(--foreground) 56%, transparent);
+}
+
+.auth-email-control {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 2.75rem;
+  padding: 0.28rem 0.34rem 0.28rem 0.72rem;
+  border-radius: 13px;
+  border: 1px solid color-mix(in oklab, var(--field-border) 84%, white 16%);
+  background: color-mix(in oklab, white 94%, var(--field));
+  color: color-mix(in oklab, var(--foreground) 56%, transparent);
+  box-shadow:
+    inset 0 1px 0 color-mix(in oklab, white 82%, transparent),
+    0 5px 12px color-mix(in oklab, black 3%, transparent);
+}
+
+.auth-email-control:focus-within {
+  border-color: color-mix(in oklab, var(--accent) 36%, white 18%);
+  box-shadow:
+    0 0 0 3px color-mix(in oklab, var(--accent) 12%, transparent),
+    inset 0 1px 0 color-mix(in oklab, white 82%, transparent);
 }
 
 .auth-email-input {
-  width: min(12.5rem, 42vw);
-  min-width: 9rem;
+  flex: 1;
+  width: 100%;
+  min-width: 0;
 }
 
+.auth-email-input.input,
 .auth-email-input .input {
-  min-height: 2rem;
-  border-radius: 12px;
+  min-height: 2.08rem;
+  padding-inline: 0.2rem;
+  border: 0;
+  border-radius: 9px;
+  background: transparent;
+  box-shadow: none;
+  color: var(--field-foreground);
+}
+
+.auth-email-input.input:hover,
+.auth-email-input.input:focus-visible {
+  background: transparent;
+  box-shadow: none;
+  outline: none;
 }
 
 .auth-submit-button {
-  min-height: 2rem;
-  border-radius: 12px;
+  width: 100%;
+  min-height: 2.45rem;
+  border-radius: 13px;
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in oklab, var(--accent) 84%, white 6%),
+      color-mix(in oklab, var(--accent) 86%, black 14%)
+    );
+  color: var(--accent-foreground);
+  box-shadow:
+    inset 0 1px 0 color-mix(in oklab, white 30%, transparent),
+    0 10px 18px color-mix(in oklab, var(--accent) 18%, transparent);
   white-space: nowrap;
 }
 
 .auth-guest-button {
-  width: fit-content;
-  min-height: 2rem;
-  border-radius: 999px;
+  width: 100%;
+  min-height: 2.3rem;
+  border-radius: 13px;
   color: color-mix(in oklab, var(--foreground) 70%, transparent);
-  background: color-mix(in oklab, var(--surface) 74%, transparent);
+  background: color-mix(in oklab, var(--surface) 86%, transparent);
   border: 1px solid color-mix(in oklab, var(--border) 82%, white 18%);
-  box-shadow: inset 0 1px 0 color-mix(in oklab, white 64%, transparent);
+  box-shadow:
+    inset 0 1px 0 color-mix(in oklab, white 70%, transparent),
+    0 6px 14px color-mix(in oklab, black 4%, transparent);
 }
 
 .auth-message {
-  flex-basis: 100%;
-  padding: 0 0.2rem 0.12rem 1.7rem;
+  padding: 0.08rem 0.15rem;
   font-size: 0.68rem;
   font-weight: 700;
   color: color-mix(in oklab, var(--success) 84%, black 16%);
@@ -850,6 +975,8 @@ select {
 
 .activity-card-title-row .card__title {
   margin: 0;
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 
 .activity-card-icon {
@@ -1470,6 +1597,7 @@ select {
   position: relative;
   display: inline-flex;
   align-items: center;
+  width: fit-content;
   max-width: 100%;
   padding-right: 2.4rem;
   border-radius: 1rem;
@@ -1478,7 +1606,7 @@ select {
 .activity-switcher-hero-select {
   font-family: var(--font-display);
   appearance: none;
-  width: auto;
+  width: 100%;
   max-width: 100%;
   padding: 0 0 0.08rem;
   margin: 0;
@@ -1924,6 +2052,31 @@ select {
   line-height: 1.35;
 }
 
+.item-note {
+  display: grid;
+  gap: 0.22rem;
+  justify-items: start;
+}
+
+.item-related-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 1.8rem;
+  padding: 0.1rem 0;
+  width: fit-content;
+  color: color-mix(in oklab, var(--accent) 88%, black 12%);
+  font-size: 0.68rem;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.item-related-link:hover,
+.item-related-link:focus-visible {
+  color: color-mix(in oklab, var(--accent) 72%, black 26%);
+  text-decoration: underline;
+  text-underline-offset: 0.16rem;
+}
+
 .item-inline-meta {
   display: flex;
   gap: var(--space-2);
@@ -2273,6 +2426,23 @@ select {
 
   .activity-card-title-row {
     width: 100%;
+  }
+
+  .activity-card-title-row .card__title {
+    line-height: 1.16;
+  }
+
+  .activity-card-status {
+    white-space: normal;
+  }
+
+  .activity-group-heading {
+    align-items: start;
+    gap: 0.35rem 0.75rem;
+  }
+
+  .activity-group-heading span {
+    font-size: 0.64rem;
   }
 
   .item-topline {

@@ -7,11 +7,23 @@ interface ActivityNavProps {
   variant?: "inline" | "hero-title"
 }
 
+function groupChecklists(checklists: Checklist[]) {
+  return Object.entries(
+    checklists.reduce<Record<string, Checklist[]>>((groups, checklist) => {
+      const category = checklist.category || "General"
+      groups[category] = groups[category] ? [...groups[category], checklist] : [checklist]
+      return groups
+    }, {}),
+  )
+}
+
 export function ActivityNav({
   checklists,
   activeSlug,
   variant = "inline",
 }: ActivityNavProps) {
+  const checklistGroups = groupChecklists(checklists)
+
   if (variant === "hero-title") {
     return (
       <label className="activity-switcher-hero">
@@ -25,10 +37,14 @@ export function ActivityNav({
             }}
             value={activeSlug}
           >
-            {checklists.map((item) => (
-              <option key={item.slug} value={item.slug}>
-                {item.label}
-              </option>
+            {checklistGroups.map(([category, items]) => (
+              <optgroup key={category} label={category}>
+                {items.map((item) => (
+                  <option key={item.slug} value={item.slug}>
+                    {item.label}
+                  </option>
+                ))}
+              </optgroup>
             ))}
           </select>
           <span className="activity-switcher-hero-chevron" aria-hidden="true">
@@ -50,10 +66,14 @@ export function ActivityNav({
         }}
         value={activeSlug}
       >
-        {checklists.map((item) => (
-          <option key={item.slug} value={item.slug}>
-            {item.label}
-          </option>
+        {checklistGroups.map(([category, items]) => (
+          <optgroup key={category} label={category}>
+            {items.map((item) => (
+              <option key={item.slug} value={item.slug}>
+                {item.label}
+              </option>
+            ))}
+          </optgroup>
         ))}
       </select>
       <span className="activity-switcher-chevron" aria-hidden="true">

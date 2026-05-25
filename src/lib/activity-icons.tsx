@@ -1,9 +1,11 @@
 import {
   Backpack,
   Bike,
-  Briefcase,
+  CalendarDays,
   Flame,
   Mountain,
+  Plane,
+  Snowflake,
   Trees,
 } from "lucide-react"
 
@@ -24,7 +26,14 @@ export function ActivityIcon({
     case "trail-running":
       return <Trees size={size} strokeWidth={strokeWidth} />
     case "travel-preparation":
-      return <Briefcase size={size} strokeWidth={strokeWidth} />
+      return <CalendarDays size={size} strokeWidth={strokeWidth} />
+    case "travel-1-day":
+    case "travel-3-day":
+    case "travel-1-week":
+    case "travel-2-week":
+      return <Plane size={size} strokeWidth={strokeWidth} />
+    case "ski-trip":
+      return <Snowflake size={size} strokeWidth={strokeWidth} />
     case "backpacking":
       return <Backpack size={size} strokeWidth={strokeWidth} />
     case "basic-cycling":

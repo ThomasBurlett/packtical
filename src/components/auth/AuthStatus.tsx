@@ -164,16 +164,21 @@ export function AuthStatus({ variant = "compact" }: AuthStatusProps) {
       </div>
 
       <form className="auth-form" onSubmit={handleSubmit}>
-        <Mail aria-hidden="true" size={15} strokeWidth={2.1} />
-        <Input
-          aria-label="Email address"
-          className="auth-email-input"
-          onChange={(event) => setEmail(event.target.value)}
-          placeholder={getEmailPlaceholder(emailMode)}
-          type="email"
-          value={email}
-          variant="secondary"
-        />
+        <label className="auth-email-field">
+          <span>Email address</span>
+          <div className="auth-email-control">
+            <Mail aria-hidden="true" size={15} strokeWidth={2.1} />
+            <Input
+              aria-label="Email address"
+              className="auth-email-input"
+              onChange={(event) => setEmail(event.target.value)}
+              placeholder={getEmailPlaceholder(emailMode)}
+              type="email"
+              value={email}
+              variant="secondary"
+            />
+          </div>
+        </label>
         <Button
           className="auth-submit-button"
           isDisabled={isSubmitting}
