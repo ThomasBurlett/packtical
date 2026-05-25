@@ -57,7 +57,7 @@ export function AuthGate({ children }: { children: ReactNode }) {
               <p className="auth-gate-copy">
                 Sign in, create an account, or continue as a guest. Guest progress is synced and can be connected to an account later.
               </p>
-              <AuthStatus />
+              <AuthStatus variant="full" />
             </Card.Content>
           </Card>
         </section>

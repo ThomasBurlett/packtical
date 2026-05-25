@@ -158,6 +158,57 @@ select {
   line-height: 1.6;
 }
 
+.account-page {
+  padding-top: var(--space-4);
+}
+
+.account-shell {
+  display: grid;
+  gap: var(--space-4);
+  width: min(100%, 760px);
+}
+
+.account-card {
+  border: 1px solid color-mix(in oklab, white 28%, var(--border));
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in oklab, var(--surface) 98%, white 2%),
+      color-mix(in oklab, var(--surface-secondary) 96%, var(--surface))
+    );
+  box-shadow:
+    0 22px 56px color-mix(in oklab, black 10%, transparent),
+    inset 0 1px 0 color-mix(in oklab, white 72%, transparent);
+}
+
+.account-card-content {
+  display: grid;
+  gap: 0.95rem;
+  padding: clamp(1.1rem, 4vw, 2rem) !important;
+}
+
+.account-copy {
+  display: grid;
+  gap: 0.55rem;
+}
+
+.account-title {
+  max-width: 12ch;
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 8vw, 3.6rem);
+  line-height: 0.98;
+  letter-spacing: -0.06em;
+  color: var(--foreground);
+}
+
+.account-description {
+  max-width: 48ch;
+  margin: 0;
+  color: color-mix(in oklab, var(--foreground) 74%, transparent);
+  line-height: 1.6;
+}
+
 .checklist-page {
   padding: 0.5rem 0 0.9rem;
 }
@@ -455,6 +506,38 @@ select {
 
 .auth-status-signed-in {
   padding-right: 0.28rem;
+}
+
+.auth-save-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.46rem;
+  min-height: 2.25rem;
+  width: fit-content;
+  padding: 0.42rem 0.72rem;
+  border-radius: 999px;
+  border: 1px solid color-mix(in oklab, var(--accent) 24%, var(--border));
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in oklab, var(--accent) 11%, white 89%),
+      color-mix(in oklab, var(--surface) 86%, var(--surface-tertiary))
+    );
+  color: color-mix(in oklab, var(--accent) 84%, black 16%);
+  box-shadow:
+    inset 0 1px 0 color-mix(in oklab, white 72%, transparent),
+    0 8px 18px color-mix(in oklab, var(--accent) 9%, transparent);
+  font-size: 0.72rem;
+  font-weight: 850;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.auth-save-link:hover,
+.auth-save-link:focus-visible {
+  border-color: color-mix(in oklab, var(--accent) 36%, var(--border));
+  color: color-mix(in oklab, var(--accent) 74%, black 24%);
+  transform: translateY(-1px);
 }
 
 .auth-icon-button {

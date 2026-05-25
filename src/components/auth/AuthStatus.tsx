@@ -1,9 +1,13 @@
 import { useState, type FormEvent } from "react";
-import { Button, Input } from "@heroui/react";
-import { Cloud, CloudOff, LogOut, Mail, UserRound } from "lucide-react";
+import { Button, Input, Link } from "@heroui/react";
+import { Cloud, CloudOff, LogOut, Mail, ShieldCheck, UserRound } from "lucide-react";
 import { useAuth, type EmailAuthMode } from "@/auth/auth-context";
 
-export function AuthStatus() {
+type AuthStatusProps = {
+  variant?: "compact" | "full";
+};
+
+export function AuthStatus({ variant = "compact" }: AuthStatusProps) {
   const {
     authError,
     isAnonymous,
@@ -94,6 +98,15 @@ export function AuthStatus() {
           <LogOut aria-hidden="true" size={14} strokeWidth={2.1} />
         </Button>
       </div>
+    );
+  }
+
+  if (variant === "compact") {
+    return (
+      <Link className="auth-save-link" href="#/account">
+        <ShieldCheck aria-hidden="true" size={15} strokeWidth={2.1} />
+        <span>{user && isAnonymous ? "Save progress" : "Account"}</span>
+      </Link>
     );
   }
 
