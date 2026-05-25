@@ -48,15 +48,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       isConfigured: isSupabaseConfigured,
       isLoading,
       user,
-      signInWithGoogle: async () => {
+      signInWithEmail: async (email: string) => {
         if (!supabase) {
           throw new Error("Supabase is not configured.");
         }
 
-        const { error } = await supabase.auth.signInWithOAuth({
-          provider: "google",
+        const { error } = await supabase.auth.signInWithOtp({
+          email,
           options: {
-            redirectTo: window.location.origin + window.location.pathname,
+            emailRedirectTo: window.location.origin + window.location.pathname,
           },
         });
 
