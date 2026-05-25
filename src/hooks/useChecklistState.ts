@@ -3,10 +3,9 @@ import { useAuth } from "@/auth/auth-context";
 import { buildCustomItemId, cloneSections, itemMatchesFilter } from "@/lib/checklist-items";
 import {
   createPersistedChecklistState,
-  loadChecklistState,
+  getEmptyChecklistState,
   normalizePersistedChecklistState,
-  saveChecklistState,
-} from "@/lib/checklist-storage";
+} from "@/lib/checklist-state";
 import {
   loadRemoteChecklistState,
   saveRemoteChecklistState,
@@ -37,23 +36,17 @@ export function useChecklistState(checklist: Checklist) {
     () => new Set(sectionIds.slice(1)),
     [sectionIds],
   );
-  const storedState = useMemo(
-    () => loadChecklistState(checklist.slug, sectionIds),
-    [checklist.slug, sectionIds],
-  );
+  const emptyState = useMemo(() => getEmptyChecklistState(), []);
 
-  const [checkedIds, setCheckedIds] = useState<Set<string>>(() => new Set(storedState.checkedIds));
+  const [checkedIds, setCheckedIds] = useState<Set<string>>(() => new Set(emptyState.checkedIds));
   const [collapsedSections, setCollapsedSections] = useState<Set<string>>(
-    () =>
-      storedState.collapsedSections.length > 0
-        ? new Set(storedState.collapsedSections)
-        : new Set(defaultCollapsedSections),
+    () => new Set(defaultCollapsedSections),
   );
-  const [customItems, setCustomItems] = useState<CustomItemMap>(() => storedState.customItems);
+  const [customItems, setCustomItems] = useState<CustomItemMap>(() => emptyState.customItems);
   const [filter, setFilter] = useState<ChecklistFilter>("all");
   const [drafts, setDrafts] = useState<DraftMap>({});
   const [openForms, setOpenForms] = useState<Set<string>>(() => new Set());
-  const [syncStatus, setSyncStatus] = useState<ChecklistSyncStatus>("local");
+  const [syncStatus, setSyncStatus] = useState<ChecklistSyncStatus>("loading");
   const [remoteReadyUserId, setRemoteReadyUserId] = useState<string | null>(null);
 
   const persistedState = useMemo(
@@ -66,27 +59,16 @@ export function useChecklistState(checklist: Checklist) {
   }, [checklist.slug]);
 
   useEffect(() => {
-    try {
-      saveChecklistState(
-        checklist.slug,
-        checkedIds,
-        collapsedSections,
-        customItems,
-        defaultCollapsedSections,
-      );
-    } catch {
-      return;
-    }
-  }, [checklist.slug, checkedIds, collapsedSections, customItems, defaultCollapsedSections]);
-
-  useEffect(() => {
     let isCancelled = false;
 
     if (!user) {
       window.queueMicrotask(() => {
         if (isCancelled) return;
         setRemoteReadyUserId(null);
-        setSyncStatus("local");
+        setCheckedIds(new Set());
+        setCollapsedSections(new Set(defaultCollapsedSections));
+        setCustomItems({});
+        setSyncStatus("loading");
       });
       return;
     }
@@ -101,16 +83,14 @@ export function useChecklistState(checklist: Checklist) {
       .then((remoteState) => {
         if (isCancelled) return;
 
-        if (remoteState) {
-          const normalizedState = normalizePersistedChecklistState(remoteState, sectionIds);
-          setCheckedIds(new Set(normalizedState.checkedIds));
-          setCollapsedSections(
-            normalizedState.collapsedSections.length > 0
-              ? new Set(normalizedState.collapsedSections)
-              : new Set(defaultCollapsedSections),
-          );
-          setCustomItems(normalizedState.customItems);
-        }
+        const normalizedState = normalizePersistedChecklistState(remoteState, sectionIds);
+        setCheckedIds(new Set(normalizedState.checkedIds));
+        setCollapsedSections(
+          normalizedState.collapsedSections.length > 0
+            ? new Set(normalizedState.collapsedSections)
+            : new Set(defaultCollapsedSections),
+        );
+        setCustomItems(normalizedState.customItems);
 
         setRemoteReadyUserId(user.id);
         setSyncStatus("synced");

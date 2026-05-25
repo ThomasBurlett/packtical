@@ -37,7 +37,7 @@ export function AuthStatus() {
     return (
       <div className="auth-status auth-status-local">
         <CloudOff aria-hidden="true" size={15} strokeWidth={2.1} />
-        <span>Local saves</span>
+        <span>Sync unavailable</span>
       </div>
     );
   }

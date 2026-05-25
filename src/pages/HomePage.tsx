@@ -4,7 +4,6 @@ import { useAuth } from "@/auth/auth-context"
 import { AuthStatus } from "@/components/auth/AuthStatus"
 import { CHECKLISTS } from "@/data/checklists"
 import { ActivityIcon } from "@/lib/activity-icons"
-import { loadChecklistState } from "@/lib/checklist-storage"
 import { loadRemoteChecklistStates } from "@/lib/remote-checklist-storage"
 import type { PersistedChecklistState } from "@/types/checklist"
 
@@ -62,24 +61,9 @@ function createResumeLists(states: Record<string, PersistedChecklistState | null
     )
 }
 
-function loadLocalResumeLists() {
-  return createResumeLists(
-    Object.fromEntries(
-      CHECKLISTS.map((list) => {
-        try {
-          const sectionIds = list.sections.map((section) => section.id)
-          return [list.slug, loadChecklistState(list.slug, sectionIds)]
-        } catch {
-          return [list.slug, null]
-        }
-      }),
-    ),
-  )
-}
-
 export function HomePage() {
   const { user } = useAuth()
-  const [resumeLists, setResumeLists] = useState<ResumeChecklist[]>(loadLocalResumeLists)
+  const [resumeLists, setResumeLists] = useState<ResumeChecklist[]>([])
   const activeResumeLists = resumeLists.filter((list) => list.percent > 0)
 
   useEffect(() => {
@@ -88,7 +72,7 @@ export function HomePage() {
     if (!user) {
       window.queueMicrotask(() => {
         if (!isCancelled) {
-          setResumeLists(loadLocalResumeLists())
+          setResumeLists([])
         }
       })
       return
@@ -102,7 +86,7 @@ export function HomePage() {
       })
       .catch(() => {
         if (!isCancelled) {
-          setResumeLists(loadLocalResumeLists())
+          setResumeLists([])
         }
       })
 
@@ -150,7 +134,7 @@ export function HomePage() {
               <span className="home-hero-fact">
                 {activeResumeLists.length > 0
                   ? `${activeResumeLists.length} in progress`
-                  : "Progress saves automatically"}
+                  : "Synced progress ready"}
               </span>
             </div>
           </div>

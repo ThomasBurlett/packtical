@@ -47,4 +47,4 @@ export interface PersistedChecklistState {
   customItems: Record<string, Array<Pick<ChecklistItem, "id" | "label" | "kind">>>;
 }
 
-export type ChecklistSyncStatus = "local" | "loading" | "saving" | "synced" | "error";
+export type ChecklistSyncStatus = "loading" | "saving" | "synced" | "error";

@@ -55,10 +55,17 @@ function ChecklistPageContent({ checklist }: { checklist: (typeof CHECKLISTS)[nu
     actions,
   } = useChecklistState(checklist)
   const previousCheckedIdsRef = useRef<Set<string>>(new Set(checkedIds))
+  const hasLoadedSyncedStateRef = useRef(false)
   const wasCompleteRef = useRef(totals.total > 0 && totals.checked === totals.total)
   const pendingItemConfettiRef = useRef<{ itemId: string; origin?: ConfettiOrigin } | null>(null)
 
   useEffect(() => {
+    if (syncStatus === "synced" && !hasLoadedSyncedStateRef.current) {
+      previousCheckedIdsRef.current = new Set(checkedIds)
+      hasLoadedSyncedStateRef.current = true
+      return
+    }
+
     const previousCheckedIds = previousCheckedIdsRef.current
     const newlyCheckedIds = [...checkedIds].filter((itemId) => !previousCheckedIds.has(itemId))
 
@@ -79,7 +86,7 @@ function ChecklistPageContent({ checklist }: { checklist: (typeof CHECKLISTS)[nu
 
     pendingItemConfettiRef.current = null
     previousCheckedIdsRef.current = new Set(checkedIds)
-  }, [checkedIds])
+  }, [checkedIds, syncStatus])
 
   useEffect(() => {
     const isComplete = totals.total > 0 && totals.checked === totals.total
@@ -97,6 +104,35 @@ function ChecklistPageContent({ checklist }: { checklist: (typeof CHECKLISTS)[nu
   }
 
   const sectionsCount = sections.length
+
+  if (syncStatus === "loading") {
+    return (
+      <main className="page-frame checklist-page">
+        <header className="page-shell checklist-shell page-header checklist-page-header">
+          <section className="home-hero checklist-hero" aria-labelledby="checklist-title">
+            <div className="checklist-hero-topbar">
+              <Link className="page-back-link" href="#/">
+                <ArrowLeft aria-hidden="true" size={16} strokeWidth={2.2} />
+                Back to checklist hub
+              </Link>
+              <AuthStatus />
+            </div>
+            <div className="home-hero-copy checklist-hero-copy">
+              <div className="checklist-hero-title-block">
+                <h1 className="page-title" id="checklist-title">
+                  {checklist.label}
+                </h1>
+                <Card.Description className="page-subtitle">
+                  Loading your saved checklist progress.
+                </Card.Description>
+              </div>
+            </div>
+          </section>
+        </header>
+      </main>
+    )
+  }
+
   return (
     <main className="page-frame checklist-page">
       <header className="page-shell checklist-shell page-header checklist-page-header">
@@ -196,6 +232,6 @@ function getSyncStatusLabel(syncStatus: ReturnType<typeof useChecklistState>["sy
     case "error":
       return "Sync paused"
     default:
-      return "Local saves"
+      return "Syncing"
   }
 }

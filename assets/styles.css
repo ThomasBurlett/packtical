@@ -113,6 +113,51 @@ select {
   padding: var(--space-4) 0 var(--space-8);
 }
 
+.auth-gate-page {
+  display: grid;
+  align-items: center;
+}
+
+.auth-gate-shell {
+  width: min(100%, 720px);
+}
+
+.auth-gate-card {
+  border: 1px solid color-mix(in oklab, white 28%, var(--border));
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in oklab, var(--surface) 98%, white 2%),
+      color-mix(in oklab, var(--surface-secondary) 96%, var(--surface))
+    );
+  box-shadow:
+    0 22px 56px color-mix(in oklab, black 10%, transparent),
+    inset 0 1px 0 color-mix(in oklab, white 72%, transparent);
+}
+
+.auth-gate-content {
+  display: grid;
+  gap: 0.9rem;
+  padding: clamp(1.1rem, 4vw, 2rem) !important;
+}
+
+.auth-gate-title {
+  max-width: 12ch;
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 8vw, 3.8rem);
+  line-height: 0.98;
+  letter-spacing: -0.06em;
+  color: var(--foreground);
+}
+
+.auth-gate-copy {
+  max-width: 42ch;
+  margin: 0;
+  color: color-mix(in oklab, var(--foreground) 74%, transparent);
+  line-height: 1.6;
+}
+
 .checklist-page {
   padding: 0.5rem 0 0.9rem;
 }

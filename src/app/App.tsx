@@ -1,14 +1,17 @@
 import { Navigate, Route, Routes, useParams } from "react-router-dom";
+import { AuthGate } from "@/auth/AuthGate";
 import { HomePage } from "@/pages/HomePage";
 import { ChecklistPage } from "@/pages/ChecklistPage";
 
 export default function App() {
   return (
-    <Routes>
-      <Route path="/" element={<HomePage />} />
-      <Route path="/:slug" element={<ChecklistRoute />} />
-      <Route path="*" element={<Navigate replace to="/" />} />
-    </Routes>
+    <AuthGate>
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/:slug" element={<ChecklistRoute />} />
+        <Route path="*" element={<Navigate replace to="/" />} />
+      </Routes>
+    </AuthGate>
   );
 }
 

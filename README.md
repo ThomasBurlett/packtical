@@ -16,8 +16,8 @@ Packtical is an interactive prep and packing hub for outdoor activities and trav
 - React application built with Vite
 - Hash-based checklist routes such as `/#/camping` and `/#/backpacking`
 - Legacy activity paths such as `/camping/` and `/backpacking/` redirect into the React app
-- Per-activity local progress saved in `localStorage`
-- Optional Supabase auth and synced progress storage
+- Supabase auth is required before using checklists
+- Per-user checklist progress and custom items are stored in Supabase
 - Ad-hoc custom items supported per section
 
 ## Local development
@@ -33,7 +33,7 @@ Then open the local URL printed by Vite.
 
 ## Supabase sync
 
-The app works without Supabase and falls back to local saves. To enable email magic-link sign-in and synced checklist progress:
+Supabase is required for sign-in and checklist persistence:
 
 1. Create a Supabase project.
 2. Run [docs/supabase.sql](docs/supabase.sql) in the Supabase SQL editor.
