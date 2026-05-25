@@ -41,6 +41,9 @@ The app works without Supabase and falls back to local saves. To enable sign-in 
 4. In Supabase Auth URL settings, add your local dev URL and GitHub Pages URL, for example:
    - `http://localhost:5173`
    - `https://<my-github-username>.github.io/packtical/`
+5. In GitHub, add repository Actions variables or secrets named:
+   - `VITE_SUPABASE_URL`
+   - `VITE_SUPABASE_ANON_KEY`
 
 Only the public anon key belongs in the frontend. Keep the service role key out of GitHub Pages.
 
