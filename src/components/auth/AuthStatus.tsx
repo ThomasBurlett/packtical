@@ -1,34 +1,20 @@
-import { useState, type FormEvent } from "react";
-import { Button, Input } from "@heroui/react";
-import { Cloud, CloudOff, LogOut, Mail } from "lucide-react";
+import { useState } from "react";
+import { Button } from "@heroui/react";
+import { Cloud, CloudOff, LogOut } from "lucide-react";
 import { useAuth } from "@/auth/auth-context";
 
 export function AuthStatus() {
-  const { isConfigured, isLoading, user, signInWithEmail, signOut } = useAuth();
-  const [email, setEmail] = useState("");
-  const [message, setMessage] = useState("");
+  const { isConfigured, isLoading, user, signInWithGoogle, signOut } = useAuth();
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const trimmedEmail = email.trim();
-
-    if (!trimmedEmail) return;
-
+  const handleGoogleSignIn = () => {
     setIsSubmitting(true);
-    setMessage("");
     setError("");
 
-    void signInWithEmail(trimmedEmail)
-      .then(() => {
-        setMessage("Check your email for the sign-in link.");
-        setEmail("");
-      })
+    void signInWithGoogle()
       .catch((signInError: unknown) => {
-        setError(signInError instanceof Error ? signInError.message : "Could not send sign-in link.");
-      })
-      .finally(() => {
+        setError(signInError instanceof Error ? signInError.message : "Could not start Google sign-in.");
         setIsSubmitting(false);
       });
   };
@@ -73,31 +59,18 @@ export function AuthStatus() {
   }
 
   return (
-    <form className="auth-form" onSubmit={handleSubmit}>
-      <Mail aria-hidden="true" size={15} strokeWidth={2.1} />
-      <Input
-        aria-label="Email address"
-        className="auth-email-input"
-        onChange={(event) => setEmail(event.target.value)}
-        placeholder="Email for sync"
-        type="email"
-        value={email}
-        variant="secondary"
-      />
+    <div className="auth-google-wrap">
       <Button
-        className="auth-submit-button"
+        className="auth-google-button"
         isDisabled={isSubmitting}
+        onPress={handleGoogleSignIn}
         size="sm"
-        type="submit"
         variant="secondary"
       >
-        {isSubmitting ? "Sending" : "Send link"}
+        <span className="google-mark" aria-hidden="true">G</span>
+        {isSubmitting ? "Opening Google" : "Sign in with Google"}
       </Button>
-      {message || error ? (
-        <span className={`auth-message${error ? " error" : ""}`}>
-          {error || message}
-        </span>
-      ) : null}
-    </form>
+      {error ? <span className="auth-message error">{error}</span> : null}
+    </div>
   );
 }

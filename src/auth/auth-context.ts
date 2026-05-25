@@ -5,7 +5,7 @@ export type AuthContextValue = {
   isConfigured: boolean;
   isLoading: boolean;
   user: SupabaseUser | null;
-  signInWithEmail: (email: string) => Promise<void>;
+  signInWithGoogle: () => Promise<void>;
   signOut: () => Promise<void>;
 };
 
