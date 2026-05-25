@@ -1,8 +1,11 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Card, Chip, Link } from "@heroui/react"
+import { useAuth } from "@/auth/auth-context"
+import { AuthStatus } from "@/components/auth/AuthStatus"
 import { CHECKLISTS } from "@/data/checklists"
 import { ActivityIcon } from "@/lib/activity-icons"
-import { getStorageKey } from "@/lib/checklist-storage"
+import { loadChecklistState } from "@/lib/checklist-storage"
+import { loadRemoteChecklistStates } from "@/lib/remote-checklist-storage"
 import type { PersistedChecklistState } from "@/types/checklist"
 
 type ResumeChecklist = {
@@ -12,52 +15,44 @@ type ResumeChecklist = {
   percent: number
 }
 
-function loadResumeLists() {
+function createResumeLists(states: Record<string, PersistedChecklistState | null | undefined>) {
   return CHECKLISTS.map((list) => {
     const totalBaseItems = list.sections.reduce(
       (sum, section) => sum + section.items.length,
       0,
     )
+    const parsedState = states[list.slug]
 
-    try {
-      const rawState = localStorage.getItem(getStorageKey(list.slug))
-      const parsedState = rawState
-        ? (JSON.parse(rawState) as PersistedChecklistState | null)
-        : null
-
-      if (!parsedState || typeof parsedState !== "object") {
-        return null
-      }
-
-      const checkedCount = Array.isArray(parsedState.checkedIds)
-        ? parsedState.checkedIds.length
-        : 0
-      const customItemCount =
-        parsedState.customItems && typeof parsedState.customItems === "object"
-          ? Object.values(parsedState.customItems).reduce(
-              (sum, items) => sum + (Array.isArray(items) ? items.length : 0),
-              0,
-            )
-          : 0
-      const totalCount = totalBaseItems + customItemCount
-      const hasSavedState =
-        checkedCount > 0 ||
-        customItemCount > 0 ||
-        (Array.isArray(parsedState.collapsedSections) &&
-          parsedState.collapsedSections.length > 0)
-
-      if (!hasSavedState || totalCount === 0) {
-        return null
-      }
-
-      return {
-        slug: list.slug,
-        checkedCount,
-        totalCount,
-        percent: Math.round((checkedCount / totalCount) * 100),
-      }
-    } catch {
+    if (!parsedState || typeof parsedState !== "object") {
       return null
+    }
+
+    const checkedCount = Array.isArray(parsedState.checkedIds)
+      ? parsedState.checkedIds.length
+      : 0
+    const customItemCount =
+      parsedState.customItems && typeof parsedState.customItems === "object"
+        ? Object.values(parsedState.customItems).reduce(
+            (sum, items) => sum + (Array.isArray(items) ? items.length : 0),
+            0,
+          )
+        : 0
+    const totalCount = totalBaseItems + customItemCount
+    const hasSavedState =
+      checkedCount > 0 ||
+      customItemCount > 0 ||
+      (Array.isArray(parsedState.collapsedSections) &&
+        parsedState.collapsedSections.length > 0)
+
+    if (!hasSavedState || totalCount === 0) {
+      return null
+    }
+
+    return {
+      slug: list.slug,
+      checkedCount,
+      totalCount,
+      percent: Math.round((checkedCount / totalCount) * 100),
     }
   })
     .filter((list): list is ResumeChecklist => list !== null)
@@ -67,9 +62,54 @@ function loadResumeLists() {
     )
 }
 
+function loadLocalResumeLists() {
+  return createResumeLists(
+    Object.fromEntries(
+      CHECKLISTS.map((list) => {
+        try {
+          const sectionIds = list.sections.map((section) => section.id)
+          return [list.slug, loadChecklistState(list.slug, sectionIds)]
+        } catch {
+          return [list.slug, null]
+        }
+      }),
+    ),
+  )
+}
+
 export function HomePage() {
-  const [resumeLists] = useState<ResumeChecklist[]>(loadResumeLists)
+  const { user } = useAuth()
+  const [resumeLists, setResumeLists] = useState<ResumeChecklist[]>(loadLocalResumeLists)
   const activeResumeLists = resumeLists.filter((list) => list.percent > 0)
+
+  useEffect(() => {
+    let isCancelled = false
+
+    if (!user) {
+      window.queueMicrotask(() => {
+        if (!isCancelled) {
+          setResumeLists(loadLocalResumeLists())
+        }
+      })
+      return
+    }
+
+    loadRemoteChecklistStates()
+      .then((states) => {
+        if (!isCancelled) {
+          setResumeLists(createResumeLists(states))
+        }
+      })
+      .catch(() => {
+        if (!isCancelled) {
+          setResumeLists(loadLocalResumeLists())
+        }
+      })
+
+    return () => {
+      isCancelled = true
+    }
+  }, [user])
 
   const resumeMap = Object.fromEntries(
     activeResumeLists.map((list) => [list.slug, list]),
@@ -91,17 +131,18 @@ export function HomePage() {
         <header className="home-hero" aria-labelledby="home-title">
           <div className="home-hero-copy">
             <Chip className="hero-chip" variant="soft">
-              Checklist Hub
+              Packtical
             </Chip>
             <h1 className="hero-title home-launch-title" id="home-title">
-              Pick a checklist and start packing.
+              Pick a plan and pack it right.
             </h1>
             <p className="hero-description">
-              Choose an activity below, keep your progress locally, and come
-              back to the same list whenever you need it.
+              Choose an activity below, track what is ready, and come back to
+              the same prep list whenever you need it.
             </p>
           </div>
           <div className="home-hero-support">
+            <AuthStatus />
             <div className="home-hero-facts" aria-label="Checklist overview">
               <span className="home-hero-fact">
                 {CHECKLISTS.length} activities ready

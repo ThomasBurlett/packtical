@@ -46,3 +46,5 @@ export interface PersistedChecklistState {
   collapsedSections: string[];
   customItems: Record<string, Array<Pick<ChecklistItem, "id" | "label" | "kind">>>;
 }
+
+export type ChecklistSyncStatus = "local" | "loading" | "saving" | "synced" | "error";

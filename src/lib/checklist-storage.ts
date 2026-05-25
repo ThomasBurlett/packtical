@@ -4,6 +4,10 @@ import type { ChecklistItem, PersistedChecklistState } from "@/types/checklist";
 const STORAGE_VERSION = "v2";
 
 export function getStorageKey(slug: string) {
+  return `packtical:${STORAGE_VERSION}:${slug}`;
+}
+
+function getLegacyStorageKey(slug: string) {
   return `adventure-checklist:${STORAGE_VERSION}:${slug}`;
 }
 
@@ -15,46 +19,55 @@ export function loadChecklistState(
   collapsedSections: string[];
   customItems: Record<string, ChecklistItem[]>;
 } {
-  const fallback = {
+  try {
+    const savedState =
+      localStorage.getItem(getStorageKey(slug)) ?? localStorage.getItem(getLegacyStorageKey(slug));
+    const parsed = JSON.parse(savedState || "null") as
+      | PersistedChecklistState
+      | null;
+
+    return normalizePersistedChecklistState(parsed, sectionIds);
+  } catch {
+    return getEmptyChecklistState();
+  }
+}
+
+export function getEmptyChecklistState() {
+  return {
     checkedIds: [],
     collapsedSections: [],
     customItems: {},
   };
-
-  try {
-    const parsed = JSON.parse(localStorage.getItem(getStorageKey(slug)) || "null") as
-      | PersistedChecklistState
-      | null;
-
-    if (!parsed || typeof parsed !== "object") {
-      return fallback;
-    }
-
-    const customItems = Object.fromEntries(
-      sectionIds
-        .map((sectionId) => [sectionId, normalizeCustomItems(parsed.customItems?.[sectionId])] as const)
-        .filter(([, items]) => items.length > 0),
-    );
-
-    return {
-      checkedIds: Array.isArray(parsed.checkedIds) ? parsed.checkedIds : [],
-      collapsedSections: Array.isArray(parsed.collapsedSections)
-        ? parsed.collapsedSections
-        : [],
-      customItems,
-    };
-  } catch {
-    return fallback;
-  }
 }
 
-export function saveChecklistState(
-  slug: string,
+export function normalizePersistedChecklistState(
+  state: PersistedChecklistState | null | undefined,
+  sectionIds: string[],
+) {
+  if (!state || typeof state !== "object") {
+    return getEmptyChecklistState();
+  }
+
+  const customItems = Object.fromEntries(
+    sectionIds
+      .map((sectionId) => [sectionId, normalizeCustomItems(state.customItems?.[sectionId])] as const)
+      .filter(([, items]) => items.length > 0),
+  );
+
+  return {
+    checkedIds: Array.isArray(state.checkedIds) ? state.checkedIds : [],
+    collapsedSections: Array.isArray(state.collapsedSections)
+      ? state.collapsedSections
+      : [],
+    customItems,
+  };
+}
+
+export function createPersistedChecklistState(
   checkedIds: ReadonlySet<string>,
   collapsedSections: ReadonlySet<string>,
   customItems: Record<string, ChecklistItem[]>,
-  defaultCollapsedSections: ReadonlySet<string>,
-) {
+): PersistedChecklistState {
   const serializableCustomItems = Object.fromEntries(
     Object.entries(customItems).map(([sectionId, items]) => [
       sectionId,
@@ -66,26 +79,46 @@ export function saveChecklistState(
     ]),
   );
 
-  const hasCustomItems = Object.values(serializableCustomItems).some(
+  return {
+    checkedIds: [...checkedIds],
+    collapsedSections: [...collapsedSections],
+    customItems: serializableCustomItems,
+  };
+}
+
+export function hasPersistedChecklistState(
+  state: PersistedChecklistState,
+  defaultCollapsedSections: ReadonlySet<string>,
+) {
+  const hasCustomItems = Object.values(state.customItems).some(
     (items) => items.length > 0,
   );
   const isDefaultCollapsedState =
-    collapsedSections.size === defaultCollapsedSections.size &&
-    [...collapsedSections].every((sectionId) =>
+    state.collapsedSections.length === defaultCollapsedSections.size &&
+    state.collapsedSections.every((sectionId) =>
       defaultCollapsedSections.has(sectionId),
     );
 
-  if (checkedIds.size === 0 && !hasCustomItems && isDefaultCollapsedState) {
+  return state.checkedIds.length > 0 || hasCustomItems || !isDefaultCollapsedState;
+}
+
+export function saveChecklistState(
+  slug: string,
+  checkedIds: ReadonlySet<string>,
+  collapsedSections: ReadonlySet<string>,
+  customItems: Record<string, ChecklistItem[]>,
+  defaultCollapsedSections: ReadonlySet<string>,
+) {
+  const state = createPersistedChecklistState(checkedIds, collapsedSections, customItems);
+
+  if (!hasPersistedChecklistState(state, defaultCollapsedSections)) {
     localStorage.removeItem(getStorageKey(slug));
+    localStorage.removeItem(getLegacyStorageKey(slug));
     return;
   }
 
   localStorage.setItem(
     getStorageKey(slug),
-    JSON.stringify({
-      checkedIds: [...checkedIds],
-      collapsedSections: [...collapsedSections],
-      customItems: serializableCustomItems,
-    } satisfies PersistedChecklistState),
+    JSON.stringify(state),
   );
 }

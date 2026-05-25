@@ -1,6 +1,6 @@
-# camping-checklist
+# Packtical
 
-Interactive checklist hub for multiple outdoor activities and travel prep.
+Packtical is an interactive prep and packing hub for outdoor activities and travel.
 
 ## Included checklists
 
@@ -17,6 +17,7 @@ Interactive checklist hub for multiple outdoor activities and travel prep.
 - Hash-based checklist routes such as `/#/camping` and `/#/backpacking`
 - Legacy activity paths such as `/camping/` and `/backpacking/` redirect into the React app
 - Per-activity local progress saved in `localStorage`
+- Optional Supabase auth and synced progress storage
 - Ad-hoc custom items supported per section
 
 ## Local development
@@ -30,6 +31,19 @@ pnpm dev
 
 Then open the local URL printed by Vite.
 
+## Supabase sync
+
+The app works without Supabase and falls back to local saves. To enable sign-in and synced checklist progress:
+
+1. Create a Supabase project.
+2. Run [docs/supabase.sql](docs/supabase.sql) in the Supabase SQL editor.
+3. Copy `.env.example` to `.env.local` and fill in `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY`.
+4. In Supabase Auth URL settings, add your local dev URL and GitHub Pages URL, for example:
+   - `http://localhost:5173`
+   - `https://<my-github-username>.github.io/packtical/`
+
+Only the public anon key belongs in the frontend. Keep the service role key out of GitHub Pages.
+
 ## GitHub Pages
 
 This site now deploys through GitHub Actions instead of serving the repository root directly.
@@ -40,7 +54,7 @@ Repository settings should use:
 
 Expected Pages URL:
 
-`https://<my-github-username>.github.io/camping-checklist/`
+`https://<my-github-username>.github.io/packtical/`
 
 Main React routes:
 
@@ -53,7 +67,7 @@ Main React routes:
 
 ## If Pages is showing an old custom domain
 
-If your site opens at `http://burlett.xyz/camping-checklist/`, a custom domain is still configured for this repository or your account-level Pages config.
+If your site opens at `http://burlett.xyz/packtical/`, a custom domain is still configured for this repository or your account-level Pages config.
 
 To reset it:
 

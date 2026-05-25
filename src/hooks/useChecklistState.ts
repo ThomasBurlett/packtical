@@ -1,11 +1,22 @@
 import { useEffect, useMemo, useState } from "react";
+import { useAuth } from "@/auth/auth-context";
 import { buildCustomItemId, cloneSections, itemMatchesFilter } from "@/lib/checklist-items";
-import { loadChecklistState, saveChecklistState } from "@/lib/checklist-storage";
+import {
+  createPersistedChecklistState,
+  loadChecklistState,
+  normalizePersistedChecklistState,
+  saveChecklistState,
+} from "@/lib/checklist-storage";
+import {
+  loadRemoteChecklistState,
+  saveRemoteChecklistState,
+} from "@/lib/remote-checklist-storage";
 import type {
   Checklist,
   ChecklistFilter,
   ChecklistItem,
   ChecklistKind,
+  ChecklistSyncStatus,
   ChecklistSectionState,
 } from "@/types/checklist";
 
@@ -19,6 +30,7 @@ type DraftMap = Record<string, DraftState>;
 type CustomItemMap = Record<string, ChecklistItem[]>;
 
 export function useChecklistState(checklist: Checklist) {
+  const { user } = useAuth();
   const baseSections = useMemo(() => cloneSections(checklist.sections), [checklist.sections]);
   const sectionIds = useMemo(() => baseSections.map((section) => section.id), [baseSections]);
   const defaultCollapsedSections = useMemo(
@@ -41,6 +53,13 @@ export function useChecklistState(checklist: Checklist) {
   const [filter, setFilter] = useState<ChecklistFilter>("all");
   const [drafts, setDrafts] = useState<DraftMap>({});
   const [openForms, setOpenForms] = useState<Set<string>>(() => new Set());
+  const [syncStatus, setSyncStatus] = useState<ChecklistSyncStatus>("local");
+  const [remoteReadyUserId, setRemoteReadyUserId] = useState<string | null>(null);
+
+  const persistedState = useMemo(
+    () => createPersistedChecklistState(checkedIds, collapsedSections, customItems),
+    [checkedIds, collapsedSections, customItems],
+  );
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -59,6 +78,69 @@ export function useChecklistState(checklist: Checklist) {
       return;
     }
   }, [checklist.slug, checkedIds, collapsedSections, customItems, defaultCollapsedSections]);
+
+  useEffect(() => {
+    let isCancelled = false;
+
+    if (!user) {
+      window.queueMicrotask(() => {
+        if (isCancelled) return;
+        setRemoteReadyUserId(null);
+        setSyncStatus("local");
+      });
+      return;
+    }
+
+    window.queueMicrotask(() => {
+      if (isCancelled) return;
+      setRemoteReadyUserId(null);
+      setSyncStatus("loading");
+    });
+
+    loadRemoteChecklistState(checklist.slug)
+      .then((remoteState) => {
+        if (isCancelled) return;
+
+        if (remoteState) {
+          const normalizedState = normalizePersistedChecklistState(remoteState, sectionIds);
+          setCheckedIds(new Set(normalizedState.checkedIds));
+          setCollapsedSections(
+            normalizedState.collapsedSections.length > 0
+              ? new Set(normalizedState.collapsedSections)
+              : new Set(defaultCollapsedSections),
+          );
+          setCustomItems(normalizedState.customItems);
+        }
+
+        setRemoteReadyUserId(user.id);
+        setSyncStatus("synced");
+      })
+      .catch(() => {
+        if (isCancelled) return;
+        setSyncStatus("error");
+      });
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [checklist.slug, defaultCollapsedSections, sectionIds, user]);
+
+  useEffect(() => {
+    if (!user || remoteReadyUserId !== user.id) {
+      return;
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      setSyncStatus("saving");
+      saveRemoteChecklistState(user.id, checklist.slug, persistedState)
+        .then(() => setSyncStatus("synced"))
+        .catch(() => setSyncStatus("error"));
+    }, 350);
+
+    return () => {
+      window.clearTimeout(timeoutId);
+    };
+  }, [checklist.slug, persistedState, remoteReadyUserId, user]);
 
   const sections = useMemo<ChecklistSectionState[]>(
     () =>
@@ -285,6 +367,7 @@ export function useChecklistState(checklist: Checklist) {
     drafts,
     openForms,
     checkedIds,
+    syncStatus,
     hasVisibleOpenSection,
     actions,
   };

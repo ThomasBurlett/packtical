@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react"
 import { Card, Link } from "@heroui/react"
-import { ArrowLeft, Layers3 } from "lucide-react"
+import { ArrowLeft, Cloud, Layers3 } from "lucide-react"
+import { AuthStatus } from "@/components/auth/AuthStatus"
 import { ActivityNav } from "@/components/checklist/ActivityNav"
 import { ChecklistSection } from "@/components/checklist/ChecklistSection"
 import { ChecklistToolbar } from "@/components/checklist/ChecklistToolbar"
@@ -49,6 +50,7 @@ function ChecklistPageContent({ checklist }: { checklist: (typeof CHECKLISTS)[nu
     drafts,
     openForms,
     checkedIds,
+    syncStatus,
     hasVisibleOpenSection,
     actions,
   } = useChecklistState(checklist)
@@ -104,6 +106,7 @@ function ChecklistPageContent({ checklist }: { checklist: (typeof CHECKLISTS)[nu
               <ArrowLeft aria-hidden="true" size={16} strokeWidth={2.2} />
               Back to checklist hub
             </Link>
+            <AuthStatus />
           </div>
 
           <div className="home-hero-copy checklist-hero-copy">
@@ -131,6 +134,10 @@ function ChecklistPageContent({ checklist }: { checklist: (typeof CHECKLISTS)[nu
               <div className="home-hero-fact checklist-hero-fact">
                 <Layers3 aria-hidden="true" size={15} strokeWidth={2.1} />
                 <span>{sectionsCount} sections</span>
+              </div>
+              <div className="home-hero-fact checklist-hero-fact">
+                <Cloud aria-hidden="true" size={15} strokeWidth={2.1} />
+                <span>{getSyncStatusLabel(syncStatus)}</span>
               </div>
             </div>
           </div>
@@ -176,4 +183,19 @@ function ChecklistPageContent({ checklist }: { checklist: (typeof CHECKLISTS)[nu
       </section>
     </main>
   )
+}
+
+function getSyncStatusLabel(syncStatus: ReturnType<typeof useChecklistState>["syncStatus"]) {
+  switch (syncStatus) {
+    case "loading":
+      return "Loading sync"
+    case "saving":
+      return "Saving"
+    case "synced":
+      return "Synced"
+    case "error":
+      return "Sync paused"
+    default:
+      return "Local saves"
+  }
 }

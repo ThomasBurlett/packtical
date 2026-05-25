@@ -1,6 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { HashRouter } from "react-router-dom";
+import { AuthProvider } from "@/auth/AuthProvider";
 import App from "@/app/App";
 import "../assets/styles.css";
 
@@ -14,8 +15,10 @@ document.documentElement.lang = "en";
 
 ReactDOM.createRoot(rootElement).render(
   <React.StrictMode>
-    <HashRouter>
-      <App />
-    </HashRouter>
+    <AuthProvider>
+      <HashRouter>
+        <App />
+      </HashRouter>
+    </AuthProvider>
   </React.StrictMode>,
 );

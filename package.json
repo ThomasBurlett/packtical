@@ -1,5 +1,5 @@
 {
-  "name": "camping-checklist",
+  "name": "packtical",
   "private": true,
   "version": "1.0.0",
   "packageManager": "pnpm@9.0.6",
@@ -13,6 +13,7 @@
   "dependencies": {
     "@heroui/react": "^3.0.5",
     "@heroui/styles": "^3.0.5",
+    "@supabase/supabase-js": "^2.106.1",
     "@tailwindcss/vite": "^4.3.0",
     "canvas-confetti": "^1.9.4",
     "lucide-react": "^1.16.0",
