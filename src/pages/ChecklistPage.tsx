@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react"
 import { Card, Link } from "@heroui/react"
-import { ArrowLeft, Cloud, Layers3 } from "lucide-react"
+import { ArrowLeft, Cloud, FolderOpen, Layers3 } from "lucide-react"
 import { AuthStatus } from "@/components/auth/AuthStatus"
 import { ActivityNav } from "@/components/checklist/ActivityNav"
 import { ChecklistSection } from "@/components/checklist/ChecklistSection"
@@ -119,6 +119,10 @@ function ChecklistPageContent({ checklist }: { checklist: (typeof CHECKLISTS)[nu
             </div>
             <div className="home-hero-copy checklist-hero-copy">
               <div className="checklist-hero-title-block">
+                <div className="checklist-category-badge" aria-label={`${checklist.category} category`}>
+                  <FolderOpen aria-hidden="true" size={14} strokeWidth={2.2} />
+                  <span>{checklist.category}</span>
+                </div>
                 <h1 className="page-title" id="checklist-title">
                   {checklist.label}
                 </h1>
@@ -148,6 +152,10 @@ function ChecklistPageContent({ checklist }: { checklist: (typeof CHECKLISTS)[nu
           <div className="home-hero-copy checklist-hero-copy">
             <div className="checklist-hero-main">
               <div className="checklist-hero-title-block">
+                <div className="checklist-category-badge" aria-label={`${checklist.category} category`}>
+                  <FolderOpen aria-hidden="true" size={14} strokeWidth={2.2} />
+                  <span>{checklist.category}</span>
+                </div>
                 <h1 className="sr-only" id="checklist-title">
                   {checklist.label}
                 </h1>
@@ -163,6 +171,10 @@ function ChecklistPageContent({ checklist }: { checklist: (typeof CHECKLISTS)[nu
             </div>
 
             <div className="home-hero-facts checklist-hero-facts" aria-label="Checklist summary">
+              <div className="home-hero-fact checklist-hero-fact checklist-hero-category-fact">
+                <FolderOpen aria-hidden="true" size={15} strokeWidth={2.1} />
+                <span>{checklist.category} category</span>
+              </div>
               <div className="home-hero-fact checklist-hero-fact checklist-hero-icon-fact">
                 <ActivityIcon slug={checklist.slug} size={16} strokeWidth={2} />
                 <span>{checklist.label}</span>
