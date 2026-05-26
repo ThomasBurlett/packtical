@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useAuth } from "@/auth/auth-context";
+import { useToast } from "@/components/toast/toast-context";
 import { buildCustomItemId, cloneSections, itemMatchesFilter } from "@/lib/checklist-items";
 import {
   createPersistedChecklistState,
@@ -10,6 +11,7 @@ import {
   loadRemoteChecklistState,
   saveRemoteChecklistState,
 } from "@/lib/remote-checklist-storage";
+import { getSupabaseErrorMessage } from "@/lib/supabase-errors";
 import type {
   Checklist,
   ChecklistFilter,
@@ -30,6 +32,7 @@ type CustomItemMap = Record<string, ChecklistItem[]>;
 
 export function useChecklistState(checklist: Checklist) {
   const { syncVersion, user } = useAuth();
+  const { showToast } = useToast();
   const baseSections = useMemo(() => cloneSections(checklist.sections), [checklist.sections]);
   const sectionIds = useMemo(() => baseSections.map((section) => section.id), [baseSections]);
   const defaultCollapsedSections = useMemo(
@@ -95,15 +98,27 @@ export function useChecklistState(checklist: Checklist) {
         setRemoteReadyUserId(user.id);
         setSyncStatus("synced");
       })
-      .catch(() => {
+      .catch((error: unknown) => {
         if (isCancelled) return;
+        showToast({
+          title: `${checklist.label} progress may be out of date`,
+          description: getSupabaseErrorMessage(error),
+        });
         setSyncStatus("error");
       });
 
     return () => {
       isCancelled = true;
     };
-  }, [checklist.slug, defaultCollapsedSections, sectionIds, syncVersion, user]);
+  }, [
+    checklist.label,
+    checklist.slug,
+    defaultCollapsedSections,
+    sectionIds,
+    showToast,
+    syncVersion,
+    user,
+  ]);
 
   useEffect(() => {
     if (!user || remoteReadyUserId !== user.id) {
@@ -114,13 +129,19 @@ export function useChecklistState(checklist: Checklist) {
       setSyncStatus("saving");
       saveRemoteChecklistState(user.id, checklist.slug, persistedState)
         .then(() => setSyncStatus("synced"))
-        .catch(() => setSyncStatus("error"));
+        .catch((error: unknown) => {
+          showToast({
+            title: `${checklist.label} changes were not saved`,
+            description: getSupabaseErrorMessage(error),
+          });
+          setSyncStatus("error");
+        });
     }, 350);
 
     return () => {
       window.clearTimeout(timeoutId);
     };
-  }, [checklist.slug, persistedState, remoteReadyUserId, user]);
+  }, [checklist.label, checklist.slug, persistedState, remoteReadyUserId, showToast, user]);
 
   const sections = useMemo<ChecklistSectionState[]>(
     () =>

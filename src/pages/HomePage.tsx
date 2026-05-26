@@ -1,10 +1,13 @@
 import { useEffect, useState } from "react"
 import { Card, Chip, Link } from "@heroui/react"
+import { ChevronDown } from "lucide-react"
 import { useAuth } from "@/auth/auth-context"
 import { AuthStatus } from "@/components/auth/AuthStatus"
+import { useToast } from "@/components/toast/toast-context"
 import { CHECKLISTS } from "@/data/checklists"
 import { ActivityIcon } from "@/lib/activity-icons"
 import { loadRemoteChecklistStates } from "@/lib/remote-checklist-storage"
+import { getSupabaseErrorMessage } from "@/lib/supabase-errors"
 import type { PersistedChecklistState } from "@/types/checklist"
 
 type ResumeChecklist = {
@@ -15,6 +18,15 @@ type ResumeChecklist = {
 }
 
 const CATEGORY_ORDER = ["Travel", "Outdoor", "Cycling", "Snow"]
+const CHECKLIST_ORDER_BY_CATEGORY: Record<string, string[]> = {
+  Travel: [
+    "travel-preparation",
+    "travel-1-day",
+    "travel-3-day",
+    "travel-1-week",
+    "travel-2-week",
+  ],
+}
 
 function sortCategoryNames(left: string, right: string) {
   const leftIndex = CATEGORY_ORDER.indexOf(left)
@@ -26,6 +38,26 @@ function sortCategoryNames(left: string, right: string) {
   }
 
   return left.localeCompare(right)
+}
+
+function sortChecklistsByCategory(
+  category: string,
+  left: (typeof CHECKLISTS)[number],
+  right: (typeof CHECKLISTS)[number],
+) {
+  const categoryOrder = CHECKLIST_ORDER_BY_CATEGORY[category]
+
+  if (categoryOrder) {
+    const leftIndex = categoryOrder.indexOf(left.slug)
+    const rightIndex = categoryOrder.indexOf(right.slug)
+
+    if (leftIndex !== -1 || rightIndex !== -1) {
+      return (leftIndex === -1 ? Number.MAX_SAFE_INTEGER : leftIndex) -
+        (rightIndex === -1 ? Number.MAX_SAFE_INTEGER : rightIndex)
+    }
+  }
+
+  return left.label.localeCompare(right.label)
 }
 
 function createResumeLists(states: Record<string, PersistedChecklistState | null | undefined>) {
@@ -77,7 +109,9 @@ function createResumeLists(states: Record<string, PersistedChecklistState | null
 
 export function HomePage() {
   const { syncVersion, user } = useAuth()
+  const { showToast } = useToast()
   const [resumeLists, setResumeLists] = useState<ResumeChecklist[]>([])
+  const [openCategories, setOpenCategories] = useState<Set<string>>(() => new Set())
   const activeResumeLists = resumeLists.filter((list) => list.percent > 0)
 
   useEffect(() => {
@@ -98,8 +132,12 @@ export function HomePage() {
           setResumeLists(createResumeLists(states))
         }
       })
-      .catch(() => {
+      .catch((error: unknown) => {
         if (!isCancelled) {
+          showToast({
+            title: "Progress may be out of date",
+            description: getSupabaseErrorMessage(error),
+          })
           setResumeLists([])
         }
       })
@@ -107,7 +145,7 @@ export function HomePage() {
     return () => {
       isCancelled = true
     }
-  }, [syncVersion, user])
+  }, [showToast, syncVersion, user])
 
   const resumeMap = Object.fromEntries(
     activeResumeLists.map((list) => [list.slug, list]),
@@ -128,7 +166,21 @@ export function HomePage() {
       groups[category] = groups[category] ? [...groups[category], checklist] : [checklist]
       return groups
     }, {}),
-  ).sort(([left], [right]) => sortCategoryNames(left, right))
+  )
+    .map(([category, checklists]) => [
+      category,
+      [...checklists].sort((left, right) => sortChecklistsByCategory(category, left, right)),
+    ] as const)
+    .sort(([left], [right]) => sortCategoryNames(left, right))
+
+  const toggleCategory = (category: string) => {
+    setOpenCategories((current) => {
+      const next = new Set(current)
+      if (next.has(category)) next.delete(category)
+      else next.add(category)
+      return next
+    })
+  }
 
   return (
     <main className="page-frame">
@@ -173,70 +225,95 @@ export function HomePage() {
             </div>
           </header>
           <div className="activity-groups">
-            {checklistGroups.map(([category, checklists]) => (
-              <section
-                className="activity-group"
-                key={category}
-                aria-labelledby={`activity-category-${category.toLowerCase()}`}
-              >
-                <div className="activity-group-heading">
-                  <h3 id={`activity-category-${category.toLowerCase()}`}>{category}</h3>
-                  <span>{checklists.length} checklists</span>
-                </div>
-                <div className="activity-grid">
-                  {checklists.map((list) => {
-                    const progress = resumeMap[list.slug]
+            {checklistGroups.map(([category, checklists]) => {
+              const isOpen = openCategories.has(category)
+              const categoryId = `activity-category-${category.toLowerCase()}`
+              const panelId = `${categoryId}-panel`
+              const inProgressCount = checklists.filter((list) => resumeMap[list.slug]).length
 
-                    return (
-                      <Link
-                        className="activity-card-link"
-                        href={`#/${list.slug}`}
-                        key={list.slug}
-                      >
-                        <Card className="activity-card" variant="secondary">
-                          <Card.Header className="activity-card-header">
-                            <div className="activity-card-topline">
-                              <div className="activity-card-title-row">
-                                <span
-                                  className="activity-card-icon"
-                                  aria-hidden="true"
-                                >
-                                  <ActivityIcon slug={list.slug} size={18} strokeWidth={2.1} />
-                                </span>
-                                <Card.Title>{list.label}</Card.Title>
-                              </div>
-                              {progress ? (
-                                <span className="activity-card-status">
-                                  {progress.percent}% complete
-                                </span>
-                              ) : null}
-                            </div>
-                            <Card.Description>{list.summary}</Card.Description>
-                          </Card.Header>
-                          <Card.Content
-                            className={`activity-card-progress${progress ? "" : " activity-card-progress-empty"}`}
-                          >
-                            <div
-                              aria-hidden="true"
-                              className="activity-card-progress-bar"
-                              role="presentation"
+              return (
+                <section
+                  className={`activity-group${isOpen ? " open" : ""}`}
+                  key={category}
+                  aria-labelledby={categoryId}
+                >
+                  <button
+                    aria-controls={panelId}
+                    aria-expanded={isOpen}
+                    className="activity-group-heading"
+                    onClick={() => toggleCategory(category)}
+                    type="button"
+                  >
+                    <span className="activity-group-heading-copy">
+                      <h3 id={categoryId}>{category}</h3>
+                      <span>
+                        {checklists.length} {checklists.length === 1 ? "checklist" : "checklists"}
+                        {inProgressCount > 0 ? ` - ${inProgressCount} in progress` : ""}
+                      </span>
+                    </span>
+                    <span className="activity-group-chevron" aria-hidden="true">
+                      <ChevronDown size={18} strokeWidth={2.2} />
+                    </span>
+                  </button>
+                  {isOpen ? (
+                    <div className="activity-group-panel" id={panelId}>
+                      <div className="activity-grid">
+                        {checklists.map((list) => {
+                          const progress = resumeMap[list.slug]
+
+                          return (
+                            <Link
+                              className="activity-card-link"
+                              href={`#/${list.slug}`}
+                              key={list.slug}
                             >
-                              <span style={{ width: `${progress?.percent ?? 0}%` }} />
-                            </div>
-                          </Card.Content>
-                          <Card.Footer className="activity-card-footer">
-                            <span>
-                              {progress ? "Resume checklist " : "Open checklist "}
-                              <span aria-hidden="true">&rarr;</span>
-                            </span>
-                          </Card.Footer>
-                        </Card>
-                      </Link>
-                    )
-                  })}
-                </div>
-              </section>
-            ))}
+                              <Card className="activity-card" variant="secondary">
+                                <Card.Header className="activity-card-header">
+                                  <div className="activity-card-topline">
+                                    <div className="activity-card-title-row">
+                                      <span
+                                        className="activity-card-icon"
+                                        aria-hidden="true"
+                                      >
+                                        <ActivityIcon slug={list.slug} size={18} strokeWidth={2.1} />
+                                      </span>
+                                      <Card.Title>{list.label}</Card.Title>
+                                    </div>
+                                    {progress ? (
+                                      <span className="activity-card-status">
+                                        {progress.percent}% complete
+                                      </span>
+                                    ) : null}
+                                  </div>
+                                  <Card.Description>{list.summary}</Card.Description>
+                                </Card.Header>
+                                <Card.Content
+                                  className={`activity-card-progress${progress ? "" : " activity-card-progress-empty"}`}
+                                >
+                                  <div
+                                    aria-hidden="true"
+                                    className="activity-card-progress-bar"
+                                    role="presentation"
+                                  >
+                                    <span style={{ width: `${progress?.percent ?? 0}%` }} />
+                                  </div>
+                                </Card.Content>
+                                <Card.Footer className="activity-card-footer">
+                                  <span>
+                                    {progress ? "Resume checklist " : "Open checklist "}
+                                    <span aria-hidden="true">&rarr;</span>
+                                  </span>
+                                </Card.Footer>
+                              </Card>
+                            </Link>
+                          )
+                        })}
+                      </div>
+                    </div>
+                  ) : null}
+                </section>
+              )
+            })}
           </div>
         </section>
       </section>

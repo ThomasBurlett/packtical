@@ -31,6 +31,14 @@ pnpm dev
 
 Then open the local URL printed by Vite.
 
+To avoid Supabase auth rate limits while testing locally, set this in `.env.local`:
+
+```bash
+VITE_USE_LOCAL_AUTH=true
+```
+
+Local auth only works in Vite development mode. It signs the app in as `local-dev@packtical.test` and stores checklist progress in browser `localStorage` instead of Supabase.
+
 ## Supabase sync
 
 Supabase is required for checklist persistence. Visitors can sign in, create an account, or continue with an anonymous Supabase user and attach that progress to an email account later:
@@ -41,6 +49,7 @@ Supabase is required for checklist persistence. Visitors can sign in, create an 
 4. In Supabase Auth Providers, keep Email enabled and confirm magic links are allowed.
 5. If Supabase shows a manual identity linking setting, enable it so anonymous users can connect an email identity.
 6. Copy `.env.example` to `.env.local` and fill in `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY`.
+   - Use `VITE_USE_LOCAL_AUTH=true` only for local development when you want to bypass Supabase auth.
 7. In Supabase Auth URL settings, add your local dev URL and GitHub Pages URL, for example:
    - `http://localhost:5173`
    - `https://<my-github-username>.github.io/packtical/`

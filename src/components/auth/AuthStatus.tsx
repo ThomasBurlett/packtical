@@ -2,6 +2,7 @@ import { useState, type FormEvent } from "react";
 import { Button, Input, Link } from "@heroui/react";
 import { Cloud, CloudOff, LogOut, Mail, ShieldCheck, UserRound } from "lucide-react";
 import { useAuth, type EmailAuthMode } from "@/auth/auth-context";
+import { getSupabaseErrorMessage } from "@/lib/supabase-errors";
 
 type AuthStatusProps = {
   variant?: "compact" | "full";
@@ -41,7 +42,7 @@ export function AuthStatus({ variant = "compact" }: AuthStatusProps) {
         setEmail("");
       })
       .catch((signInError: unknown) => {
-        setError(signInError instanceof Error ? signInError.message : "Could not send sign-in link.");
+        setError(getSupabaseErrorMessage(signInError));
       })
       .finally(() => {
         setIsSubmitting(false);
@@ -55,7 +56,7 @@ export function AuthStatus({ variant = "compact" }: AuthStatusProps) {
 
     void startAnonymousSession()
       .catch((anonymousError: unknown) => {
-        setError(anonymousError instanceof Error ? anonymousError.message : "Could not start a guest session.");
+        setError(getSupabaseErrorMessage(anonymousError));
       })
       .finally(() => {
         setIsSubmitting(false);

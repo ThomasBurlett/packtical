@@ -15,11 +15,24 @@ import {
   type AuthContextValue,
   type EmailAuthMode,
 } from "@/auth/auth-context";
-import { isSupabaseConfigured, supabase, type SupabaseUser } from "@/lib/supabase";
+import { createLocalDevUser } from "@/auth/local-dev-user";
+import { useToast } from "@/components/toast/toast-context";
+import { getSupabaseErrorMessage } from "@/lib/supabase-errors";
+import {
+  isLocalSupabaseMockEnabled,
+  isSupabaseConfigured,
+  supabase,
+  type SupabaseUser,
+} from "@/lib/supabase";
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<SupabaseUser | null>(null);
-  const [isLoading, setIsLoading] = useState(() => isSupabaseConfigured);
+  const { showToast } = useToast();
+  const [user, setUser] = useState<SupabaseUser | null>(() =>
+    isLocalSupabaseMockEnabled ? createLocalDevUser() : null,
+  );
+  const [isLoading, setIsLoading] = useState(
+    () => isSupabaseConfigured && !isLocalSupabaseMockEnabled,
+  );
   const [authError, setAuthError] = useState("");
   const [syncVersion, setSyncVersion] = useState(0);
   const anonymousSignInPromiseRef = useRef<Promise<void> | null>(null);
@@ -37,11 +50,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setSyncVersion((current) => current + 1);
       })
       .catch((error: unknown) => {
-        setAuthError(error instanceof Error ? error.message : "Could not sync guest progress.");
+        const message = getSupabaseErrorMessage(error);
+        setAuthError(message);
+        showToast({
+          title: "We couldn't move your guest progress",
+          description: message,
+        });
       });
-  }, []);
+  }, [showToast]);
 
   const startAnonymousSession = useCallback(async () => {
+    if (isLocalSupabaseMockEnabled) {
+      finishUserSession(createLocalDevUser());
+      return;
+    }
+
     if (!supabase) {
       return;
     }
@@ -68,6 +91,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [finishUserSession]);
 
   useEffect(() => {
+    if (isLocalSupabaseMockEnabled) {
+      return;
+    }
+
     if (!supabase) {
       return;
     }
@@ -89,7 +116,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       })
       .catch((error: unknown) => {
         if (!isMounted) return;
-        setAuthError(error instanceof Error ? error.message : "Could not check your session.");
+        const message = getSupabaseErrorMessage(error);
+        setAuthError(message);
+        showToast({
+          title: "We couldn't check your saved session",
+          description: message,
+        });
         setIsLoading(false);
       });
 
@@ -109,17 +141,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       isMounted = false;
       subscription.unsubscribe();
     };
-  }, [finishUserSession, startAnonymousSession]);
+  }, [finishUserSession, showToast, startAnonymousSession]);
 
   const value = useMemo<AuthContextValue>(
     () => ({
       authError,
       isConfigured: isSupabaseConfigured,
-      isAnonymous: Boolean(user?.is_anonymous),
+      isAnonymous: isLocalSupabaseMockEnabled ? false : Boolean(user?.is_anonymous),
       isLoading,
       syncVersion,
       user,
       signInWithEmail: async (email: string, mode: EmailAuthMode) => {
+        if (isLocalSupabaseMockEnabled) {
+          finishUserSession({
+            ...createLocalDevUser(),
+            email: email.trim() || "local-dev@packtical.test",
+          });
+          return;
+        }
+
         if (!supabase) {
           throw new Error("Supabase is not configured.");
         }
@@ -132,15 +172,35 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             },
           );
 
-          if (error) throw error;
+          if (error) {
+            showToast({
+              title: "We couldn't connect your guest progress",
+              description: getSupabaseErrorMessage(error),
+            });
+            throw error;
+          }
           return;
         }
 
         if (mode === "connect-existing" && user?.is_anonymous) {
-          await storePendingAnonymousProgress();
+          try {
+            await storePendingAnonymousProgress();
+          } catch (error) {
+            showToast({
+              title: "We couldn't prepare your guest progress",
+              description: getSupabaseErrorMessage(error),
+            });
+            throw error;
+          }
 
           const { error: signOutError } = await supabase.auth.signOut();
-          if (signOutError) throw signOutError;
+          if (signOutError) {
+            showToast({
+              title: "We couldn't switch accounts",
+              description: getSupabaseErrorMessage(signOutError),
+            });
+            throw signOutError;
+          }
         }
 
         const { error } = await supabase.auth.signInWithOtp({
@@ -151,9 +211,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           },
         });
 
-        if (error) throw error;
+        if (error) {
+          showToast({
+            title:
+              mode === "create"
+                ? "We couldn't create that account"
+                : "We couldn't send the sign-in link",
+            description: getSupabaseErrorMessage(error),
+          });
+          throw error;
+        }
       },
       startAnonymousSession: async () => {
+        if (isLocalSupabaseMockEnabled) {
+          finishUserSession(createLocalDevUser());
+          return;
+        }
+
         if (!supabase) {
           throw new Error("Supabase is not configured.");
         }
@@ -161,17 +235,34 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setIsLoading(true);
         try {
           await startAnonymousSession();
+        } catch (error) {
+          showToast({
+            title: "We couldn't start guest mode",
+            description: getSupabaseErrorMessage(error),
+          });
+          throw error;
         } finally {
           setIsLoading(false);
         }
       },
       signOut: async () => {
+        if (isLocalSupabaseMockEnabled) {
+          setUser(null);
+          return;
+        }
+
         if (!supabase) return;
         const { error } = await supabase.auth.signOut();
-        if (error) throw error;
+        if (error) {
+          showToast({
+            title: "We couldn't sign you out",
+            description: getSupabaseErrorMessage(error),
+          });
+          throw error;
+        }
       },
     }),
-    [authError, isLoading, startAnonymousSession, syncVersion, user],
+    [authError, finishUserSession, isLoading, showToast, startAnonymousSession, syncVersion, user],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

@@ -402,18 +402,49 @@ select {
 
 .activity-group {
   display: grid;
-  gap: 0.85rem;
+  gap: 0.75rem;
+}
+
+.activity-group.open {
+  gap: 0;
 }
 
 .activity-group-heading {
   display: flex;
-  flex-wrap: wrap;
-  align-items: end;
+  align-items: center;
   justify-content: space-between;
-  gap: var(--space-3);
-  min-height: 2rem;
-  padding-bottom: 0.55rem;
-  border-bottom: 1px solid color-mix(in oklab, var(--border) 78%, transparent);
+  gap: 0.85rem;
+  width: 100%;
+  min-height: 3.4rem;
+  padding: 0.72rem 0.8rem;
+  border: 1px solid color-mix(in oklab, var(--border) 84%, white 16%);
+  border-radius: 16px;
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in oklab, var(--surface) 92%, white 8%),
+      color-mix(in oklab, var(--surface-secondary) 92%, var(--surface))
+    );
+  box-shadow:
+    inset 0 1px 0 color-mix(in oklab, white 72%, transparent),
+    0 10px 22px color-mix(in oklab, black 5%, transparent);
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.activity-group-heading:hover,
+.activity-group-heading:focus-visible {
+  border-color: color-mix(in oklab, var(--accent) 22%, var(--border));
+  box-shadow:
+    inset 0 1px 0 color-mix(in oklab, white 78%, transparent),
+    0 14px 26px color-mix(in oklab, black 7%, transparent);
+}
+
+.activity-group-heading-copy {
+  display: grid;
+  gap: 0.18rem;
+  min-width: 0;
 }
 
 .activity-group-heading h3 {
@@ -425,12 +456,78 @@ select {
 }
 
 .activity-group-heading span {
-  flex-shrink: 0;
   font-size: 0.7rem;
   font-weight: 800;
   letter-spacing: 0.05em;
   text-transform: uppercase;
   color: color-mix(in oklab, var(--foreground) 54%, transparent);
+}
+
+.activity-group-chevron {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  min-width: 2rem;
+  border-radius: 999px;
+  color: color-mix(in oklab, var(--accent) 84%, black 14%);
+  background: color-mix(in oklab, var(--accent) 8%, white 92%);
+  transition: transform 160ms ease;
+}
+
+.activity-group.open .activity-group-chevron {
+  transform: rotate(180deg);
+}
+
+.activity-group.open .activity-group-heading {
+  border-color: color-mix(in oklab, var(--accent) 20%, var(--border));
+  border-bottom-color: color-mix(in oklab, var(--accent) 10%, var(--border));
+  border-radius: 16px 16px 10px 10px;
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in oklab, var(--surface) 90%, white 10%),
+      color-mix(in oklab, var(--accent) 7%, var(--surface-secondary))
+    );
+}
+
+.activity-group-panel {
+  position: relative;
+  padding: 0.85rem 0.85rem 0.9rem 1.1rem;
+  border: 1px solid color-mix(in oklab, var(--accent) 14%, var(--border));
+  border-top: 0;
+  border-radius: 0 0 18px 18px;
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in oklab, var(--surface-secondary) 90%, white 10%),
+      color-mix(in oklab, var(--surface) 96%, var(--accent) 4%)
+    );
+  box-shadow:
+    inset 0 1px 0 color-mix(in oklab, white 60%, transparent),
+    0 16px 30px color-mix(in oklab, black 5%, transparent);
+}
+
+.activity-group-panel::before {
+  content: "";
+  position: absolute;
+  top: 0.95rem;
+  bottom: 0.95rem;
+  left: 0.62rem;
+  width: 3px;
+  border-radius: 999px;
+  background: linear-gradient(
+    180deg,
+    color-mix(in oklab, var(--accent) 82%, white 18%),
+    color-mix(in oklab, var(--success) 72%, var(--accent))
+  );
+  opacity: 0.68;
+}
+
+.activity-group-panel .activity-grid {
+  margin-top: 0;
+  padding-left: 0.55rem;
 }
 
 .home-hero-facts {
@@ -752,6 +849,77 @@ select {
   color: color-mix(in oklab, var(--danger) 86%, black 14%);
 }
 
+.toast-region {
+  position: fixed;
+  right: clamp(0.75rem, 3vw, 1.25rem);
+  bottom: clamp(0.75rem, 3vw, 1.25rem);
+  z-index: 80;
+  display: grid;
+  gap: 0.55rem;
+  width: min(calc(100vw - 1.5rem), 25rem);
+  pointer-events: none;
+}
+
+.toast-card {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 0.7rem;
+  align-items: start;
+  padding: 0.72rem;
+  border-radius: 16px;
+  border: 1px solid color-mix(in oklab, var(--danger) 28%, white 26%);
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in oklab, white 96%, var(--danger) 4%),
+      color-mix(in oklab, var(--surface) 94%, var(--danger) 6%)
+    );
+  box-shadow:
+    0 18px 42px color-mix(in oklab, black 14%, transparent),
+    inset 0 1px 0 color-mix(in oklab, white 74%, transparent);
+  color: color-mix(in oklab, var(--foreground) 90%, black 10%);
+  pointer-events: auto;
+}
+
+.toast-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  min-width: 2rem;
+  border-radius: 999px;
+  color: color-mix(in oklab, var(--danger) 86%, black 14%);
+  background: color-mix(in oklab, var(--danger) 10%, white 90%);
+}
+
+.toast-copy {
+  display: grid;
+  gap: 0.18rem;
+  min-width: 0;
+}
+
+.toast-copy strong {
+  font-size: 0.84rem;
+  line-height: 1.18;
+}
+
+.toast-copy span {
+  color: color-mix(in oklab, var(--foreground) 68%, transparent);
+  font-size: 0.72rem;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
+.toast-close-button {
+  width: 1.8rem;
+  min-width: 1.8rem;
+  height: 1.8rem;
+  min-height: 1.8rem;
+  color: color-mix(in oklab, var(--foreground) 58%, transparent);
+  background: transparent;
+}
+
 .checklist-hero-copy {
   display: grid;
   gap: 0.75rem;
@@ -983,20 +1151,43 @@ select {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 2.4rem;
-  height: 2.4rem;
-  min-width: 2.4rem;
-  border-radius: 0.9rem;
-  color: color-mix(in oklab, var(--accent) 88%, black 12%);
+  width: 2.45rem;
+  height: 2.45rem;
+  min-width: 2.45rem;
+  border-radius: 0.82rem;
+  border: 1px solid color-mix(in oklab, var(--accent) 26%, white 38%);
+  color: color-mix(in oklab, var(--accent) 78%, black 22%);
   background:
     linear-gradient(
       180deg,
-      color-mix(in oklab, var(--surface-tertiary) 80%, white 20%),
-      color-mix(in oklab, var(--surface-secondary) 92%, var(--surface))
+      color-mix(in oklab, white 98%, var(--surface)),
+      color-mix(in oklab, white 88%, var(--accent) 12%)
     );
   box-shadow:
-    inset 0 1px 0 color-mix(in oklab, white 68%, transparent),
-    0 10px 20px color-mix(in oklab, var(--accent) 10%, transparent);
+    0 0 0 3px color-mix(in oklab, white 58%, transparent),
+    0 10px 22px color-mix(in oklab, black 9%, transparent),
+    inset 0 1px 0 color-mix(in oklab, white 84%, transparent);
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    transform 160ms ease;
+}
+
+.activity-card:hover .activity-card-icon,
+.activity-card-link:focus-visible .activity-card-icon {
+  border-color: color-mix(in oklab, var(--accent) 42%, white 18%);
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in oklab, white 96%, var(--accent) 4%),
+      color-mix(in oklab, white 82%, var(--accent) 18%)
+    );
+  box-shadow:
+    0 0 0 3px color-mix(in oklab, var(--accent) 12%, white 42%),
+    0 12px 24px color-mix(in oklab, var(--accent) 14%, black 6%),
+    inset 0 1px 0 color-mix(in oklab, white 88%, transparent);
+  transform: translateY(-1px);
 }
 
 .activity-card-status {
@@ -1935,6 +2126,7 @@ select {
   cursor: pointer;
   background: color-mix(in oklab, white 64%, var(--surface));
   box-shadow: none;
+  outline: 0;
 }
 
 .item-card + .item-card {
@@ -1955,11 +2147,21 @@ select {
   background: color-mix(in oklab, var(--accent) 4%, white 96%);
 }
 
-.item-card:hover::before,
-.item-card:focus-within::before,
 .item-card.checked::before {
   width: 4px;
   opacity: 0.95;
+}
+
+.item-card:focus-within {
+  background: color-mix(in oklab, var(--accent) 3%, white 97%);
+  box-shadow:
+    inset 0 0 0 2px color-mix(in oklab, var(--accent) 20%, transparent);
+}
+
+.item-card.checked:focus-within {
+  box-shadow:
+    inset 4px 0 0 color-mix(in oklab, var(--success) 82%, var(--accent)),
+    inset 0 0 0 2px color-mix(in oklab, var(--success) 22%, transparent);
 }
 
 .item-card-content {
@@ -2324,6 +2526,17 @@ select {
     min-width: 0;
   }
 
+  .toast-region {
+    right: 0.75rem;
+    bottom: 0.75rem;
+    width: calc(100vw - 1.5rem);
+  }
+
+  .toast-card {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    padding: 0.68rem;
+  }
+
   .hero-actions {
     display: grid;
   }
@@ -2437,12 +2650,26 @@ select {
   }
 
   .activity-group-heading {
-    align-items: start;
+    align-items: center;
     gap: 0.35rem 0.75rem;
+    min-height: 3.2rem;
+    padding: 0.65rem 0.7rem;
   }
 
   .activity-group-heading span {
     font-size: 0.64rem;
+  }
+
+  .activity-group-panel {
+    padding: 0.7rem 0.65rem 0.75rem 0.85rem;
+  }
+
+  .activity-group-panel::before {
+    left: 0.45rem;
+  }
+
+  .activity-group-panel .activity-grid {
+    padding-left: 0.42rem;
   }
 
   .item-topline {

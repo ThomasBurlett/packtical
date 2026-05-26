@@ -39,10 +39,17 @@ type Database = {
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+export const isLocalSupabaseMockEnabled =
+  import.meta.env.DEV && import.meta.env.VITE_USE_LOCAL_AUTH === "true";
 
-export const isSupabaseConfigured = Boolean(supabaseUrl && supabaseAnonKey);
+export const isSupabaseConfigured =
+  isLocalSupabaseMockEnabled || Boolean(supabaseUrl && supabaseAnonKey);
 
 function createSupabaseBrowserClient() {
+  if (isLocalSupabaseMockEnabled) {
+    return null;
+  }
+
   if (!supabaseUrl || !supabaseAnonKey) {
     return null;
   }
