@@ -346,21 +346,22 @@ select {
   display: grid;
   gap: var(--space-5);
   padding: clamp(0.75rem, 2vw, 1.25rem) 0;
-  overflow-x: clip;
+  overflow: visible;
 }
 
 .home-hero::before {
   content: "";
   position: absolute;
-  inset: -1rem -1.5rem auto auto;
-  width: clamp(11rem, 28vw, 18rem);
-  height: clamp(11rem, 28vw, 18rem);
+  top: -1.8rem;
+  right: calc(50% - 50vw - 3rem);
+  width: clamp(17rem, 58vw, 25rem);
+  height: clamp(15rem, 54vw, 23rem);
   border-radius: 999px;
   background:
-    radial-gradient(circle, color-mix(in oklab, var(--accent) 18%, transparent) 0%, transparent 70%);
-  filter: blur(6px);
+    radial-gradient(ellipse at center, color-mix(in oklab, var(--accent) 14%, transparent) 0%, color-mix(in oklab, var(--accent) 8%, transparent) 34%, transparent 72%);
+  filter: blur(14px);
   pointer-events: none;
-  opacity: 0.95;
+  opacity: 0.92;
 }
 
 .home-hero::after {
@@ -667,12 +668,34 @@ select {
   white-space: nowrap;
 }
 
+.auth-status-identity {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.48rem;
+  min-width: 0;
+}
+
 .auth-status-local {
   color: color-mix(in oklab, var(--foreground) 62%, transparent);
 }
 
 .auth-status-signed-in {
   padding-right: 0.28rem;
+}
+
+.auth-status-full {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.55rem;
+  width: 100%;
+  max-width: none;
+  padding: 0.52rem;
+}
+
+.auth-sign-out-button {
+  min-width: 6.4rem;
+  color: color-mix(in oklab, var(--danger) 74%, black 18%);
+  background: color-mix(in oklab, var(--danger) 6%, white 94%);
 }
 
 .auth-save-link {
@@ -2688,6 +2711,13 @@ select {
   .activity-card-footer {
     align-items: flex-start;
     flex-direction: column;
+  }
+
+  .home-hero::before {
+    top: -1.6rem;
+    right: calc(50% - 50vw - 4.5rem);
+    width: 22rem;
+    height: 18rem;
   }
 
   .home-hero-support {

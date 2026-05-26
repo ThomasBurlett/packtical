@@ -83,21 +83,37 @@ export function AuthStatus({ variant = "compact" }: AuthStatusProps) {
 
   if (user && !isAnonymous) {
     return (
-      <div className="auth-status auth-status-signed-in">
-        <Cloud aria-hidden="true" size={15} strokeWidth={2.1} />
-        <span title={user.email ?? undefined}>{user.email ?? "Signed in"}</span>
-        <Button
-          aria-label="Sign out"
-          className="auth-icon-button"
-          isIconOnly
-          onPress={() => {
-            void signOut();
-          }}
-          size="sm"
-          variant="ghost"
-        >
-          <LogOut aria-hidden="true" size={14} strokeWidth={2.1} />
-        </Button>
+      <div className={`auth-status auth-status-signed-in${variant === "full" ? " auth-status-full" : ""}`}>
+        <div className="auth-status-identity">
+          <Cloud aria-hidden="true" size={15} strokeWidth={2.1} />
+          <span title={user.email ?? undefined}>{user.email ?? "Signed in"}</span>
+        </div>
+        {variant === "full" ? (
+          <Button
+            className="auth-sign-out-button"
+            onPress={() => {
+              void signOut();
+            }}
+            size="sm"
+            variant="ghost"
+          >
+            <LogOut aria-hidden="true" size={14} strokeWidth={2.1} />
+            <span>Sign out</span>
+          </Button>
+        ) : (
+          <Button
+            aria-label="Sign out"
+            className="auth-icon-button"
+            isIconOnly
+            onPress={() => {
+              void signOut();
+            }}
+            size="sm"
+            variant="ghost"
+          >
+            <LogOut aria-hidden="true" size={14} strokeWidth={2.1} />
+          </Button>
+        )}
       </div>
     );
   }
