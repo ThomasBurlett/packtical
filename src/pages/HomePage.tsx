@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react"
 import { Card, Chip, Link } from "@heroui/react"
-import { ChevronDown } from "lucide-react"
+import { CloudOff, ChevronDown, UserRound } from "lucide-react"
 import { useAuth } from "@/auth/auth-context"
-import { AuthStatus } from "@/components/auth/AuthStatus"
 import { useToast } from "@/components/toast/toast-context"
 import { CHECKLISTS } from "@/data/checklists"
 import { ActivityIcon } from "@/lib/activity-icons"
@@ -108,7 +107,7 @@ function createResumeLists(states: Record<string, PersistedChecklistState | null
 }
 
 export function HomePage() {
-  const { syncVersion, user } = useAuth()
+  const { isAnonymous, isConfigured, isLoading, syncVersion, user } = useAuth()
   const { showToast } = useToast()
   const [resumeLists, setResumeLists] = useState<ResumeChecklist[]>([])
   const [openCategories, setOpenCategories] = useState<Set<string>>(() => new Set())
@@ -199,7 +198,12 @@ export function HomePage() {
             </p>
           </div>
           <div className="home-hero-support">
-            <AuthStatus />
+            <HomeAccountLink
+              isAnonymous={isAnonymous}
+              isConfigured={isConfigured}
+              isLoading={isLoading}
+              userEmail={user?.email ?? ""}
+            />
             <div className="home-hero-facts" aria-label="Checklist overview">
               <span className="home-hero-fact">
                 {CHECKLISTS.length} checklists ready
@@ -318,5 +322,43 @@ export function HomePage() {
         </section>
       </section>
     </main>
+  )
+}
+
+type HomeAccountLinkProps = {
+  isAnonymous: boolean
+  isConfigured: boolean
+  isLoading: boolean
+  userEmail: string
+}
+
+function HomeAccountLink({
+  isAnonymous,
+  isConfigured,
+  isLoading,
+  userEmail,
+}: HomeAccountLinkProps) {
+  if (!isConfigured) {
+    return (
+      <span className="home-account-link home-account-link-muted">
+        <CloudOff aria-hidden="true" size={16} strokeWidth={2.1} />
+        <span>Sync unavailable</span>
+      </span>
+    )
+  }
+
+  const label = isLoading
+    ? "Checking sync"
+    : userEmail && !isAnonymous
+      ? userEmail
+      : userEmail
+        ? "Save progress"
+        : "Account"
+
+  return (
+    <Link className="home-account-link" href="#/account" title={userEmail || "Account and sync settings"}>
+      <UserRound aria-hidden="true" size={16} strokeWidth={2.1} />
+      <span>{label}</span>
+    </Link>
   )
 }

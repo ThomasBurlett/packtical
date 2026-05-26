@@ -1,7 +1,6 @@
 import { useEffect, useRef } from "react"
 import { Card, Link } from "@heroui/react"
-import { ArrowLeft, Cloud, FolderOpen, Layers3 } from "lucide-react"
-import { AuthStatus } from "@/components/auth/AuthStatus"
+import { ArrowLeft, Cloud, FolderOpen, Layers3, UserRound } from "lucide-react"
 import { ActivityNav } from "@/components/checklist/ActivityNav"
 import { ChecklistSection } from "@/components/checklist/ChecklistSection"
 import { ChecklistToolbar } from "@/components/checklist/ChecklistToolbar"
@@ -110,13 +109,7 @@ function ChecklistPageContent({ checklist }: { checklist: (typeof CHECKLISTS)[nu
       <main className="page-frame checklist-page">
         <header className="page-shell checklist-shell page-header checklist-page-header">
           <section className="home-hero checklist-hero" aria-labelledby="checklist-title">
-            <div className="checklist-hero-topbar">
-              <Link className="page-back-link" href="#/">
-                <ArrowLeft aria-hidden="true" size={16} strokeWidth={2.2} />
-                Back to checklist hub
-              </Link>
-              <AuthStatus />
-            </div>
+            <ChecklistTopbar />
             <div className="home-hero-copy checklist-hero-copy">
               <div className="checklist-hero-title-block">
                 <div className="checklist-category-badge" aria-label={`${checklist.category} category`}>
@@ -141,13 +134,7 @@ function ChecklistPageContent({ checklist }: { checklist: (typeof CHECKLISTS)[nu
     <main className="page-frame checklist-page">
       <header className="page-shell checklist-shell page-header checklist-page-header">
         <section className="home-hero checklist-hero" aria-labelledby="checklist-title">
-          <div className="checklist-hero-topbar">
-            <Link className="page-back-link" href="#/">
-              <ArrowLeft aria-hidden="true" size={16} strokeWidth={2.2} />
-              Back to checklist hub
-            </Link>
-            <AuthStatus />
-          </div>
+          <ChecklistTopbar />
 
           <div className="home-hero-copy checklist-hero-copy">
             <div className="checklist-hero-main">
@@ -229,6 +216,21 @@ function ChecklistPageContent({ checklist }: { checklist: (typeof CHECKLISTS)[nu
         </div>
       </section>
     </main>
+  )
+}
+
+function ChecklistTopbar() {
+  return (
+    <nav className="checklist-hero-topbar" aria-label="Checklist navigation">
+      <Link className="page-back-link checklist-hub-link" href="#/">
+        <ArrowLeft aria-hidden="true" size={16} strokeWidth={2.2} />
+        <span>Checklist hub</span>
+      </Link>
+      <Link className="checklist-account-link" href="#/account" aria-label="Account and sync settings">
+        <UserRound aria-hidden="true" size={16} strokeWidth={2.1} />
+        <span>Account</span>
+      </Link>
+    </nav>
   )
 }
 

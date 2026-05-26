@@ -2,6 +2,8 @@
 
 Packtical is an interactive prep and packing hub for outdoor activities and travel.
 
+Project-specific agent instructions live in [AGENTS.md](AGENTS.md). Shared product terminology lives in [docs/ubiquitous-language.md](docs/ubiquitous-language.md).
+
 ## Included checklists
 
 - Camping
