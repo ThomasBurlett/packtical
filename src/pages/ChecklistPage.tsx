@@ -171,13 +171,12 @@ function ChecklistPageContent({ checklist }: { checklist: (typeof CHECKLISTS)[nu
             </div>
 
             <div className="home-hero-facts checklist-hero-facts" aria-label="Checklist summary">
-              <div className="home-hero-fact checklist-hero-fact checklist-hero-category-fact">
-                <FolderOpen aria-hidden="true" size={15} strokeWidth={2.1} />
-                <span>{checklist.category} category</span>
-              </div>
-              <div className="home-hero-fact checklist-hero-fact checklist-hero-icon-fact">
-                <ActivityIcon slug={checklist.slug} size={16} strokeWidth={2} />
-                <span>{checklist.label}</span>
+              <div
+                className="home-hero-fact checklist-hero-fact checklist-hero-icon-fact"
+                aria-label={`${checklist.label} activity`}
+                title={`${checklist.label} activity`}
+              >
+                <ActivityIcon slug={checklist.slug} size={17} strokeWidth={2.1} />
               </div>
               <div className="home-hero-fact checklist-hero-fact">
                 <Layers3 aria-hidden="true" size={15} strokeWidth={2.1} />

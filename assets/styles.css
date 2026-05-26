@@ -991,12 +991,12 @@ select {
 }
 
 .checklist-hero-icon-fact {
-  color: color-mix(in oklab, var(--accent) 80%, black 20%);
-}
-
-.checklist-hero-category-fact {
+  justify-content: center;
+  width: 2.15rem;
+  min-width: 2.15rem;
+  padding-inline: 0;
   border-color: color-mix(in oklab, var(--accent) 18%, var(--border));
-  color: color-mix(in oklab, var(--accent) 78%, black 20%);
+  color: color-mix(in oklab, var(--accent) 80%, black 20%);
   background: color-mix(in oklab, var(--accent) 8%, var(--surface));
 }
 
