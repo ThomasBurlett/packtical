@@ -561,21 +561,22 @@ select {
   position: relative;
   gap: var(--space-5);
   padding-block: clamp(0.55rem, 1.8vw, 1rem);
-  overflow-x: clip;
+  overflow: visible;
 }
 
 .checklist-hero::after {
   content: "";
   position: absolute;
-  inset: -0.25rem -2rem auto auto;
-  width: clamp(10rem, 24vw, 15rem);
-  height: clamp(10rem, 24vw, 15rem);
+  top: -1.2rem;
+  right: calc(50% - 50vw - 2rem);
+  width: clamp(16rem, 56vw, 24rem);
+  height: clamp(14rem, 52vw, 22rem);
   border-radius: 999px;
   background:
-    radial-gradient(circle, color-mix(in oklab, var(--accent) 14%, transparent) 0%, transparent 68%);
-  filter: blur(8px);
+    radial-gradient(ellipse at center, color-mix(in oklab, var(--accent) 13%, transparent) 0%, color-mix(in oklab, var(--accent) 8%, transparent) 34%, transparent 72%);
+  filter: blur(14px);
   pointer-events: none;
-  opacity: 0.88;
+  opacity: 0.92;
 }
 
 .checklist-hero::before {
@@ -2608,6 +2609,13 @@ select {
   .checklist-hero {
     gap: var(--space-4);
     padding-block: 0.45rem 0.7rem;
+  }
+
+  .checklist-hero::after {
+    top: -1.4rem;
+    right: calc(50% - 50vw - 4.5rem);
+    width: 21rem;
+    height: 18rem;
   }
 
   .activity-switcher-hero-title-wrap {

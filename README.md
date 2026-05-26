@@ -59,6 +59,8 @@ Supabase is required for checklist persistence. Visitors can sign in, create an 
 
 Only the public anon key belongs in the frontend. Keep the service role key out of GitHub Pages.
 
+Custom Packtical magic-link email copy and HTML lives in [docs/supabase-auth-email-templates.md](docs/supabase-auth-email-templates.md).
+
 When an anonymous user signs in to an existing email account, the app temporarily stores their guest checklist state in `sessionStorage`, then merges it into the signed-in account after the magic link returns.
 
 ## GitHub Pages
