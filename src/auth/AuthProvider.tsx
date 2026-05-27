@@ -245,6 +245,52 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           setIsLoading(false);
         }
       },
+      updateProfileName: async (firstName: string, lastName: string) => {
+        const trimmedFirstName = firstName.trim();
+        const trimmedLastName = lastName.trim();
+        const fullName = [trimmedFirstName, trimmedLastName].filter(Boolean).join(" ");
+
+        if (!user) {
+          throw new Error("Sign in before updating your name.");
+        }
+
+        if (isLocalSupabaseMockEnabled) {
+          finishUserSession({
+            ...user,
+            user_metadata: {
+              ...user.user_metadata,
+              first_name: trimmedFirstName,
+              last_name: trimmedLastName,
+              full_name: fullName,
+            },
+          });
+          return;
+        }
+
+        if (!supabase) {
+          throw new Error("Supabase is not configured.");
+        }
+
+        const { data, error } = await supabase.auth.updateUser({
+          data: {
+            first_name: trimmedFirstName,
+            last_name: trimmedLastName,
+            full_name: fullName,
+          },
+        });
+
+        if (error) {
+          showToast({
+            title: "We couldn't save your name",
+            description: getSupabaseErrorMessage(error),
+          });
+          throw error;
+        }
+
+        if (data.user) {
+          finishUserSession(data.user);
+        }
+      },
       signOut: async () => {
         if (isLocalSupabaseMockEnabled) {
           setUser(null);

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react"
 import { Card, Chip, Link } from "@heroui/react"
 import { CloudOff, ChevronDown, UserRound } from "lucide-react"
 import { useAuth } from "@/auth/auth-context"
+import { getUserDisplayName } from "@/auth/user-display"
 import { useToast } from "@/components/toast/toast-context"
 import { CHECKLISTS } from "@/data/checklists"
 import { ActivityIcon } from "@/lib/activity-icons"
@@ -112,6 +113,7 @@ export function HomePage() {
   const [resumeLists, setResumeLists] = useState<ResumeChecklist[]>([])
   const [openCategories, setOpenCategories] = useState<Set<string>>(() => new Set())
   const activeResumeLists = resumeLists.filter((list) => list.percent > 0)
+  const accountDisplayName = getUserDisplayName(user)
 
   useEffect(() => {
     let isCancelled = false
@@ -199,6 +201,7 @@ export function HomePage() {
           </div>
           <div className="home-hero-support">
             <HomeAccountLink
+              displayName={accountDisplayName}
               isAnonymous={isAnonymous}
               isConfigured={isConfigured}
               isLoading={isLoading}
@@ -326,6 +329,7 @@ export function HomePage() {
 }
 
 type HomeAccountLinkProps = {
+  displayName: string
   isAnonymous: boolean
   isConfigured: boolean
   isLoading: boolean
@@ -333,6 +337,7 @@ type HomeAccountLinkProps = {
 }
 
 function HomeAccountLink({
+  displayName,
   isAnonymous,
   isConfigured,
   isLoading,
@@ -349,8 +354,8 @@ function HomeAccountLink({
 
   const label = isLoading
     ? "Checking sync"
-    : userEmail && !isAnonymous
-      ? userEmail
+    : displayName && !isAnonymous
+      ? displayName
       : userEmail
         ? "Save progress"
         : "Account"

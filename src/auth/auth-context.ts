@@ -11,6 +11,7 @@ export type AuthContextValue = {
   syncVersion: number;
   user: SupabaseUser | null;
   signInWithEmail: (email: string, mode: EmailAuthMode) => Promise<void>;
+  updateProfileName: (firstName: string, lastName: string) => Promise<void>;
   startAnonymousSession: () => Promise<void>;
   signOut: () => Promise<void>;
 };

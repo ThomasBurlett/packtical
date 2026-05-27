@@ -209,6 +209,69 @@ select {
   line-height: 1.6;
 }
 
+.account-name-form {
+  display: grid;
+  gap: 0.85rem;
+  padding: 0.85rem;
+  border: 1px solid color-mix(in oklab, var(--accent) 14%, var(--border));
+  border-radius: 18px;
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in oklab, white 88%, var(--surface)),
+      color-mix(in oklab, var(--surface-secondary) 94%, var(--surface))
+    );
+}
+
+.account-name-form-heading {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.account-name-form-heading h2 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1rem;
+  line-height: 1.2;
+}
+
+.account-name-form-heading p {
+  margin: 0;
+  color: color-mix(in oklab, var(--foreground) 68%, transparent);
+  font-size: 0.82rem;
+  line-height: 1.45;
+}
+
+.account-name-fields {
+  display: grid;
+  gap: 0.7rem;
+  grid-template-columns: 1fr;
+}
+
+.account-name-input .input,
+.account-name-input.input {
+  background: color-mix(in oklab, white 94%, var(--surface));
+}
+
+.account-name-actions {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.account-name-save-button {
+  min-width: 7.5rem;
+}
+
+.account-name-message {
+  color: color-mix(in oklab, var(--success) 76%, black 18%);
+  font-size: 0.76rem;
+  font-weight: 750;
+}
+
+.account-name-message.error {
+  color: color-mix(in oklab, var(--danger) 84%, black 10%);
+}
+
 .checklist-page {
   padding: 0.5rem 0 0.9rem;
 }
@@ -398,9 +461,9 @@ select {
   width: fit-content;
   max-width: min(100%, 20rem);
   min-height: 2.4rem;
-  padding: 0.44rem 0.72rem;
-  border: 1px solid color-mix(in oklab, var(--accent) 18%, var(--border));
-  border-radius: 999px;
+  padding: 0.5rem 0.76rem;
+  border: 1px solid color-mix(in oklab, var(--accent) 28%, var(--border));
+  border-radius: 14px;
   background:
     linear-gradient(
       180deg,
@@ -409,7 +472,7 @@ select {
     );
   box-shadow:
     inset 0 1px 0 color-mix(in oklab, white 70%, transparent),
-    0 8px 18px color-mix(in oklab, var(--accent) 7%, transparent);
+    0 12px 22px color-mix(in oklab, var(--accent) 11%, transparent);
   color: color-mix(in oklab, var(--accent) 76%, black 20%);
   font-size: 0.74rem;
   font-weight: 850;
@@ -1096,8 +1159,8 @@ select {
   gap: 0.48rem;
   width: fit-content;
   padding: 0.42rem 0.7rem;
-  border: 1px solid color-mix(in oklab, var(--accent) 18%, var(--border));
-  border-radius: 999px;
+  border: 1px solid color-mix(in oklab, var(--accent) 28%, var(--border));
+  border-radius: 14px;
   background:
     linear-gradient(
       180deg,
@@ -1106,7 +1169,7 @@ select {
     );
   box-shadow:
     inset 0 1px 0 color-mix(in oklab, white 68%, transparent),
-    0 8px 16px color-mix(in oklab, var(--accent) 7%, transparent);
+    0 10px 18px color-mix(in oklab, var(--accent) 10%, transparent);
   color: color-mix(in oklab, var(--accent) 76%, black 20%);
   font-size: 0.74rem;
   font-weight: 800;
@@ -2525,6 +2588,10 @@ select {
 @media (min-width: 640px) {
   .page-shell {
     padding-inline: var(--space-5);
+  }
+
+  .account-name-fields {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .hero-metrics,

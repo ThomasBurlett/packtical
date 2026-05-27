@@ -2,6 +2,7 @@ import { useState, type FormEvent } from "react";
 import { Button, Input, Link } from "@heroui/react";
 import { Cloud, CloudOff, LogOut, Mail, ShieldCheck, UserRound } from "lucide-react";
 import { useAuth, type EmailAuthMode } from "@/auth/auth-context";
+import { getUserDisplayName } from "@/auth/user-display";
 import { getSupabaseErrorMessage } from "@/lib/supabase-errors";
 
 type AuthStatusProps = {
@@ -25,6 +26,7 @@ export function AuthStatus({ variant = "compact" }: AuthStatusProps) {
   const [mode, setMode] = useState<EmailAuthMode>("sign-in");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const emailMode = getEmailMode(mode, isAnonymous);
+  const displayName = getUserDisplayName(user);
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -86,7 +88,7 @@ export function AuthStatus({ variant = "compact" }: AuthStatusProps) {
       <div className={`auth-status auth-status-signed-in${variant === "full" ? " auth-status-full" : ""}`}>
         <div className="auth-status-identity">
           <Cloud aria-hidden="true" size={15} strokeWidth={2.1} />
-          <span title={user.email ?? undefined}>{user.email ?? "Signed in"}</span>
+          <span title={user.email ?? undefined}>{displayName || "Signed in"}</span>
         </div>
         {variant === "full" ? (
           <Button

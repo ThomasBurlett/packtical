@@ -130,6 +130,10 @@ An anonymous Supabase-backed session. Guest progress can later be connected to a
 
 The user's email-backed identity for sign-in and sync.
 
+**Display name**
+
+An optional first and/or last name stored on the user's account metadata. When present, show the display name in account affordances instead of the email address.
+
 **Magic link**
 
 The passwordless sign-in email sent by Supabase.
