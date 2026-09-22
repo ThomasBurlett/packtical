@@ -4,6 +4,10 @@ Pack well. Wander more.
 
 Packbee replaces Packtical with a shared Expo / React Native application for Android, iPhone, and web. Each Google account gets private reusable checklists backed by Firebase, with offline edits and a warm visual identity aligned with Mealbee.
 
+- [Open Packbee](https://packbee-app.web.app)
+- [Download Android APK, version 1.0.0 (3)](https://expo.dev/artifacts/eas/oAuQ-aDJg---4Ozqu0CGO2ZKNX5947neTGRh4x4SWMo.apk)
+- [Android build record](https://expo.dev/accounts/thomasburlett/projects/packbee/builds/881071fa-b859-41eb-9669-496b33ed525a)
+
 ## Run
 
 Use Node 24 and npm. From the repository root:

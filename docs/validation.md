@@ -13,9 +13,14 @@
 - Web export and Firebase Hosting/rules deployments pass.
 - Android and iOS JavaScript bundles export successfully. Local Android prebuild passes.
 - EAS archive inspected: source, icons, and native Firebase registrations present; signing credentials excluded from the source archive.
+- GitHub CI passed for the rebuild commit.
+- EAS standalone Android release build succeeded: `881071fa-b859-41eb-9669-496b33ed525a`, version 1.0.0 (3).
+- Signed APK installed successfully over wireless ADB on the owner's Pixel 8; installed package version confirmed with Android package manager.
+- Owner confirmed physical Pixel 8 checks: native Google sign-in, matching web progress, checking an item in airplane mode, persistence after closing/reopening, and sync after reconnecting all worked.
+- APK size: 82,864,129 bytes. SHA-256: `28C61EC1C64E29F218B5A76BA37103DAE9C991781D2DF417CB83DC065BF1091D`.
 
 ## Delivery notes
 
 The first EAS build stopped in prebuild because an overly broad archive rule omitted app assets. The rule was corrected and the archive inspected before retrying. No native success is inferred from that failed build or from JavaScript export alone.
 
-Physical Android installation, native Google sign-in, offline restart, and reconnection results will be recorded after the signed APK finishes. An iOS native binary and physical iPhone validation have not been performed.
+An iOS native binary and physical iPhone validation have not been performed. Web offline cold-start behavior has not yet been physically tested; the offline application shell is built, and persistence/reconnection are covered by the Firestore integration and physical Android checks above.

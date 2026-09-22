@@ -1,6 +1,6 @@
 # Packbee rebuild
 
-Status: owner confirmed shared understanding and authorized implementation. The rebuild is implemented; delivery and device validation are in progress.
+Status: implemented and delivered on Firebase Hosting and as a signed Expo EAS Android APK. Installed on the owner's Pixel 8; the owner confirmed native sign-in, cross-device progress, offline restart, and reconnection. See validation.md for evidence and the remaining web offline cold-start and native iOS validation limitations.
 
 ## Owner requirements
 
