@@ -17,7 +17,6 @@ import {
   CircleHelp,
   Eye,
   EyeOff,
-  ListFilter,
   MoreHorizontal,
   Pencil,
   Plus,
@@ -25,6 +24,7 @@ import {
   Search,
   SkipForward,
   Trash2,
+  X,
 } from "lucide-react-native";
 import { randomUUID } from "expo-crypto";
 import { CHECKLIST_MAP } from "@/domain/catalogue";
@@ -69,6 +69,7 @@ export function ChecklistScreen({
   );
   const [filter, setFilter] = useState<Filter>("all");
   const [query, setQuery] = useState("");
+  const [searching, setSearching] = useState(false);
   const [collapsed, setCollapsed] = useState<Set<string>>(new Set());
   const [editing, setEditing] = useState(false);
   const [editor, setEditor] = useState<Editor | null>(null);
@@ -184,7 +185,9 @@ export function ChecklistScreen({
           </View>
           <Text style={{ color: "#E4EBD8", fontSize: 12 }}>
             {counts.remaining} remaining
-            {counts.skipped ? ` · ${counts.skipped} skipped this time` : ""} ·{" "}
+            {counts.skipped
+              ? ` · ${counts.skipped} skipped this time`
+              : ""} ·{" "}
             {driver.preview
               ? "Local preview"
               : data.pending
@@ -194,68 +197,121 @@ export function ChecklistScreen({
                   : "Synced"}
           </Text>
         </View>
-        <View style={[styles.row, styles.input]}>
-          <Search size={18} color={colors.muted} />
-          <TextInput
-            accessibilityLabel="Search items"
-            placeholder="Find an item…"
-            placeholderTextColor={colors.muted}
-            value={query}
-            onChangeText={setQuery}
-            style={{ flex: 1, fontSize: 16, color: colors.ink, minHeight: 24 }}
-          />
-          <IconButton
-            label={editing ? "Finish editing" : "Customize checklist"}
-            icon={editing ? Check : Pencil}
-            onPress={() => setEditing(!editing)}
-          />
-        </View>
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{ gap: 8 }}
-        >
-          <ListFilter
-            size={18}
-            color={colors.muted}
-            style={{ marginTop: 12, marginRight: 4 }}
-          />
-          {(
-            [
-              "all",
-              "remaining",
-              "core",
-              "optional",
-              "skipped",
-              "hidden",
-            ] as Filter[]
-          ).map((value) => (
-            <Pressable
-              key={value}
-              accessibilityRole="button"
-              accessibilityState={{ selected: value === filter }}
-              onPress={() => setFilter(value)}
-              style={{
-                minHeight: 44,
-                paddingHorizontal: 16,
-                justifyContent: "center",
-                borderRadius: 22,
-                backgroundColor: filter === value ? colors.ink : colors.paper,
-                borderWidth: 1,
-                borderColor: filter === value ? colors.ink : colors.line,
-              }}
+        <View style={{ gap: 8 }}>
+          {searching && (
+            <View
+              style={[
+                styles.row,
+                styles.input,
+                { paddingVertical: 0, paddingRight: 2 },
+              ]}
             >
-              <Text
-                style={{
-                  fontWeight: "600",
-                  color: filter === value ? colors.paper : colors.muted,
+              <Search size={18} color={colors.muted} />
+              <TextInput
+                autoFocus
+                accessibilityLabel="Search items"
+                placeholder="Find an item"
+                placeholderTextColor={colors.muted}
+                value={query}
+                onChangeText={setQuery}
+                autoCorrect={false}
+                returnKeyType="search"
+                onKeyPress={({ nativeEvent }) => {
+                  if (nativeEvent.key === "Escape") {
+                    setQuery("");
+                    setSearching(false);
+                  }
                 }}
-              >
-                {value.charAt(0).toUpperCase() + value.slice(1)}
-              </Text>
-            </Pressable>
-          ))}
-        </ScrollView>
+                style={{
+                  flex: 1,
+                  minWidth: 0,
+                  fontSize: 16,
+                  color: colors.ink,
+                  minHeight: 44,
+                }}
+              />
+              <IconButton
+                label="Close search"
+                icon={X}
+                onPress={() => {
+                  setQuery("");
+                  setSearching(false);
+                }}
+              />
+            </View>
+          )}
+          <View style={[styles.row, { gap: 4 }]}>
+            <ScrollView
+              horizontal
+              style={{ flex: 1, minWidth: 0 }}
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={{ gap: 6 }}
+            >
+              {(
+                [
+                  "all",
+                  "remaining",
+                  "core",
+                  "optional",
+                  "skipped",
+                  "hidden",
+                ] as Filter[]
+              ).map((value) => (
+                <Pressable
+                  key={value}
+                  accessibilityRole="button"
+                  accessibilityState={{ selected: value === filter }}
+                  onPress={() => setFilter(value)}
+                  style={{
+                    minHeight: 44,
+                    paddingHorizontal: 16,
+                    justifyContent: "center",
+                    borderRadius: 22,
+                    backgroundColor:
+                      filter === value ? colors.ink : colors.paper,
+                    borderWidth: 1,
+                    borderColor: filter === value ? colors.ink : colors.line,
+                  }}
+                >
+                  <Text
+                    style={{
+                      fontWeight: "600",
+                      color: filter === value ? colors.paper : colors.muted,
+                    }}
+                  >
+                    {value.charAt(0).toUpperCase() + value.slice(1)}
+                  </Text>
+                </Pressable>
+              ))}
+            </ScrollView>
+            <View
+              style={[
+                styles.row,
+                {
+                  gap: 0,
+                  paddingLeft: 4,
+                  borderLeftWidth: 1,
+                  borderLeftColor: colors.line,
+                },
+              ]}
+            >
+              {!searching && (
+                <IconButton
+                  label="Search items"
+                  icon={Search}
+                  onPress={() => setSearching(true)}
+                />
+              )}
+              <Button
+                label={editing ? "Done" : "Edit"}
+                icon={editing ? Check : Pencil}
+                tone={editing ? "secondary" : "quiet"}
+                style={{ paddingHorizontal: 10, minHeight: 44 }}
+                onPress={() => setEditing(!editing)}
+              />
+            </View>
+          </View>
+        </View>
         {editing && (
           <Text style={styles.muted}>
             Make this checklist yours. Edit items and sections, or use the
