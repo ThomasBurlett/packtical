@@ -5,5 +5,20 @@
     "types": ["node", "react"],
     "paths": { "@/*": ["./src/*"] }
   },
-  "exclude": ["node_modules", "dist", "android", "ios"]
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "tests/**/*.ts",
+    "App.tsx",
+    "index.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "dist-preview",
+    "dist-native",
+    "dist-native-ios",
+    "android",
+    "ios"
+  ]
 }

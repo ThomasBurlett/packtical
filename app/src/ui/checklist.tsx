@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   ActivityIndicator,
   Pressable,
@@ -73,6 +73,9 @@ export function ChecklistScreen({
   const [collapsed, setCollapsed] = useState<Set<string>>(new Set());
   const [editing, setEditing] = useState(false);
   const [editor, setEditor] = useState<Editor | null>(null);
+  const [itemMenu, setItemMenu] = useState<Item | null>(null);
+  const [info, setInfo] = useState(false);
+  const normalizedQuery = query.trim().toLowerCase();
   const [menu, setMenu] = useState(false);
   const [confirm, setConfirm] = useState<"reset" | "restore" | null>(null);
   const [undo, setUndo] = useState<{
@@ -98,7 +101,7 @@ export function ChecklistScreen({
     (filter !== "skipped" ||
       data.snapshot.states[item.id]?.status === "skipped") &&
     (!["core", "optional"].includes(filter) || item.kind === filter) &&
-    `${item.label} ${item.note}`.toLowerCase().includes(query.toLowerCase());
+    `${item.label} ${item.note}`.toLowerCase().includes(normalizedQuery);
   const move = (
     ids: { id: string }[],
     index: number,
@@ -111,17 +114,29 @@ export function ChecklistScreen({
   };
   return (
     <View style={{ flex: 1 }}>
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        keyboardShouldPersistTaps="handled"
-        contentContainerStyle={{ padding: 24, paddingBottom: 44, gap: 22 }}
+      <View
+        style={{
+          paddingHorizontal: 20,
+          paddingTop: 8,
+          paddingBottom: 12,
+          gap: 8,
+          borderBottomWidth: 1,
+          borderColor: colors.line,
+          backgroundColor: colors.cream,
+        }}
       >
-        <View style={[styles.row, { justifyContent: "space-between" }]}>
-          <Button
-            label="All checklists"
-            icon={ArrowLeft}
-            tone="quiet"
-            onPress={back}
+        <View style={[styles.row, { gap: 4 }]}>
+          <IconButton label="All checklists" icon={ArrowLeft} onPress={back} />
+          <Text
+            accessibilityRole="header"
+            style={[styles.heading, { flex: 1 }]}
+          >
+            {list.label}
+          </Text>
+          <IconButton
+            label="About this checklist"
+            icon={CircleHelp}
+            onPress={() => setInfo(true)}
           />
           <IconButton
             label="Checklist options"
@@ -129,74 +144,48 @@ export function ChecklistScreen({
             onPress={() => setMenu(true)}
           />
         </View>
-        <View style={{ gap: 10 }}>
-          <Text style={styles.eyebrow}>
-            {list.category} / Your packing space
+        <View
+          style={[
+            styles.row,
+            { justifyContent: "space-between", flexWrap: "wrap" },
+          ]}
+        >
+          <Text
+            accessibilityLabel="Packing progress"
+            style={{ color: colors.green, fontWeight: "700" }}
+          >
+            {counts.packed} of {counts.total} packed
           </Text>
-          <Text accessibilityRole="header" style={styles.title}>
-            {list.label}
+          <Text style={styles.muted}>
+            {counts.remaining === 0
+              ? "Ready to go"
+              : `${counts.remaining} remaining`}
           </Text>
-          <Text style={styles.muted}>{list.summary}</Text>
         </View>
         <View
-          style={{
-            backgroundColor: colors.green,
-            padding: 20,
-            borderRadius: 20,
-            gap: 13,
-          }}
+          accessibilityRole="progressbar"
+          accessibilityValue={{ min: 0, max: counts.total, now: counts.packed }}
+          style={{ height: 4, borderRadius: 2, backgroundColor: colors.line }}
         >
-          <View style={[styles.row, { justifyContent: "space-between" }]}>
-            <Text
-              style={{ color: colors.paper, fontSize: 16, fontWeight: "600" }}
-            >
-              {counts.remaining === 0
-                ? "You’re ready to go."
-                : "A little closer to ready."}
-            </Text>
-            <Text
-              accessibilityLabel="Packing progress"
-              style={{
-                color: colors.cream,
-                fontWeight: "700",
-                fontVariant: ["tabular-nums"],
-              }}
-            >
-              {counts.packed} / {counts.total}
-            </Text>
-          </View>
           <View
-            accessibilityRole="progressbar"
-            accessibilityValue={{
-              min: 0,
-              max: counts.total,
-              now: counts.packed,
+            style={{
+              height: 4,
+              borderRadius: 2,
+              width: `${counts.fraction * 100}%`,
+              backgroundColor: colors.green,
             }}
-            style={{ height: 6, backgroundColor: "#ffffff30", borderRadius: 3 }}
-          >
-            <View
-              style={{
-                height: 6,
-                width: `${counts.fraction * 100}%`,
-                backgroundColor: colors.gold,
-                borderRadius: 3,
-              }}
-            />
-          </View>
-          <Text style={{ color: "#E4EBD8", fontSize: 12 }}>
-            {counts.remaining} remaining
-            {counts.skipped
-              ? ` · ${counts.skipped} skipped this time`
-              : ""} ·{" "}
-            {driver.preview
-              ? "Local preview"
-              : data.pending
-                ? "Changes waiting to sync"
-                : data.cached
-                  ? "Offline-ready · showing saved data"
-                  : "Synced"}
-          </Text>
+          />
         </View>
+        <Text style={{ color: colors.muted, fontSize: 11 }}>
+          {counts.skipped ? `${counts.skipped} skipped · ` : ""}
+          {driver.preview
+            ? "Local preview"
+            : data.pending
+              ? "Changes waiting to sync"
+              : data.cached
+                ? "Offline-ready · showing saved data"
+                : "Synced"}
+        </Text>
         <View style={{ gap: 8 }}>
           {searching && (
             <View
@@ -312,6 +301,34 @@ export function ChecklistScreen({
             </View>
           </View>
         </View>
+        {(searching || filter !== "all") && (
+          <View style={[styles.row, { justifyContent: "space-between" }]}>
+            <Text
+              accessibilityLiveRegion="polite"
+              style={[styles.muted, { flex: 1 }]}
+            >
+              {sections.reduce(
+                (n, section) => n + section.items.filter(matches).length,
+                0,
+              )}{" "}
+              results{filter !== "all" ? ` · ${filter}` : ""}
+            </Text>
+            <Button
+              label="Clear filters"
+              tone="quiet"
+              onPress={() => {
+                setQuery("");
+                setFilter("all");
+              }}
+            />
+          </View>
+        )}
+      </View>
+      <ScrollView
+        contentInsetAdjustmentBehavior="automatic"
+        keyboardShouldPersistTaps="handled"
+        contentContainerStyle={{ padding: 20, paddingBottom: 44, gap: 16 }}
+      >
         {editing && (
           <Text style={styles.muted}>
             Make this checklist yours. Edit items and sections, or use the
@@ -337,7 +354,7 @@ export function ChecklistScreen({
                   <Pressable
                     accessibilityRole="button"
                     accessibilityState={{
-                      expanded: !collapsed.has(section.id),
+                      expanded: !!normalizedQuery || !collapsed.has(section.id),
                     }}
                     accessibilityLabel={`${section.title} section`}
                     onPress={() => toggleSection(section.id)}
@@ -349,7 +366,7 @@ export function ChecklistScreen({
                       gap: 8,
                     }}
                   >
-                    {collapsed.has(section.id) ? (
+                    {!normalizedQuery && collapsed.has(section.id) ? (
                       <ChevronRight size={17} color={colors.muted} />
                     ) : (
                       <ChevronDown size={17} color={colors.muted} />
@@ -387,7 +404,7 @@ export function ChecklistScreen({
                     </View>
                   )}
                 </View>
-                {!collapsed.has(section.id) && (
+                {(!!normalizedQuery || !collapsed.has(section.id)) && (
                   <View
                     style={{
                       borderRadius: 16,
@@ -514,32 +531,9 @@ export function ChecklistScreen({
                               </View>
                             </Pressable>
                             <IconButton
-                              label={
-                                editing
-                                  ? `Edit ${item.label}`
-                                  : status === "skipped"
-                                    ? `Include ${item.label}`
-                                    : `Skip ${item.label}`
-                              }
-                              icon={
-                                editing
-                                  ? Pencil
-                                  : status === "skipped"
-                                    ? RotateCcw
-                                    : SkipForward
-                              }
-                              onPress={() => {
-                                if (editing) setEditor({ type: "item", item });
-                                else {
-                                  setUndo(null);
-                                  data.status(
-                                    item.id,
-                                    status === "skipped"
-                                      ? "unpacked"
-                                      : "skipped",
-                                  );
-                                }
-                              }}
+                              label={`Actions for ${item.label}`}
+                              icon={MoreHorizontal}
+                              onPress={() => setItemMenu(item)}
                             />
                           </View>
                           {item.relatedChecklistSlug &&
@@ -622,7 +616,7 @@ export function ChecklistScreen({
             <View style={styles.panel}>
               <CircleHelp size={24} color={colors.sage} />
               <Text style={styles.heading}>
-                {filter === "remaining"
+                {filter === "remaining" && !normalizedQuery
                   ? "Nothing left to pack."
                   : "No matching items."}
               </Text>
@@ -686,6 +680,57 @@ export function ChecklistScreen({
             }}
           />
         </View>
+      )}
+      {info && (
+        <Sheet title={list.label} close={() => setInfo(false)}>
+          <Text style={styles.eyebrow}>{list.category}</Text>
+          <Text style={styles.body}>{list.summary}</Text>
+        </Sheet>
+      )}
+      {itemMenu && (
+        <Sheet title={itemMenu.label} close={() => setItemMenu(null)}>
+          <Button
+            label={
+              data.snapshot.states[itemMenu.id]?.status === "skipped"
+                ? "Include this time"
+                : "Skip this time"
+            }
+            icon={SkipForward}
+            tone="secondary"
+            onPress={() => {
+              setUndo(null);
+              data.status(
+                itemMenu.id,
+                data.snapshot.states[itemMenu.id]?.status === "skipped"
+                  ? "unpacked"
+                  : "skipped",
+              );
+              setItemMenu(null);
+            }}
+          />
+          <Button
+            label="Edit item"
+            icon={Pencil}
+            tone="secondary"
+            onPress={() => {
+              setEditor({ type: "item", item: itemMenu });
+              setItemMenu(null);
+            }}
+          />
+          <Button
+            label={itemMenu.hidden ? "Show item" : "Hide item"}
+            icon={itemMenu.hidden ? Eye : EyeOff}
+            tone="quiet"
+            onPress={() => {
+              data.item(itemMenu.id, { hidden: !itemMenu.hidden });
+              setItemMenu(null);
+            }}
+          />
+          <Text style={styles.muted}>
+            Skipped items return on reset. Hidden items stay hidden until you
+            show them again.
+          </Text>
+        </Sheet>
       )}
       {menu && (
         <Sheet title="Your checklist" close={() => setMenu(false)}>
@@ -751,13 +796,32 @@ export function ChecklistScreen({
       )}
       {editor && (
         <EditSheet
-          key={editor.type === "item" ? editor.item.id : editor.section.id}
+          key={
+            editor.type === "item" && !editor.item.label
+              ? "quick-add"
+              : editor.type === "item"
+                ? editor.item.id
+                : editor.section.id
+          }
           editor={editor}
           close={() => setEditor(null)}
-          save={(label, note, kind) => {
+          save={(label, note, kind, another) => {
             if (editor.type === "item") {
               const { id, ...item } = editor.item;
               data.item(id, { ...item, label, note, kind });
+              if (another) {
+                setEditor({
+                  type: "item",
+                  item: {
+                    ...editor.item,
+                    id: `custom-${randomUUID()}`,
+                    label: "",
+                    note: "",
+                    order: editor.item.order + 100,
+                  },
+                });
+                return;
+              }
             } else {
               const { id, ...section } = editor.section;
               data.section(id, { ...section, title: label });
@@ -788,7 +852,12 @@ function EditSheet({
 }: {
   editor: Editor;
   close: () => void;
-  save: (label: string, note: string, kind: "core" | "optional") => void;
+  save: (
+    label: string,
+    note: string,
+    kind: "core" | "optional",
+    another?: boolean,
+  ) => void;
   remove?: () => void;
 }) {
   const [label, setLabel] = useState(
@@ -800,6 +869,8 @@ function EditSheet({
   const [kind, setKind] = useState<"core" | "optional">(
     editor.type === "item" ? editor.item.kind : "core",
   );
+  const nameInput = useRef<TextInput>(null);
+  const [added, setAdded] = useState(0);
   const [deleting, setDeleting] = useState(false);
   return (
     <Sheet
@@ -815,6 +886,7 @@ function EditSheet({
       close={close}
     >
       <Field
+        inputRef={nameInput}
         label={editor.type === "item" ? "Item name" : "Section name"}
         value={label}
         onChangeText={setLabel}
@@ -844,8 +916,33 @@ function EditSheet({
           </View>
         </>
       )}
+      {editor.type === "item" && !editor.item.label && (
+        <>
+          {added > 0 && (
+            <Text accessibilityLiveRegion="polite" style={styles.muted}>
+              {added} added to this section
+            </Text>
+          )}
+          <Button
+            label="Add another"
+            tone="secondary"
+            disabled={!label.trim()}
+            onPress={() => {
+              save(label.trim(), note.trim(), kind, true);
+              setLabel("");
+              setNote("");
+              setAdded(added + 1);
+              nameInput.current?.focus();
+            }}
+          />
+        </>
+      )}
       <Button
-        label="Save changes"
+        label={
+          editor.type === "item" && !editor.item.label
+            ? "Add and close"
+            : "Save changes"
+        }
         disabled={!label.trim()}
         onPress={() => save(label.trim(), note.trim(), kind)}
       />

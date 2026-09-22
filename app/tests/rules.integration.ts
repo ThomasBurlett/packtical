@@ -1,6 +1,7 @@
 import { after, before, test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
+import { backupWrites } from "../src/data/backup";
 import {
   initializeTestEnvironment,
   assertFails,
@@ -19,6 +20,57 @@ import {
   getDocFromCache,
 } from "firebase/firestore";
 let env: RulesTestEnvironment;
+test("backup restore writes are accepted for the owner and cannot touch another account or progress", async () => {
+  const db = env.authenticatedContext("backup-owner").firestore();
+  const writes = backupWrites(
+    {
+      format: "packbee-customizations",
+      version: 1,
+      createdAt: new Date().toISOString(),
+      checklists: [
+        {
+          slug: "camping",
+          sections: {
+            "custom-kit": { custom: true, title: "My kit", order: 800 },
+          },
+          items: {
+            "custom-mug": {
+              custom: true,
+              sectionId: "custom-kit",
+              label: "Mug",
+              note: "Blue",
+              kind: "core",
+              hidden: false,
+              order: 100,
+            },
+            "campsite--tent": { label: "Our tent", hidden: true },
+          },
+        },
+      ],
+    },
+    "backup-owner",
+  );
+  const progressPath =
+    "users/backup-owner/checklists/camping/cycles/current/states/campsite--tent";
+  await setDoc(doc(db, progressPath), { status: "packed" });
+  for (let attempt = 0; attempt < 2; attempt++) {
+    const batch = writeBatch(db);
+    for (const w of writes)
+      batch.set(doc(db, w.path), w.data!, { merge: true });
+    await assertSucceeds(batch.commit());
+  }
+  assert.equal(
+    (
+      await getDocs(
+        collection(db, "users/backup-owner/checklists/camping/items"),
+      )
+    ).size,
+    2,
+  );
+  assert.equal((await getDoc(doc(db, progressPath))).data()?.status, "packed");
+  const stranger = env.authenticatedContext("backup-stranger").firestore();
+  await assertFails(setDoc(doc(stranger, writes[0].path), writes[0].data!));
+});
 before(async () => {
   env = await initializeTestEnvironment({
     projectId: "demo-packbee",

@@ -1,5 +1,15 @@
 # Rebuild verification
 
+## Packing polish and backups
+
+- Compact checklist name, progress, and search/filter/edit controls remain fixed above the scrolling items. Description moved to an About action.
+- At 390 x 844, verified that controls stay visible while scrolling into later sections, and search reveals matches inside a previously collapsed section.
+- Verified query result counts, active-filter labeling, no-result recovery, item-menu skip behavior, and consecutive Add another / Add and close entries with retained field focus.
+- Preview backup exported to a JSON download, selected through the file picker, reviewed, and restored successfully. Backup excludes packing progress and accounts.
+- Eight domain/backup tests and four Firestore emulator tests pass, including owner-only restore, malformed-file rejection, repeated restore without duplicate IDs, and retained packing progress.
+- TypeScript configuration now includes source and tests explicitly; generated preview/native bundles no longer enter type checking and trigger intermittent stack overflows.
+- Updated standalone Android build: `99c03746-f03a-4824-8d94-6bfc81626caf`, version 1.0.0 (4). Device validation pending build completion.
+
 ## Completed
 
 - Original catalogue compared directly with Git source: 11 activities and 651 item rows preserved.

@@ -1,6 +1,8 @@
-import type { ReactNode } from "react";
+import type { ReactNode, Ref } from "react";
 import {
   Modal,
+  KeyboardAvoidingView,
+  Platform,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -259,11 +261,16 @@ export function IconButton({
     </Pressable>
   );
 }
-export function Field({ label, ...props }: TextInputProps & { label: string }) {
+export function Field({
+  label,
+  inputRef,
+  ...props
+}: TextInputProps & { label: string; inputRef?: Ref<TextInput> }) {
   return (
     <View style={{ gap: 7 }}>
       <Text style={[styles.muted, { fontWeight: "600" }]}>{label}</Text>
       <TextInput
+        ref={inputRef}
         accessibilityLabel={label}
         placeholderTextColor={colors.muted}
         {...props}
@@ -287,7 +294,8 @@ export function Sheet({
 }) {
   return (
     <Modal transparent animationType="fade" onRequestClose={close} visible>
-      <View
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={{
           flex: 1,
           backgroundColor: "#24313A66",
@@ -325,7 +333,7 @@ export function Sheet({
             {children}
           </ScrollView>
         </View>
-      </View>
+      </KeyboardAvoidingView>
     </Modal>
   );
 }

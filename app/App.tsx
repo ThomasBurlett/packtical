@@ -33,6 +33,7 @@ import {
   Sheet,
   styles,
 } from "@/ui/kit";
+import { BackupPanel } from "@/ui/backup";
 import { Hub } from "@/ui/hub";
 import { ChecklistScreen } from "@/ui/checklist";
 
@@ -359,12 +360,10 @@ function SettingsScreen({
     try {
       for (let index = 0; index < items.length; index += 400)
         await driver.write(
-          items
-            .slice(index, index + 400)
-            .map((entry) => ({
-              path: `users/${user.uid}/checklists/${entry.slug}/items/${entry.id}`,
-              data: entry.item,
-            })),
+          items.slice(index, index + 400).map((entry) => ({
+            path: `users/${user.uid}/checklists/${entry.slug}/items/${entry.id}`,
+            data: entry.item,
+          })),
         );
       setMessage(
         `${items.length} custom items imported. Your built-in checklists are unchanged.`,
@@ -450,6 +449,7 @@ function SettingsScreen({
           </Text>
         )}
       </View>
+      <BackupPanel driver={driver} uid={user.uid} />
       <View style={{ alignItems: "center", gap: 10, padding: 20 }}>
         <Mark size={70} />
         <Text style={styles.heading}>packbee</Text>

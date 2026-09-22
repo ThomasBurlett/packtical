@@ -40,5 +40,7 @@
 - **Synced**: observed data has been confirmed by the server with no pending writes in that checklist.
 - **Offline-ready**: previously loaded content remains available after an offline restart.
 - **Local preview**: an explicitly selected developer preview with browser-only data; not a signed-in account and not production sync.
+- **Customization backup**: a portable Packbee file containing item and section customizations across all activities, excluding accounts and packing progress.
+- **Restore a backup**: review and merge saved customizations into the signed-in account. Matching IDs are updated; other additions and packing progress are retained.
 
 Use these terms consistently in code and copy. Avoid introducing trips, household sharing, or legacy Supabase terminology into the rebuilt product.

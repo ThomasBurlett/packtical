@@ -32,6 +32,9 @@ The app lives in `app/`. Service registrations belong in `app/native-config/`; s
 - Restore defaults retains personal additions.
 - Previously loaded data persists offline; the web build includes an offline application shell.
 - The most recent checklist resumes at launch. Each Google account owns its own data.
+- Compact pinned checklist controls, search results that reveal collapsed sections, and item action menus keep packing in focus.
+- Add another keeps the item editor open for consecutive additions.
+- Settings can export a customization backup file and review/restore one. Matching items and sections are updated without changing packing progress or removing other personal additions. Export requires a connection so unloaded checklists are not silently omitted.
 
 ## Build and deploy
 

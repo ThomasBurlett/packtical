@@ -48,6 +48,7 @@ module.exports = {
       ...(project.projectId ? { eas: { projectId: project.projectId } } : {}),
     },
     plugins: [
+      "expo-sharing",
       "@react-native-firebase/app",
       "@react-native-firebase/auth",
       project.iosUrlScheme
