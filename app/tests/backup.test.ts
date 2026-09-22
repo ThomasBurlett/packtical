@@ -123,3 +123,31 @@ test("export waits for synchronized data and releases all subscriptions", async 
   assert.equal(backupCount(backup), 0);
   assert.equal(stopped, 22);
 });
+
+test("export includes effective defaults so restoring a renamed item also restores its saved visibility", async () => {
+  const driver: Driver = {
+    preview: true,
+    auth: () => () => {},
+    signIn: async () => {},
+    signOut: async () => {},
+    write: async () => {},
+    watch(path, _list, next) {
+      next(
+        path.endsWith("/camping/items")
+          ? [{ id: "campsite--tent", data: { label: "Our tent" } }]
+          : [],
+        { cached: false, pending: false },
+      );
+      return () => {};
+    },
+  };
+  const backup = await exportBackup(driver, "owner");
+  const saved = backup.checklists.find((c) => c.slug === "camping")!.items[
+    "campsite--tent"
+  ];
+  assert.equal(saved.label, "Our tent");
+  assert.equal(saved.hidden, false);
+  assert.equal(saved.kind, "core");
+  assert.equal(saved.sectionId, "campsite");
+  assert.equal(parseBackup(JSON.stringify(backup)).checklists.length, 11);
+});

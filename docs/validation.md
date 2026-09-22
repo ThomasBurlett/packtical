@@ -6,9 +6,12 @@
 - At 390 x 844, verified that controls stay visible while scrolling into later sections, and search reveals matches inside a previously collapsed section.
 - Verified query result counts, active-filter labeling, no-result recovery, item-menu skip behavior, and consecutive Add another / Add and close entries with retained field focus.
 - Preview backup exported to a JSON download, selected through the file picker, reviewed, and restored successfully. Backup excludes packing progress and accounts.
-- Eight domain/backup tests and four Firestore emulator tests pass, including owner-only restore, malformed-file rejection, repeated restore without duplicate IDs, and retained packing progress.
+- Nine domain/backup tests and four Firestore emulator tests pass, including owner-only restore, malformed-file rejection, repeated restore without duplicate IDs, and retained packing progress.
 - TypeScript configuration now includes source and tests explicitly; generated preview/native bundles no longer enter type checking and trigger intermittent stack overflows.
-- Updated standalone Android build: `99c03746-f03a-4824-8d94-6bfc81626caf`, version 1.0.0 (4). Device validation pending build completion.
+- Updated standalone Android build: `99c03746-f03a-4824-8d94-6bfc81626caf`, version 1.0.0 (4). EAS release build succeeded and installed on Pixel 8. The owner confirmed the compact scrolling controls, continuous-entry keyboard behavior, and native backup save/share and file-selection review looked good.
+
+- Build 4 APK: 83,002,129 bytes; SHA-256 `BDB9ED8740DCB21BFA430C5AC14CA040919134BB7D1D0570B33EAD68DD0A2C0A`.
+- Production web deployment and signed-in full backup export verified. Android and iOS JS exports and GitHub CI passed for the polish release.
 
 ## Completed
 
