@@ -74,6 +74,7 @@ export function ChecklistScreen({
   const [editing, setEditing] = useState(false);
   const [editor, setEditor] = useState<Editor | null>(null);
   const [itemMenu, setItemMenu] = useState<Item | null>(null);
+  const [bulkSection, setBulkSection] = useState<Section | null>(null);
   const [info, setInfo] = useState(false);
   const normalizedQuery = query.trim().toLowerCase();
   const [menu, setMenu] = useState(false);
@@ -187,48 +188,6 @@ export function ChecklistScreen({
                 : "Synced"}
         </Text>
         <View style={{ gap: 8 }}>
-          {searching && (
-            <View
-              style={[
-                styles.row,
-                styles.input,
-                { paddingVertical: 0, paddingRight: 2 },
-              ]}
-            >
-              <Search size={18} color={colors.muted} />
-              <TextInput
-                autoFocus
-                accessibilityLabel="Search items"
-                placeholder="Find an item"
-                placeholderTextColor={colors.muted}
-                value={query}
-                onChangeText={setQuery}
-                autoCorrect={false}
-                returnKeyType="search"
-                onKeyPress={({ nativeEvent }) => {
-                  if (nativeEvent.key === "Escape") {
-                    setQuery("");
-                    setSearching(false);
-                  }
-                }}
-                style={{
-                  flex: 1,
-                  minWidth: 0,
-                  fontSize: 16,
-                  color: colors.ink,
-                  minHeight: 44,
-                }}
-              />
-              <IconButton
-                label="Close search"
-                icon={X}
-                onPress={() => {
-                  setQuery("");
-                  setSearching(false);
-                }}
-              />
-            </View>
-          )}
           <View style={[styles.row, { gap: 4 }]}>
             <ScrollView
               horizontal
@@ -291,15 +250,50 @@ export function ChecklistScreen({
                   onPress={() => setSearching(true)}
                 />
               )}
-              <Button
-                label={editing ? "Done" : "Edit"}
-                icon={editing ? Check : Pencil}
-                tone={editing ? "secondary" : "quiet"}
-                style={{ paddingHorizontal: 10, minHeight: 44 }}
-                onPress={() => setEditing(!editing)}
-              />
             </View>
           </View>
+          {searching && (
+            <View
+              style={[
+                styles.row,
+                styles.input,
+                { paddingVertical: 0, paddingRight: 2 },
+              ]}
+            >
+              <Search size={18} color={colors.muted} />
+              <TextInput
+                autoFocus
+                accessibilityLabel="Search items"
+                placeholder="Find an item"
+                placeholderTextColor={colors.muted}
+                value={query}
+                onChangeText={setQuery}
+                autoCorrect={false}
+                returnKeyType="search"
+                onKeyPress={({ nativeEvent }) => {
+                  if (nativeEvent.key === "Escape") {
+                    setQuery("");
+                    setSearching(false);
+                  }
+                }}
+                style={{
+                  flex: 1,
+                  minWidth: 0,
+                  fontSize: 16,
+                  color: colors.ink,
+                  minHeight: 44,
+                }}
+              />
+              <IconButton
+                label="Close search"
+                icon={X}
+                onPress={() => {
+                  setQuery("");
+                  setSearching(false);
+                }}
+              />
+            </View>
+          )}
         </View>
         {(searching || filter !== "all") && (
           <View style={[styles.row, { justifyContent: "space-between" }]}>
@@ -378,6 +372,13 @@ export function ChecklistScreen({
                       {sectionProgress.packed}/{sectionProgress.total}
                     </Text>
                   </Pressable>
+                  {!editing && section.items.some((item) => !item.hidden) && (
+                    <IconButton
+                      label={`Bulk actions for ${section.title}`}
+                      icon={MoreHorizontal}
+                      onPress={() => setBulkSection(section)}
+                    />
+                  )}
                   {editing && (
                     <View style={styles.row}>
                       <IconButton
@@ -732,12 +733,55 @@ export function ChecklistScreen({
           </Text>
         </Sheet>
       )}
+      {bulkSection && (() => {
+        const items = bulkSection.items.filter((item) => !item.hidden);
+        const allPacked = items.every(
+          (item) => data.snapshot.states[item.id]?.status === "packed",
+        );
+        const allSkipped = items.every(
+          (item) => data.snapshot.states[item.id]?.status === "skipped",
+        );
+        return (
+          <Sheet title={bulkSection.title} close={() => setBulkSection(null)}>
+            <Text style={styles.muted}>
+              Update all {items.length} visible items in this section at once.
+            </Text>
+            <Button
+              label={allPacked ? "Clear all completed" : "Mark all complete"}
+              icon={Check}
+              tone="secondary"
+              onPress={() => {
+                setUndo(null);
+                data.statuses(
+                  items.map((item) => item.id),
+                  allPacked ? "unpacked" : "packed",
+                );
+                setBulkSection(null);
+              }}
+            />
+            <Button
+              label={allSkipped ? "Include all items" : "Mark all skipped"}
+              icon={SkipForward}
+              tone="secondary"
+              onPress={() => {
+                setUndo(null);
+                data.statuses(
+                  items.map((item) => item.id),
+                  allSkipped ? "unpacked" : "skipped",
+                );
+                setBulkSection(null);
+              }}
+            />
+          </Sheet>
+        );
+      })()}
       {menu && (
         <Sheet title="Your checklist" close={() => setMenu(false)}>
           <Button
             label={editing ? "Finish customizing" : "Customize checklist"}
             icon={Pencil}
             tone="secondary"
+            style={{ borderWidth: 1, borderColor: colors.sage, backgroundColor: "#DDE7D8" }}
             onPress={() => {
               setEditing(!editing);
               setMenu(false);
@@ -747,6 +791,7 @@ export function ChecklistScreen({
             label="Reset packing progress"
             icon={RotateCcw}
             tone="secondary"
+            style={{ borderWidth: 1, borderColor: colors.sage, backgroundColor: "#DDE7D8" }}
             onPress={() => {
               setConfirm("reset");
               setMenu(false);
@@ -755,6 +800,7 @@ export function ChecklistScreen({
           <Button
             label="Restore defaults"
             tone="quiet"
+            style={{ borderWidth: 1, borderColor: colors.line, backgroundColor: colors.paper }}
             onPress={() => {
               setConfirm("restore");
               setMenu(false);

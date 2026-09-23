@@ -5,7 +5,10 @@ service cloud.firestore {
     function shortText(value, limit) { return value is string && value.size() <= limit; }
     match /users/{uid} {
       allow read: if owns(uid);
-      allow create, update: if owns(uid) && request.resource.data.keys().hasOnly(['lastChecklist']) && shortText(request.resource.data.lastChecklist, 100);
+      allow create, update: if owns(uid)
+        && request.resource.data.keys().hasOnly(['lastChecklist', 'collapsedCategories'])
+        && (!('lastChecklist' in request.resource.data) || shortText(request.resource.data.lastChecklist, 100))
+        && (!('collapsedCategories' in request.resource.data) || (request.resource.data.collapsedCategories is list && request.resource.data.collapsedCategories.hasOnly(['Outdoor', 'Travel', 'Cycling', 'Snow'])));
       match /checklists/{slug} {
         allow read: if owns(uid);
         allow create, update: if owns(uid) && request.resource.data.keys().hasOnly(['cycle']) && shortText(request.resource.data.cycle, 100);

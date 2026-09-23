@@ -96,6 +96,14 @@ export function useChecklist(
         },
       ]);
     },
+    statuses(ids: string[], status: PackingStatus) {
+      write(
+        ids.map((id) => ({
+          path: `${root}/cycles/${snapshot.cycle}/states/${id}`,
+          data: { status },
+        })),
+      );
+    },
     item(id: string, data: Partial<Item>) {
       write([{ path: `${root}/items/${id}`, data }]);
     },

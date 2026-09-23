@@ -100,6 +100,16 @@ test("private accounts reject unauthenticated and cross-account reads/writes", a
     setDoc(doc(stranger, path), { hidden: true }, { merge: true }),
   );
   await assertFails(setDoc(doc(owner, path), { label: "" }, { merge: true }));
+  await assertSucceeds(
+    setDoc(doc(owner, "users/owner"), {
+      collapsedCategories: ["Outdoor", "Travel"],
+    }),
+  );
+  await assertFails(
+    setDoc(doc(owner, "users/owner"), {
+      collapsedCategories: ["Not a Packbee category"],
+    }),
+  );
 });
 test("late writes to an older cycle cannot change the new cycle; undo copies into another fresh cycle", async () => {
   const db = env.authenticatedContext("packer").firestore();

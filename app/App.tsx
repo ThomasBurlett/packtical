@@ -264,7 +264,7 @@ function Workspace({
       {!resumed ? (
         <ActivityIndicator style={{ flex: 1 }} color={colors.green} />
       ) : screen === "hub" ? (
-        <Hub open={open} />
+        <Hub open={open} driver={driver} uid={user.uid} fail={fail} />
       ) : screen === "checklist" && slug ? (
         <ChecklistScreen
           key={slug}

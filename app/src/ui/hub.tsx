@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Pressable, ScrollView, Text, TextInput, View } from "react-native";
 import {
   ArrowUpRight,
@@ -7,9 +7,12 @@ import {
   Plane,
   Search,
   Snowflake,
+  ChevronDown,
+  ChevronRight,
   type LucideIcon,
 } from "lucide-react-native";
 import { CHECKLISTS } from "@/domain/catalogue";
+import type { Driver } from "@/data/port";
 import { colors, Landscape, styles } from "./kit";
 
 const icons: Record<string, LucideIcon> = {
@@ -18,8 +21,51 @@ const icons: Record<string, LucideIcon> = {
   Cycling: Bike,
   Snow: Snowflake,
 };
-export function Hub({ open }: { open: (slug: string) => void }) {
+const categories = Object.keys(icons);
+export function Hub({
+  open,
+  driver,
+  uid,
+  fail,
+}: {
+  open: (slug: string) => void;
+  driver: Driver;
+  uid: string;
+  fail: (error: Error) => void;
+}) {
   const [query, setQuery] = useState("");
+  const [collapsed, setCollapsed] = useState<string[]>([]);
+  useEffect(
+    () =>
+      driver.watch(
+        `users/${uid}`,
+        false,
+        (entries) => {
+          const value = entries[0]?.data.collapsedCategories;
+          if (
+            Array.isArray(value) &&
+            value.every(
+              (category): category is string =>
+                typeof category === "string" && categories.includes(category),
+            )
+          )
+            setCollapsed(value);
+        },
+        fail,
+      ),
+    [driver, fail, uid],
+  );
+  const toggleCategory = (category: string) => {
+    setCollapsed((previous) => {
+      const next = previous.includes(category)
+        ? previous.filter((value) => value !== category)
+        : [...previous, category];
+      void driver
+        .write([{ path: `users/${uid}`, data: { collapsedCategories: next } }])
+        .catch(fail);
+      return next;
+    });
+  };
   return (
     <ScrollView
       contentInsetAdjustmentBehavior="automatic"
@@ -72,14 +118,26 @@ export function Hub({ open }: { open: (slug: string) => void }) {
         if (!lists.length) return null;
         return (
           <View key={category} style={{ gap: 12 }}>
-            <View style={styles.row}>
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel={`${category} category`}
+              accessibilityState={{ expanded: !collapsed.includes(category) }}
+              onPress={() => toggleCategory(category)}
+              style={[styles.row, { minHeight: 44 }]}
+            >
+              {collapsed.includes(category) ? (
+                <ChevronRight size={18} color={colors.muted} />
+              ) : (
+                <ChevronDown size={18} color={colors.muted} />
+              )}
               <Icon size={18} color={colors.clay} />
               <Text accessibilityRole="header" style={styles.heading}>
                 {category}
               </Text>
               <Text style={styles.muted}>{lists.length}</Text>
-            </View>
-            <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 12 }}>
+            </Pressable>
+            {!collapsed.includes(category) && (
+              <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 12 }}>
               {lists.map((list) => (
                 <Pressable
                   key={list.slug}
@@ -121,7 +179,8 @@ export function Hub({ open }: { open: (slug: string) => void }) {
                   </Text>
                 </Pressable>
               ))}
-            </View>
+              </View>
+            )}
           </View>
         );
       })}
