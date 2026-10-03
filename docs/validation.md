@@ -1,5 +1,13 @@
 # Rebuild verification
 
+## Day-hiking checklist release
+
+- Pushed `d4f7c08` to `main`; GitHub CI run `37088686102` passed.
+- Firebase Hosting released to `https://packbee-app.web.app`; the live page returned HTTP 200 and its deployed bundle contains both day-hiking checklists.
+- EAS Android build `c33b3e22-c9a2-467e-a6db-a3d33e186d08` finished successfully as version 1.0.0 (6): https://expo.dev/artifacts/eas/TWwo9I06BJfz9asziSxheT0rpD2oqQxDx3Wq_qHR-mo.apk
+- The Android APK was not installed on a physical device for this release; ADB found no attached or wireless device.
+- The iOS build did not complete because Expo requires Apple Developer account authentication to validate the existing distribution certificate. EAS initialized and incremented the remote iOS build number to 2 during the attempts; no iOS artifact was produced.
+
 ## Packing polish and backups
 
 - Compact checklist name, progress, and search/filter/edit controls remain fixed above the scrolling items. Description moved to an About action.
