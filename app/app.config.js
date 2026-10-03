@@ -34,6 +34,7 @@ module.exports = {
     ios: {
       bundleIdentifier: "com.packbee.app",
       supportsTablet: true,
+      infoPlist: { ITSAppUsesNonExemptEncryption: false },
       ...(fs.existsSync(iosFile) ? { googleServicesFile: iosFile } : {}),
     },
     web: {
