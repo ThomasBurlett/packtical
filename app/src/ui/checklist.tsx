@@ -40,6 +40,7 @@ import { useChecklist } from "@/data/use-checklist";
 import { Button, colors, Field, IconButton, Sheet, styles } from "./kit";
 
 type Filter = "all" | "remaining" | "core" | "optional" | "skipped" | "hidden";
+type MaterializedSection = ReturnType<typeof materialize>[number];
 type Editor =
   { type: "item"; item: Item } | { type: "section"; section: Section };
 export function ChecklistScreen({
@@ -74,7 +75,7 @@ export function ChecklistScreen({
   const [editing, setEditing] = useState(false);
   const [editor, setEditor] = useState<Editor | null>(null);
   const [itemMenu, setItemMenu] = useState<Item | null>(null);
-  const [bulkSection, setBulkSection] = useState<Section | null>(null);
+  const [bulkSection, setBulkSection] = useState<MaterializedSection | null>(null);
   const [info, setInfo] = useState(false);
   const normalizedQuery = query.trim().toLowerCase();
   const [menu, setMenu] = useState(false);

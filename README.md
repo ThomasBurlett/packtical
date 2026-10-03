@@ -25,7 +25,7 @@ The app lives in `app/`. Service registrations belong in `app/native-config/`; s
 
 ## Packing behavior
 
-- Eleven preserved activities, including separate Travel preparation and duration-based packing checklists.
+- Thirteen activities, including separate Travel preparation and duration-based packing checklists.
 - Check, skip this time, search, filter, and collapse sections.
 - Add/edit/hide/reorder items and edit/reorder/add sections.
 - Reset starts a new packing cycle, retaining customizations. Undo copies previous progress into a fresh cycle; stale offline writes never revive an old cycle.

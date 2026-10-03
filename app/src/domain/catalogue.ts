@@ -1,5 +1,7 @@
 import type { Checklist } from "./legacy-types";
 
+const TEN_ESSENTIALS_NOTE = "Part of the Ten Essentials systems.";
+
 export const CHECKLISTS: Checklist[] = [
   {
     slug: "camping",
@@ -1286,6 +1288,314 @@ export const CHECKLISTS: Checklist[] = [
           ["knife", "Knife or multi-tool", "core"],
           ["repair-kit", "Repair kit for mattress or stove", "optional"],
           ["duct-tape", "Duct tape strips", "optional"],
+        ],
+      },
+    ],
+  },
+  {
+    slug: "day-hiking-over-2-hours",
+    label: "Day hiking (2+ hours)",
+    shortLabel: "Day hiking (2+ hours)",
+    category: "Outdoor",
+    subtitle:
+      "A comprehensive day-hiking packing list for backcountry outings lasting more than two hours.",
+    summary:
+      "Daypack, navigation, food and water, clothing, first aid and emergency gear.",
+    sections: [
+      {
+        id: "hiking-gear",
+        title: "Hiking gear",
+        items: [
+          ["daypack", "Daypack or hydration pack", "core"],
+          ["trekking-poles", "Trekking poles", "optional"],
+          ["winter-traction", "Winter traction devices", "optional"],
+        ],
+      },
+      {
+        id: "navigation",
+        title: "Navigation",
+        items: [
+          ["map", "Map", "core", TEN_ESSENTIALS_NOTE],
+          ["compass", "Compass", "core", TEN_ESSENTIALS_NOTE],
+          ["route-guide", "Route description or guidebook", "optional"],
+          ["altimeter-watch", "Altimeter watch", "optional", TEN_ESSENTIALS_NOTE],
+          ["gps", "GPS", "optional", TEN_ESSENTIALS_NOTE],
+          [
+            "smartphone-apps",
+            "Smartphone navigation apps",
+            "optional",
+            "Examples: Strava, AllTrails, Gaia or FarOut.",
+          ],
+          [
+            "satellite-messenger",
+            "Satellite messenger or personal locator beacon",
+            "optional",
+            TEN_ESSENTIALS_NOTE,
+          ],
+        ],
+      },
+      {
+        id: "food-water",
+        title: "Food & water",
+        items: [
+          [
+            "water",
+            "Water bottles or reservoir sized for your pack",
+            "core",
+            TEN_ESSENTIALS_NOTE,
+          ],
+          [
+            "water-treatment",
+            "Water filter, purifier or chemical treatment",
+            "core",
+            TEN_ESSENTIALS_NOTE,
+          ],
+          ["trail-snacks", "Trail snacks", "core"],
+          ["lunch", "Lunch", "core"],
+          ["extra-food", "Extra day's supply of food", "core", TEN_ESSENTIALS_NOTE],
+          ["trash-bag", "Resealable bag for your trash or someone else's", "core"],
+        ],
+      },
+      {
+        id: "clothing",
+        title: "Clothing",
+        items: [
+          ["underwear", "Moisture-wicking underwear", "core"],
+          ["shirt", "Moisture-wicking shirt", "core"],
+          ["pants", "Quick-drying pants or shorts", "core"],
+          ["long-sleeve", "Long-sleeve shirt for sun and bugs", "core"],
+          ["fleece", "Lightweight fleece or jacket", "core"],
+          ["socks", "Synthetic or wool socks", "core"],
+          [
+            "extra-clothes",
+            "Extra clothes beyond the minimum expectation",
+            "core",
+            TEN_ESSENTIALS_NOTE,
+          ],
+        ],
+      },
+      {
+        id: "weather-layers",
+        title: "Rainy or cold weather",
+        items: [
+          ["rainwear", "Rainwear (jacket and pants)", "core"],
+          ["long-underwear", "Long underwear", "core"],
+          ["insulated-jacket", "Warm insulated jacket or vest", "core"],
+          ["fleece-pants", "Fleece pants", "core"],
+          ["gloves", "Gloves or mittens", "core"],
+          ["warm-hat", "Warm hat", "core"],
+          ["bandana", "Bandana or neck gaiter", "optional"],
+          ["gaiters", "Gaiters for rainy, snowy or muddy conditions", "optional"],
+        ],
+      },
+      {
+        id: "footwear",
+        title: "Footwear",
+        items: [
+          [
+            "hiking-footwear",
+            "Choose one: hiking boots, hiking shoes, trail-running shoes or hiking sandals",
+            "core",
+          ],
+        ],
+      },
+      {
+        id: "tools-repair",
+        title: "Tools & repair",
+        items: [
+          ["knife", "Knife or multi-tool", "core", TEN_ESSENTIALS_NOTE],
+          ["repair-kit", "Small gear-repair kit", "core", TEN_ESSENTIALS_NOTE],
+        ],
+      },
+      {
+        id: "emergency",
+        title: "Emergency",
+        items: [
+          ["first-aid", "First-aid kit or supplies", "core", TEN_ESSENTIALS_NOTE],
+          [
+            "itineraries",
+            "Two itineraries (leave one with a friend and one under the car seat)",
+            "core",
+          ],
+          ["personal-items", "Personal items (phone, ID, etc.)", "core"],
+          ["handkerchief", "Handkerchief", "core"],
+          ["antiseptic-wipes", "Antibacterial or antiseptic wipes", "core", TEN_ESSENTIALS_NOTE],
+          ["blister-care", "Blister treatments", "core"],
+          ["pain-medication", "Pain medication (aspirin or ibuprofen)", "core"],
+          [
+            "fire-starting",
+            "Lighter or matches and firestarter",
+            "core",
+            TEN_ESSENTIALS_NOTE,
+          ],
+          ["emergency-shelter", "Emergency shelter", "core", TEN_ESSENTIALS_NOTE],
+          ["headlamp", "Flashlight or headlamp", "core", TEN_ESSENTIALS_NOTE],
+          ["whistle", "Whistle", "core"],
+          ["bear-spray", "Bear spray", "core"],
+        ],
+      },
+      {
+        id: "sun-protection",
+        title: "Sun protection",
+        items: [
+          ["sunscreen", "Sunscreen", "core", TEN_ESSENTIALS_NOTE],
+          ["sunglasses", "Sunglasses and sunglass straps", "core", TEN_ESSENTIALS_NOTE],
+          ["sun-hat", "Sun hat, visor or baseball cap", "core", TEN_ESSENTIALS_NOTE],
+          ["lip-balm", "SPF-rated lip balm", "core", TEN_ESSENTIALS_NOTE],
+        ],
+      },
+      {
+        id: "health-hygiene",
+        title: "Health & hygiene",
+        items: [
+          ["hand-sanitizer", "Hand sanitizer", "core"],
+          ["menstrual-products", "Menstrual products", "core"],
+          ["toilet-paper", "Toilet paper or urinary products", "core"],
+          ["insect-repellent", "Insect repellent", "core", TEN_ESSENTIALS_NOTE],
+          ["medications", "Prescription medications", "core"],
+          ["baby-wipes", "Baby wipes", "core"],
+        ],
+      },
+    ],
+  },
+  {
+    slug: "day-hiking-under-2-hours",
+    label: "Day hiking (2 hours or less)",
+    shortLabel: "Day hiking (2 hours or less)",
+    category: "Outdoor",
+    subtitle:
+      "A focused day-hiking checklist for outings of two hours or less, with layers and emergency basics.",
+    summary:
+      "Day bag, navigation, water, trail snacks, clothing and emergency essentials.",
+    sections: [
+      {
+        id: "hiking-gear",
+        title: "Hiking gear",
+        items: [
+          [
+            "daypack",
+            "Choose one: bottle sling, waist pack, daypack or hydration pack",
+            "core",
+          ],
+          ["trekking-poles", "Trekking poles", "optional"],
+          ["winter-traction", "Winter traction devices", "optional"],
+        ],
+      },
+      {
+        id: "navigation",
+        title: "Navigation",
+        items: [
+          ["map", "Map", "core", TEN_ESSENTIALS_NOTE],
+          ["compass", "Compass", "core", TEN_ESSENTIALS_NOTE],
+          ["route-guide", "Route description or guidebook", "optional"],
+          ["altimeter-watch", "Altimeter watch", "optional", TEN_ESSENTIALS_NOTE],
+          ["gps", "GPS", "optional", TEN_ESSENTIALS_NOTE],
+          [
+            "smartphone-apps",
+            "Smartphone navigation apps",
+            "optional",
+            "Examples: Strava, AllTrails, Gaia or FarOut.",
+          ],
+        ],
+      },
+      {
+        id: "food-water",
+        title: "Food & water",
+        items: [
+          [
+            "water",
+            "Water bottles or reservoir sized for your pack",
+            "core",
+            TEN_ESSENTIALS_NOTE,
+          ],
+          ["trail-snacks", "Trail snacks (pack extra)", "core", TEN_ESSENTIALS_NOTE],
+          ["trash-bag", "Resealable bag for your trash or someone else's", "core"],
+          ["lunch", "Lunch", "optional"],
+        ],
+      },
+      {
+        id: "clothing",
+        title: "Clothing",
+        items: [
+          ["underwear", "Moisture-wicking underwear", "core"],
+          ["shirt", "Moisture-wicking shirt", "core"],
+          ["pants", "Quick-drying pants or shorts", "core"],
+          ["long-sleeve", "Long-sleeve shirt for sun and bugs", "core"],
+          ["fleece", "Lightweight fleece or jacket", "core"],
+          ["socks", "Synthetic or wool socks", "core"],
+        ],
+      },
+      {
+        id: "weather-layers",
+        title: "Rainy or cold weather",
+        items: [
+          ["rainwear", "Rainwear (jacket and pants)", "core"],
+          ["long-underwear", "Long underwear", "core"],
+          ["insulated-jacket", "Warm insulated jacket or vest", "core"],
+          ["fleece-pants", "Fleece pants", "core"],
+          ["gloves", "Gloves or mittens", "core"],
+          ["warm-hat", "Warm hat", "core"],
+          ["bandana", "Bandana or neck gaiter", "optional"],
+          ["gaiters", "Gaiters for rainy, snowy or muddy conditions", "optional"],
+        ],
+      },
+      {
+        id: "footwear",
+        title: "Footwear",
+        items: [
+          [
+            "hiking-footwear",
+            "Choose one: hiking boots, hiking shoes, trail-running shoes or hiking sandals",
+            "core",
+          ],
+        ],
+      },
+      {
+        id: "tools-repair",
+        title: "Tools & repair",
+        items: [
+          ["knife", "Knife or multi-tool", "core", TEN_ESSENTIALS_NOTE],
+          ["repair-kit", "Small gear-repair kit", "core", TEN_ESSENTIALS_NOTE],
+        ],
+      },
+      {
+        id: "emergency",
+        title: "Emergency",
+        items: [
+          ["first-aid", "First-aid kit or supplies", "core", TEN_ESSENTIALS_NOTE],
+          [
+            "itineraries",
+            "Two itineraries (leave one with a friend and one under the car seat)",
+            "core",
+          ],
+          ["personal-items", "Personal items (phone, ID, etc.)", "core"],
+          ["handkerchief", "Handkerchief", "core"],
+          ["pain-medication", "Pain medication (aspirin or ibuprofen)", "core"],
+          ["antiseptic-wipes", "Antibacterial or antiseptic wipes", "core", TEN_ESSENTIALS_NOTE],
+          ["headlamp", "Flashlight or headlamp", "core", TEN_ESSENTIALS_NOTE],
+          ["whistle", "Whistle", "core"],
+        ],
+      },
+      {
+        id: "sun-protection",
+        title: "Sun protection",
+        items: [
+          ["sunscreen", "Sunscreen", "core", TEN_ESSENTIALS_NOTE],
+          ["sunglasses", "Sunglasses and sunglass straps", "core", TEN_ESSENTIALS_NOTE],
+          ["sun-hat", "Sun hat, visor or baseball cap", "core", TEN_ESSENTIALS_NOTE],
+          ["lip-balm", "SPF-rated lip balm", "core", TEN_ESSENTIALS_NOTE],
+        ],
+      },
+      {
+        id: "health-hygiene",
+        title: "Health & hygiene",
+        items: [
+          ["hand-sanitizer", "Hand sanitizer", "core"],
+          ["menstrual-products", "Menstrual products", "core"],
+          ["toilet-paper", "Toilet paper or urinary products", "core"],
+          ["insect-repellent", "Insect repellent", "core", TEN_ESSENTIALS_NOTE],
+          ["medications", "Prescription medications", "core"],
+          ["baby-wipes", "Baby wipes", "core"],
         ],
       },
     ],

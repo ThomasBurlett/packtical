@@ -8,8 +8,8 @@ import {
   importLegacy,
 } from "../src/domain/packing";
 
-test("catalogue has all eleven activities with unique stable item keys and valid links", () => {
-  assert.equal(CHECKLISTS.length, 11);
+test("catalogue has all thirteen activities with unique stable item keys and valid links", () => {
+  assert.equal(CHECKLISTS.length, 13);
   for (const checklist of CHECKLISTS) {
     const sections = materialize(checklist.slug, emptySnapshot());
     const items = sections.flatMap((section) => section.items);

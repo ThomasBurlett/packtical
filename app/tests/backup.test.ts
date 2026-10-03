@@ -119,9 +119,9 @@ test("export waits for synchronized data and releases all subscriptions", async 
     },
   } as Driver;
   const backup = await exportBackup(driver, "owner");
-  assert.equal(backup.checklists.length, 11);
+  assert.equal(backup.checklists.length, 13);
   assert.equal(backupCount(backup), 0);
-  assert.equal(stopped, 22);
+  assert.equal(stopped, 26);
 });
 
 test("export includes effective defaults so restoring a renamed item also restores its saved visibility", async () => {
@@ -149,5 +149,5 @@ test("export includes effective defaults so restoring a renamed item also restor
   assert.equal(saved.hidden, false);
   assert.equal(saved.kind, "core");
   assert.equal(saved.sectionId, "campsite");
-  assert.equal(parseBackup(JSON.stringify(backup)).checklists.length, 11);
+  assert.equal(parseBackup(JSON.stringify(backup)).checklists.length, 13);
 });
